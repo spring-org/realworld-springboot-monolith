@@ -12,9 +12,6 @@ class RealWorldApplicationTests {
 
     @Test
     void contextLoads() {
-        ApplicationContext context = new AnnotationConfigApplicationContext(RealWorldApplication.class);
-        int beanDefinitionCount = context.getBeanDefinitionCount();
-        assertThat(beanDefinitionCount).isNotZero();
     }
 
 }
