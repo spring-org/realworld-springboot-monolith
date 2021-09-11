@@ -7,16 +7,34 @@ test {
     finalizedBy 'jacocoTestReport'
 }
 
+def jacocoExclude = [
+        '**/*Api.class',
+        '**/Request*',
+        '**/Response*',
+        '**/RealWorldApplication.class',
+        '**/*Exception.class'
+]
+
 jacocoTestReport {
     reports {
         html.enabled true
         xml.enabled true
         // csv.enabled true
     }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: jacocoExclude)
+        }))
+    }
     finalizedBy 'jacocoTestCoverageVerification'
 }
 
 jacocoTestCoverageVerification {
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: jacocoExclude)
+        }))
+    }
     violationRules {
         // 전체
         rule {
@@ -24,8 +42,6 @@ jacocoTestCoverageVerification {
             limit {
                 minimum = 0.90
             }
-
-            excludes = [ '**.RealWorldApplication.**' ]
         }
         // 패키지
         rule {
@@ -52,7 +68,7 @@ jacocoTestCoverageVerification {
 
             // 라인 커버리지를 최소한 80% 만족
             limit {
-                 counter = 'LINE'
+                counter = 'LINE'
                 value = 'COVEREDRATIO'
                 minimum = 1.00
             }
@@ -63,9 +79,6 @@ jacocoTestCoverageVerification {
                 value = 'TOTALCOUNT'
                 maximum = 200
             }
-            excludes = [
-                    '**.RealWorldApplication',
-            ]
         }
     }
 }
