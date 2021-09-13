@@ -38,12 +38,18 @@ public class User {
         this.token = token;
     }
 
-    public static User registeredUser(Long id, String email, String password, Profile profile) {
-        return new User(id, email, password, profile, new Follow(), null);
+    public static User registeredUser(Long id, String email, String password) {
+        return new User(id, email, password, new Profile(), new Follow(), null);
     }
 
     // profile
-    public User updateUser(String userName, String bio, String url) {
+    public User updateUser(String email, String password, String userName, String bio, String url) {
+        if (StringUtils.hasText(email)) {
+            this.email = email;
+        }
+        if (StringUtils.hasText(password)) {
+            this.password = password;
+        }
         if (StringUtils.hasText(userName)) {
             profile.changeUserName(userName);
         }
