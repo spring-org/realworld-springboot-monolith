@@ -8,6 +8,8 @@ test {
 }
 
 def jacocoExclude = [
+        '**/Article.class',
+        '**/Comment.class',
         '**/*Api.class',
         '**/Request*',
         '**/Response*',
