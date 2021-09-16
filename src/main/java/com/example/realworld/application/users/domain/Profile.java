@@ -1,6 +1,9 @@
 package com.example.realworld.application.users.domain;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.Embeddable;
 
@@ -16,27 +19,25 @@ public class Profile {
 
     private String image;
 
-    @Builder
     public Profile(String userName, String bio, String image) {
         this.userName = userName;
         this.bio = bio;
         this.image = image;
     }
 
-    public Profile changeUserName(String userName) {
+    public static Profile of(String userName, String bio, String image) {
+        return new Profile(userName, bio, image);
+    }
+
+    public void changeUserName(String userName) {
         this.userName = userName;
-        return this;
     }
 
-    public Profile changeImage(String url) {
+    public void changeImage(String url) {
         this.image = url;
-        return this;
     }
 
-    public Profile changeBio(String bio) {
+    public void changeBio(String bio) {
         this.bio = bio;
-        return this;
     }
-
-
 }

@@ -27,9 +27,9 @@ class FollowRepositoryTest {
     private static Stream<Arguments> userList() {
         return Stream.of(
                 Arguments.of(
-                        User.registeredUser(1L, "seok1@gmail.com", "1234"),
-                        User.registeredUser(2L, "seok2@gmail.com", "1234"),
-                        User.registeredUser(3L, "seok3@gmail.com", "1234"))
+                        User.of("seok2@gmail.com", "1234"),
+                        User.of("seok3@gmail.com", "1234"),
+                        User.of("seok1@gmail.com", "1234"))
         );
     }
 
@@ -41,28 +41,28 @@ class FollowRepositoryTest {
         userRepository.saveAll(List.of(fromUser, toUser));
 
         final Follow newFollow = Follow.following(fromUser, toUser);
-        followRepository.save(newFollow);
-        fromUser.getFollowing().add(newFollow);
+        Follow savedFollow = followRepository.save(newFollow);
+        fromUser.getFollowing().add(savedFollow);
 
         // when
         boolean contains = fromUser.isFollowing(toUser);
-        long followSize = followRepository.count();
+        long followSize = fromUser.getFollowing().size();
 
         // then
         assertThat(contains).isTrue();
         assertThat(followSize).isNotZero();
     }
 
-    @DisplayName("사용자 간의 Follow 확인 테스트")
-    @ParameterizedTest(name = "fromUser : {0}, toUser : {1} 팔로우 테스트")
+    @DisplayName("사용자 간의 unFollow 확인 테스트")
+    @ParameterizedTest(name = "fromUser : {0}, toUser : {1} unFollow 확인 테스트")
     @MethodSource(value = "userList")
     void when_follow_expected_throw_not_matches_toUser_email(final User fromUser, final User toUser, final User otherUser) {
         // given
-        userRepository.saveAll(List.of(fromUser, toUser));
+        userRepository.saveAll(List.of(fromUser, toUser, otherUser));
 
         final Follow newFollow = Follow.following(fromUser, toUser);
         followRepository.save(newFollow);
-        fromUser.getFollowing().add(newFollow);
+        fromUser.follow(newFollow);
 
         // when
         boolean contains = fromUser.isFollowing(otherUser);
@@ -70,5 +70,4 @@ class FollowRepositoryTest {
         // then
         assertThat(contains).isFalse();
     }
-
 }

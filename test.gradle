@@ -8,8 +8,6 @@ test {
 }
 
 def jacocoExclude = [
-        '**/Article.class',
-        '**/Comment.class',
         '**/*Api.class',
         '**/Request*',
         '**/Response*',
@@ -42,7 +40,7 @@ jacocoTestCoverageVerification {
         rule {
             // 해당 프로젝트의 최소 커버리지
             limit {
-                minimum = 0.90
+                minimum = 1.00
             }
         }
         // 패키지
