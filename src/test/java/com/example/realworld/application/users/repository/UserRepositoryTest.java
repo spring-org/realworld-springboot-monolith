@@ -18,13 +18,13 @@ class UserRepositoryTest {
     private UserRepository userRepository;
     private User savedUser;
 
-    private User createUser(Long id, String email) {
-        return User.registeredUser(id, email, "1234");
+    private User createUser(String email) {
+        return User.of(email, "1234");
     }
 
     @BeforeEach
     void setUp() {
-        savedUser = userRepository.save(createUser(1L, "seokrae@gmail.com"));
+        savedUser = userRepository.save(createUser("seokrae@gmail.com"));
     }
 
     @AfterEach
@@ -47,7 +47,7 @@ class UserRepositoryTest {
     @Test
     void when_updateUser_expected_changeInfo() {
         // when
-        savedUser.updateUser("update@gmail.com", "4321", "username", "bio", "gmail.com/image.png");
+        savedUser.update("update@gmail.com", "4321", "username", "bio", "gmail.com/image.png");
         userRepository.flush();
 
         User findUser = userRepository.findByEmail(savedUser.getEmail())
@@ -61,7 +61,7 @@ class UserRepositoryTest {
     @Test
     void when_updatedUser_expected_noData_changeInfo() {
         // when
-        savedUser.updateUser(null, null, null, null, null);
+        savedUser.update(null, null, null, null, null);
         userRepository.flush();
 
         User findUser = userRepository.findByEmail(savedUser.getEmail())

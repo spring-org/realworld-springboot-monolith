@@ -8,10 +8,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class UserTest {
 
-    public static User createUser(Long id) {
+    public static User createUser(String email) {
         return User.builder()
-                .id(id)
-                .email("seokrae@gmail.com")
+                .email(email)
                 .password("!234")
                 .profile(createProfile())
                 .token("")
@@ -22,7 +21,7 @@ class UserTest {
     @Test
     void when_createUser_expected_equals_email() {
 
-        User user = createUser(1L);
+        User user = createUser("seokrae@gmail.com");
 
         assertThat(user.getEmail()).isEqualTo("seokrae@gmail.com");
     }
@@ -31,13 +30,12 @@ class UserTest {
     @Test
     void when_saveUser_expected_isEquals() {
         // given
-        User actual = createUser(1L);
+        User actual = createUser("seokrae@gmail.com");
 
         // when
-        User expected = createUser(1L);
+        User expected = createUser("seokrae@gmail.com");
 
         // then
-        assertThat(actual.getId()).isEqualTo(expected.getId());
         assertThat(actual.getEmail()).isEqualTo(expected.getEmail());
     }
 
@@ -45,13 +43,12 @@ class UserTest {
     @Test
     void when_createUser_expected_not_equals_user() {
         // given
-        User actual = createUser(1L);
+        User actual = createUser("seokrae@gmail.com");
 
         // when
-        User expected = createUser(2L);
+        User expected = createUser("seok@gmail.com");
 
         // then
-        assertThat(actual.getId()).isNotEqualTo(expected.getId());
-        assertThat(actual.getEmail()).isEqualTo(expected.getEmail());
+        assertThat(actual.getEmail()).isNotEqualTo(expected.getEmail());
     }
 }

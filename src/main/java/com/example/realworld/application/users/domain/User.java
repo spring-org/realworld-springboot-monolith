@@ -1,5 +1,7 @@
 package com.example.realworld.application.users.domain;
 
+import com.example.realworld.application.articles.domain.Article;
+import com.example.realworld.application.articles.exception.NotFoundArticleException;
 import com.example.realworld.application.follow.domain.Follow;
 import com.example.realworld.application.follow.exception.NotFoundFollowException;
 import lombok.*;
@@ -7,7 +9,9 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @ToString
@@ -16,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "USER_ID", nullable = false)
     private Long id;
 
@@ -37,17 +41,25 @@ public class User {
     @ToString.Exclude
     private final List<Follow> followers = new ArrayList<>();
 
+    @OneToMany(mappedBy = "author", orphanRemoval = true)
+    @ToString.Exclude
+    private final Set<Article> articles = new HashSet<>();
+
     @Builder
-    public User(Long id, String email, String password, Profile profile, String token) {
-        this.id = id;
+    public User(String email, String password, Profile profile, String token) {
         this.email = email;
         this.password = password;
         this.profile = profile;
         this.token = token;
     }
 
-    public static User registeredUser(Long id, String email, String password) {
-        return new User(id, email, password, new Profile(), null);
+    // User
+    public static User of(String email, String password) {
+        return new User(email, password, new Profile(), null);
+    }
+
+    public String userName() {
+        return profile.getUserName();
     }
 
     public boolean isSameUser(User toUser) {
@@ -55,7 +67,7 @@ public class User {
     }
 
     // profile
-    public void updateUser(String email, String password, String userName, String bio, String url) {
+    public void update(String email, String password, String userName, String bio, String url) {
         if (StringUtils.hasText(email)) {
             this.email = email;
         }
@@ -73,13 +85,18 @@ public class User {
         }
     }
 
+    // Follow
     public void follow(Follow newFollow) {
-        this.following.add(newFollow);
+        if (!isFollowing(newFollow.getToUser())) {
+            this.following.add(newFollow);
+        }
     }
 
     public void unFollow(User toUser) {
-        Follow findFollow = findFollowing(toUser);
-        this.following.remove(findFollow);
+        if (isFollowing(toUser)) {
+            Follow findFollow = findFollowing(toUser);
+            this.following.remove(findFollow);
+        }
     }
 
     public boolean isFollowing(User toUser) {
@@ -92,5 +109,21 @@ public class User {
                 .filter(follow -> follow.isSameToUser(toUser))
                 .findAny()
                 .orElseThrow(() -> new NotFoundFollowException("사용자 간의 팔로우 관계가 존재하지 않습니다."));
+    }
+
+    // Article
+    public void postArticles(List<Article> articles) {
+        this.articles.addAll(articles);
+    }
+
+    public void postArticles(Article article) {
+        this.articles.add(article);
+    }
+
+    public Article findArticleByTitle(String title) {
+        return articles.stream()
+                .filter(article -> article.isMatches(title))
+                .findAny()
+                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
     }
 }
