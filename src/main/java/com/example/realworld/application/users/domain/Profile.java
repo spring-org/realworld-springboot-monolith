@@ -19,7 +19,7 @@ public class Profile {
 
     private String image;
 
-    public Profile(String userName, String bio, String image) {
+    private Profile(String userName, String bio, String image) {
         this.userName = userName;
         this.bio = bio;
         this.image = image;
