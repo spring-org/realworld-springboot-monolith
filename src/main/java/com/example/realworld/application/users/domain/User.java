@@ -45,8 +45,7 @@ public class User {
     @ToString.Exclude
     private final Set<Article> articles = new HashSet<>();
 
-    @Builder
-    public User(String email, String password, Profile profile, String token) {
+    private User(String email, String password, Profile profile, String token) {
         this.email = email;
         this.password = password;
         this.profile = profile;

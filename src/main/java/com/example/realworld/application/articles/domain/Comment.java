@@ -33,7 +33,7 @@ public class Comment extends BaseTimeEntity {
     @JoinColumn(name = "ARTICLE_ID", nullable = false)
     private Article article;
 
-    public Comment(String body, User author) {
+    private Comment(String body, User author) {
         this.body = body;
         this.author = author;
     }
