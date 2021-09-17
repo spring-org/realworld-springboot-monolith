@@ -1,9 +1,13 @@
 package com.example.realworld.application.articles.domain;
 
 import com.example.realworld.application.articles.exception.NotFoundCommentException;
+import com.example.realworld.application.tags.domain.Tag;
 import com.example.realworld.application.users.domain.User;
 import com.example.realworld.core.domain.BaseTimeEntity;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.util.StringUtils;
 
@@ -11,6 +15,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -36,7 +41,7 @@ public class Article extends BaseTimeEntity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    private boolean favorited;
+    private boolean favorites;
 
     private Integer favoritesCount;
 
@@ -48,15 +53,18 @@ public class Article extends BaseTimeEntity {
     @JoinColumn(name = "COMMENT_ID")
     private final Set<Comment> comments = new HashSet<>();
 
-    @Builder
-    public Article(
+    @OneToMany
+    @JoinColumn(name = "TAG_ID")
+    private final Set<Tag> tags = new HashSet<>();
+
+    private Article(
             String title, String description, String body,
-            boolean favorited, Integer favoritesCount, User author) {
+            boolean favorites, Integer favoritesCount, User author) {
         this.slug = makeSlug(title);
         this.title = title;
         this.description = description;
         this.body = body;
-        this.favorited = favorited;
+        this.favorites = favorites;
         this.favoritesCount = favoritesCount;
         this.author = author;
     }
@@ -93,6 +101,10 @@ public class Article extends BaseTimeEntity {
         this.comments.add(comment);
     }
 
+    public void postComments(List<Comment> comments) {
+        this.comments.addAll(comments);
+    }
+
     public Comment findComment(String body) {
         return this.comments.stream()
                 .filter(comment -> comment.getBody().equals(body))
@@ -103,4 +115,14 @@ public class Article extends BaseTimeEntity {
     public boolean isMatches(String title) {
         return this.title.equals(title);
     }
+
+    public void deleteComment(Comment savedComment) {
+        this.comments.remove(savedComment);
+    }
+
+    // Tag
+    public void hashTag(Tag newTag) {
+        this.tags.add(newTag);
+    }
+
 }
