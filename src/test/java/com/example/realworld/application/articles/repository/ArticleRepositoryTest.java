@@ -124,5 +124,4 @@ class ArticleRepositoryTest {
 
         assertThat(updatedArticle.getTitle()).isEqualTo("title-1");
     }
-
 }
