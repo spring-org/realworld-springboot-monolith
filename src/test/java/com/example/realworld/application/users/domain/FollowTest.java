@@ -1,6 +1,5 @@
-package com.example.realworld.application.follow.domain;
+package com.example.realworld.application.users.domain;
 
-import com.example.realworld.application.users.domain.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +42,7 @@ class FollowTest {
         assertThat(isFollow).isTrue();
 
         // given
-        fromUser.unFollow(toUser);
+        fromUser.unFollow(following);
         boolean isUnFollow = fromUser.isFollowing(toUser);
 
         // then

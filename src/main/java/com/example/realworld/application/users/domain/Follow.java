@@ -1,6 +1,5 @@
-package com.example.realworld.application.follow.domain;
+package com.example.realworld.application.users.domain;
 
-import com.example.realworld.application.users.domain.User;
 import com.example.realworld.core.domain.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Getter;

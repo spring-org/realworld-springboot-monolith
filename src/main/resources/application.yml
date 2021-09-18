@@ -20,11 +20,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
+    show-sql: true
 
   h2:
     console:
       enabled: true
       path: /h2-console
+
 
 logging:
   level:
@@ -32,3 +34,4 @@ logging:
       hibernate:
         sql: debug
         type: trace
+
