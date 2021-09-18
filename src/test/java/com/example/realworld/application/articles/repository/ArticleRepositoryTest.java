@@ -3,7 +3,7 @@ package com.example.realworld.application.articles.repository;
 import com.example.realworld.application.articles.domain.Article;
 import com.example.realworld.application.articles.exception.NotFoundArticleException;
 import com.example.realworld.application.users.domain.User;
-import com.example.realworld.application.users.exception.UserNotFoundException;
+import com.example.realworld.application.users.exception.NotFoundUserException;
 import com.example.realworld.application.users.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -89,7 +89,7 @@ class ArticleRepositoryTest {
         article.update("updateTitle-1", "description", "body");
 
         User findUser = userRepository.findByEmail(savedUser.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("사용자가 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundUserException("사용자가 존재하지 않습니다."));
 
         Article updatedArticle = findUser.findArticleByTitle("updateTitle-1");
 
@@ -118,7 +118,7 @@ class ArticleRepositoryTest {
         article.update(null, null, null);
 
         User findUser = userRepository.findByEmail(savedUser.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("사용자가 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundUserException("사용자가 존재하지 않습니다."));
 
         Article updatedArticle = findUser.findArticleByTitle("title-1");
 

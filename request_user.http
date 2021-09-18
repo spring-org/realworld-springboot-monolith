@@ -1,0 +1,38 @@
+### 로그아웃 요청
+DELETE localhost:8087/api/users/logout
+
+### 사용자 등록
+POST localhost:8087/api/users
+Content-Type: application/json
+
+{
+  "email": "seok2@gmail.com",
+  "password": "1234",
+  "userName": "seok2"
+}
+
+### 사용자 로그인
+
+POST localhost:8087/api/users/login
+Content-Type: application/json
+
+{
+  "email": "seok1@gmail.com",
+  "password": "1234"
+}
+
+### 현재 세션에 저장된 사용자 조회
+
+GET localhost:8087/api/user
+
+### 사용자 수정
+
+PUT localhost:8087/api/user
+Content-Type: application/json
+
+{
+  "email": "seokrae@gmail.com",
+  "userName": "username",
+  "image": "images",
+  "bio": "bio"
+}

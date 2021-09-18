@@ -1,8 +1,7 @@
-package com.example.realworld.application.follow.respository;
+package com.example.realworld.application.users.repository;
 
-import com.example.realworld.application.follow.domain.Follow;
+import com.example.realworld.application.users.domain.Follow;
 import com.example.realworld.application.users.domain.User;
-import com.example.realworld.application.users.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

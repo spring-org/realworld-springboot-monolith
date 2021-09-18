@@ -1,7 +1,8 @@
 package com.example.realworld.application.users.repository;
 
 import com.example.realworld.application.users.domain.User;
-import com.example.realworld.application.users.exception.UserNotFoundException;
+import com.example.realworld.application.users.dto.RequestUpdateUser;
+import com.example.realworld.application.users.exception.NotFoundUserException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -37,7 +38,7 @@ class UserRepositoryTest {
     void when_createUser_expected_exist() {
         // when
         User findUser = userRepository.findByEmail("seokrae@gmail.com")
-                .orElseThrow(() -> new UserNotFoundException("사용자 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundUserException("사용자 정보가 존재하지 않습니다."));
 
         // then
         assertThat(findUser.getEmail()).isEqualTo("seokrae@gmail.com");
@@ -47,11 +48,13 @@ class UserRepositoryTest {
     @Test
     void when_updateUser_expected_changeInfo() {
         // when
-        savedUser.update("update@gmail.com", "4321", "username", "bio", "gmail.com/image.png");
+        RequestUpdateUser updateUser = RequestUpdateUser.of("update@gmail.com", "4321", "username", "bio", "gmail.com/image.png");
+        savedUser.update(updateUser);
+
         userRepository.flush();
 
         User findUser = userRepository.findByEmail(savedUser.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("사용자가 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundUserException("사용자가 존재하지 않습니다."));
 
         // then
         assertThat(findUser.getProfile().getImage()).isNotNull();
@@ -61,11 +64,13 @@ class UserRepositoryTest {
     @Test
     void when_updatedUser_expected_noData_changeInfo() {
         // when
-        savedUser.update(null, null, null, null, null);
+        RequestUpdateUser updateUser = RequestUpdateUser.of("update@gmail.com", "4321", "username", "bio", "gmail.com/image.png");
+        savedUser.update(updateUser);
+
         userRepository.flush();
 
         User findUser = userRepository.findByEmail(savedUser.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("사용자가 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundUserException("사용자가 존재하지 않습니다."));
 
         // then
         assertThat(findUser.getProfile().getImage()).isNull();

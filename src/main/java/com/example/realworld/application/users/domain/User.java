@@ -2,12 +2,17 @@ package com.example.realworld.application.users.domain;
 
 import com.example.realworld.application.articles.domain.Article;
 import com.example.realworld.application.articles.exception.NotFoundArticleException;
-import com.example.realworld.application.follow.domain.Follow;
-import com.example.realworld.application.follow.exception.NotFoundFollowException;
-import lombok.*;
+import com.example.realworld.application.users.dto.RequestUpdateUser;
+import com.example.realworld.application.users.exception.NotFoundFollowException;
+import com.example.realworld.core.domain.BaseTimeEntity;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -18,12 +23,13 @@ import java.util.Set;
 @Table(name = "TB_USER")
 @Entity(name = "user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
+public class User extends BaseTimeEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "USER_ID", nullable = false)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String email;
 
     private String password;
@@ -53,6 +59,10 @@ public class User {
     }
 
     // User
+    public static User of(String email, String password, Profile profile) {
+        return new User(email, password, profile, null);
+    }
+
     public static User of(String email, String password) {
         return new User(email, password, new Profile(), null);
     }
@@ -66,21 +76,21 @@ public class User {
     }
 
     // profile
-    public void update(String email, String password, String userName, String bio, String url) {
-        if (StringUtils.hasText(email)) {
-            this.email = email;
+    public void update(RequestUpdateUser updateUser) {
+        if (StringUtils.hasText(updateUser.getEmail())) {
+            this.email = updateUser.getEmail();
         }
-        if (StringUtils.hasText(password)) {
-            this.password = password;
+        if (StringUtils.hasText(updateUser.getPassword())) {
+            this.password = updateUser.getPassword();
         }
-        if (StringUtils.hasText(userName)) {
-            profile.changeUserName(userName);
+        if (StringUtils.hasText(updateUser.getPassword())) {
+            profile.changeUserName(updateUser.getUserName());
         }
-        if (StringUtils.hasText(bio)) {
-            profile.changeBio(bio);
+        if (StringUtils.hasText(updateUser.getBio())) {
+            profile.changeBio(updateUser.getBio());
         }
-        if (StringUtils.hasText(url)) {
-            profile.changeImage(url);
+        if (StringUtils.hasText(updateUser.getImage())) {
+            profile.changeImage(updateUser.getImage());
         }
     }
 
@@ -91,11 +101,8 @@ public class User {
         }
     }
 
-    public void unFollow(User toUser) {
-        if (isFollowing(toUser)) {
-            Follow findFollow = findFollowing(toUser);
-            this.following.remove(findFollow);
-        }
+    public void unFollow(Follow findFollow) {
+        this.following.remove(findFollow);
     }
 
     public boolean isFollowing(User toUser) {
@@ -103,7 +110,7 @@ public class User {
                 .anyMatch(follow -> follow.isSameToUser(toUser));
     }
 
-    private Follow findFollowing(User toUser) {
+    public Follow findFollowing(User toUser) {
         return this.following.stream()
                 .filter(follow -> follow.isSameToUser(toUser))
                 .findAny()
@@ -125,4 +132,5 @@ public class User {
                 .findAny()
                 .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
     }
+
 }

@@ -40,8 +40,7 @@ $ ./gradlew --console verbose test jacocoTestReport jacocoTestCoverageVerificati
 ```
 
 - 위 shell을 하나의 명령어로 실행
-    - 해당 작업을 위한 사전 작업
-      필요 [build.gradle](https://github.com/realworld-club/realworld-spring-boot-example-sr/blob/29a3b2b1c180fc918f3b77cbd68acdb3fbd6ab66/build.gradle#L39))
+    - 해당 작업을 위한 사전 작업 필요 [build.gradle](https://github.com/realworld-club/realworld-spring-boot-example-sr/blob/29a3b2b1c180fc918f3b77cbd68acdb3fbd6ab66/build.gradle#L39)
 
 ```shell
 ./gradlew --console verbose testCoverage

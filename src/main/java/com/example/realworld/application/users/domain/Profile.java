@@ -5,14 +5,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 
 @Getter
 @ToString
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Profile {
+public class Profile implements Serializable {
 
+    @Column(nullable = false, unique = true)
     private String userName;
 
     private String bio;
@@ -25,6 +28,10 @@ public class Profile {
         this.image = image;
     }
 
+    public static Profile createProfile(String userName) {
+        return new Profile(userName, null, null);
+    }
+
     public static Profile of(String userName, String bio, String image) {
         return new Profile(userName, bio, image);
     }
@@ -33,8 +40,8 @@ public class Profile {
         this.userName = userName;
     }
 
-    public void changeImage(String url) {
-        this.image = url;
+    public void changeImage(String image) {
+        this.image = image;
     }
 
     public void changeBio(String bio) {

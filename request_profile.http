@@ -1,0 +1,5 @@
+### 프로필 조회
+GET http://localhost:8087/api/profiles/seok1
+
+### 사용자간 팔로우
+POST http://localhost:8087/api/profiles/seok1/follow
