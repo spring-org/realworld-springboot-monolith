@@ -2,7 +2,6 @@ package com.example.realworld.application.users.service;
 
 import com.example.realworld.application.users.domain.Follow;
 import com.example.realworld.application.users.domain.User;
-import com.example.realworld.application.users.dto.ResponseProfile;
 import com.example.realworld.application.users.exception.NotFoundUserException;
 import com.example.realworld.application.users.repository.FollowRepository;
 import com.example.realworld.application.users.repository.UserRepository;
@@ -13,14 +12,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-
-import static java.util.Optional.*;
+import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 class FollowBusinessServiceTest {
@@ -40,7 +37,7 @@ class FollowBusinessServiceTest {
 
     @DisplayName("사용자 간의 팔로우 테스트")
     @Test
-    void when_follow_expect_success_user_relationship(){
+    void when_follow_expect_success_user_relationship() {
         User fromUser = User.of("seok1@gmail.com", "1234");
         User toUser = User.of("seok2@gmail.com", "1234");
         Follow newFollow = Follow.following(fromUser, toUser);
@@ -61,7 +58,7 @@ class FollowBusinessServiceTest {
 
     @DisplayName("사용자 간의 언팔로우 테스트")
     @Test
-    void when_unFollow_expect_success_single(){
+    void when_unFollow_expect_success_single() {
         User fromUser = User.of("seok1@gmail.com", "1234");
         User toUser = User.of("seok2@gmail.com", "1234");
         Follow newFollow = Follow.following(fromUser, toUser);

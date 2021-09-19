@@ -9,11 +9,11 @@ import javax.validation.constraints.NotEmpty;
 public class RequestSaveUser {
 
     @NotEmpty
-    private String email;
+    private final String email;
     @NotEmpty
-    private String userName;
+    private final String userName;
     @NotEmpty
-    private String password;
+    private final String password;
 
     private RequestSaveUser(String email, String userName, String password) {
         this.email = email;
