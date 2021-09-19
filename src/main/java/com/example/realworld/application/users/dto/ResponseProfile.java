@@ -1,6 +1,7 @@
 package com.example.realworld.application.users.dto;
 
 import com.example.realworld.application.users.domain.Profile;
+import com.example.realworld.application.users.domain.User;
 import lombok.Getter;
 
 @Getter
@@ -11,14 +12,15 @@ public class ResponseProfile {
     private final String image;
     private final boolean following;
 
-    private ResponseProfile(String userName, String bio, String image, boolean following) {
-        this.userName = userName;
-        this.bio = bio;
-        this.image = image;
+    private ResponseProfile(Profile profile, boolean following) {
+        this.userName = profile.getUserName();
+        this.bio = profile.getBio();
+        this.image = profile.getImage();
         this.following = following;
     }
 
-    public static ResponseProfile of(Profile profile) {
-        return new ResponseProfile(profile.getUserName(), profile.getBio(), profile.getImage(), false);
+    // TODO following 값은 어떻게 보여줘야 할까?
+    public static ResponseProfile of(User user) {
+        return new ResponseProfile(user.getProfile(), false);
     }
 }

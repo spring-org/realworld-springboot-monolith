@@ -29,7 +29,7 @@ class ArticleRepositoryTest {
     }
 
     private User createUser() {
-        return User.of("seokrae@gmail.com", "1234");
+        return User.of("seokrae@gmail.com", "1234", "seokrae");
     }
 
     @DisplayName("특정 사용자의 여러 글 등록 테스트")

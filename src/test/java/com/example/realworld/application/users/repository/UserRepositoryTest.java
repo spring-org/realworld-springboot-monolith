@@ -20,7 +20,7 @@ class UserRepositoryTest {
     private User savedUser;
 
     private User createUser(String email) {
-        return User.of(email, "1234");
+        return User.of(email, "1234", "seokrae");
     }
 
     @BeforeEach
@@ -48,7 +48,7 @@ class UserRepositoryTest {
     @Test
     void when_updateUser_expected_changeInfo() {
         // when
-        RequestUpdateUser updateUser = RequestUpdateUser.of("update@gmail.com", "4321", "username", "bio", "gmail.com/image.png");
+        RequestUpdateUser updateUser = RequestUpdateUser.of("update@gmail.com", "username", "4321", "gmail.com/image.png", "bio");
         savedUser.update(updateUser);
 
         userRepository.flush();
@@ -64,7 +64,7 @@ class UserRepositoryTest {
     @Test
     void when_updatedUser_expected_noData_changeInfo() {
         // when
-        RequestUpdateUser updateUser = RequestUpdateUser.of("update@gmail.com", "4321", "username", "bio", "gmail.com/image.png");
+        RequestUpdateUser updateUser = RequestUpdateUser.of("update@gmail.com", "username", null, null, null);
         savedUser.update(updateUser);
 
         userRepository.flush();

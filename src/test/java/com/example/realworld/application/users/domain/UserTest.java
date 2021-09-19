@@ -3,18 +3,12 @@ package com.example.realworld.application.users.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.example.realworld.application.users.domain.ProfileTest.createProfile;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class UserTest {
 
     public static User createUser(String email) {
-        return User.builder()
-                .email(email)
-                .password("!234")
-                .profile(createProfile())
-                .token("")
-                .build();
+        return User.of(email, "1234", "seok");
     }
 
     @DisplayName("사용자 엔티티 생성 테스트")
