@@ -21,12 +21,13 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class UserApi {
 
+    public static final String EMAIL = "email";
     private final UserBusinessService userBusinessService;
 
     @GetMapping
     public ResponseEntity<ResponseUser> getCurrentUser(HttpSession session) {
 
-        String email = (String) session.getAttribute("email");
+        String email = (String) session.getAttribute(EMAIL);
         if (Strings.isEmpty(email)) {
             throw new UnauthorizedUserException("접근 권한이 부족합니다.");
         }
@@ -41,7 +42,7 @@ public class UserApi {
     public ResponseEntity<ResponseUser> putUser(
             HttpSession session, @Valid @RequestBody RequestUpdateUser updateUser) {
 
-        String email = (String) session.getAttribute("email");
+        String email = (String) session.getAttribute(EMAIL);
         if (Strings.isEmpty(email) || !email.equals(updateUser.getEmail())) {
             throw new UnauthorizedUserException("접근 권한이 부족합니다.");
         }

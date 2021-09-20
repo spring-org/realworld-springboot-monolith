@@ -15,6 +15,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -49,6 +50,9 @@ public class User extends BaseTimeEntity implements Serializable {
     @OneToMany(mappedBy = "author", orphanRemoval = true)
     @ToString.Exclude
     private final Set<Article> articles = new HashSet<>();
+
+    @Transient
+    private final Set<Article> favoriteArticles = new HashSet<>();
 
     private User(String email, String password) {
         this(email, password, new Profile(), null);
@@ -137,4 +141,32 @@ public class User extends BaseTimeEntity implements Serializable {
                 .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
     }
 
+    public Article getArticle(String slug) {
+        return this.articles.stream()
+                .filter(article -> article.isSlugMatches(slug))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
+    }
+
+    public void favoriteArticle(Article article) {
+        this.favoriteArticles.add(article);
+    }
+
+    public void unFavoriteArticle(Article article) {
+        this.favoriteArticles.remove(article);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id)
+                && Objects.equals(email, user.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, email);
+    }
 }

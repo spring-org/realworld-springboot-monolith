@@ -20,6 +20,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        use_sql_comments: true
     show-sql: true
 
   h2:

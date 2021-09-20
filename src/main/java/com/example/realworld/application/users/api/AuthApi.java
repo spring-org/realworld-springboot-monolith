@@ -20,6 +20,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class AuthApi {
 
+    public static final String EMAIL = "email";
     private final UserBusinessService userBusinessService;
 
     @PostMapping
@@ -36,7 +37,7 @@ public class AuthApi {
             HttpSession session, @Valid @RequestBody RequestLoginUser loginUser) {
 
         User userByEmail = userBusinessService.findUserByEmail(loginUser.getEmail());
-        session.setAttribute("email", userByEmail.getEmail());
+        session.setAttribute(EMAIL, userByEmail.getEmail());
         ResponseUser responseUser = ResponseUser.of(RequestLoginUser.toEntity(loginUser));
 
         return ResponseEntity.status(HttpStatus.OK).body(responseUser);
@@ -45,7 +46,7 @@ public class AuthApi {
     @DeleteMapping("/logout")
     public ResponseEntity<Void> logout(HttpSession session) {
 
-        session.removeAttribute("email");
+        session.removeAttribute(EMAIL);
 
         return ResponseEntity.noContent().build();
     }
