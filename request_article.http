@@ -1,0 +1,2 @@
+### Article
+GET http://localhost:8087/api/articles
