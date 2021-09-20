@@ -22,18 +22,25 @@ public class Profile implements Serializable {
 
     private String image;
 
-    private Profile(String userName, String bio, String image) {
+    private boolean following;
+
+    public Profile(String userName) {
+        this(userName, null, null, false);
+    }
+
+    private Profile(String userName, String bio, String image, boolean following) {
         this.userName = userName;
         this.bio = bio;
         this.image = image;
+        this.following = following;
     }
 
-    public static Profile createProfile(String userName) {
-        return new Profile(userName, null, null);
+    public static Profile from(String userName) {
+        return new Profile(userName);
     }
 
-    public static Profile of(String userName, String bio, String image) {
-        return new Profile(userName, bio, image);
+    public static Profile of(String userName, String bio, String image, boolean following) {
+        return new Profile(userName, bio, image, following);
     }
 
     public void changeUserName(String userName) {

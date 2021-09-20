@@ -18,6 +18,7 @@ import javax.servlet.http.HttpSession;
 @RequiredArgsConstructor
 public class ProfileApi {
 
+    public static final String EMAIL = "email";
     private final UserBusinessService userService;
     private final FollowService followService;
 
@@ -34,7 +35,7 @@ public class ProfileApi {
     public ResponseEntity<ResponseProfile> postFollowUser(
             HttpSession session, @PathVariable("toEmail") String toEmail) {
 
-        String fromEmail = (String) session.getAttribute("email");
+        String fromEmail = (String) session.getAttribute(EMAIL);
         if (Strings.isEmpty(fromEmail)) {
             throw new UnauthorizedUserException("접근 권한이 부족합니다.");
         }
@@ -51,7 +52,7 @@ public class ProfileApi {
     public ResponseEntity<ResponseProfile> deleteUnFollowUser(
             HttpSession session, @PathVariable("toEmail") String toEmail) {
 
-        String fromEmail = (String) session.getAttribute("email");
+        String fromEmail = (String) session.getAttribute(EMAIL);
         if (Strings.isEmpty(fromEmail)) {
             throw new UnauthorizedUserException("접근 권한이 부족합니다.");
         }

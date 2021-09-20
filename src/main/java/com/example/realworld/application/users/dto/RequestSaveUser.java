@@ -1,6 +1,5 @@
 package com.example.realworld.application.users.dto;
 
-import com.example.realworld.application.users.domain.Profile;
 import com.example.realworld.application.users.domain.User;
 import lombok.Getter;
 
@@ -10,13 +9,23 @@ import javax.validation.constraints.NotEmpty;
 public class RequestSaveUser {
 
     @NotEmpty
-    private String email;
+    private final String email;
     @NotEmpty
-    private String userName;
+    private final String userName;
     @NotEmpty
-    private String password;
+    private final String password;
+
+    private RequestSaveUser(String email, String userName, String password) {
+        this.email = email;
+        this.userName = userName;
+        this.password = password;
+    }
+
+    public static RequestSaveUser of(String email, String userName, String password) {
+        return new RequestSaveUser(email, userName, password);
+    }
 
     public static User toEntity(RequestSaveUser saveUser) {
-        return User.of(saveUser.getEmail(), saveUser.getPassword(), Profile.createProfile(saveUser.getUserName()));
+        return User.of(saveUser.getEmail(), saveUser.getPassword(), saveUser.getUserName());
     }
 }

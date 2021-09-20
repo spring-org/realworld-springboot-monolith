@@ -13,9 +13,9 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -41,15 +41,22 @@ public class User extends BaseTimeEntity implements Serializable {
 
     @OneToMany(mappedBy = "fromUser", orphanRemoval = true)
     @ToString.Exclude
-    private final List<Follow> following = new ArrayList<>();
+    private final Set<Follow> following = new HashSet<>();
 
     @OneToMany(mappedBy = "toUser")
     @ToString.Exclude
-    private final List<Follow> followers = new ArrayList<>();
+    private final Set<Follow> followers = new HashSet<>();
 
     @OneToMany(mappedBy = "author", orphanRemoval = true)
     @ToString.Exclude
     private final Set<Article> articles = new HashSet<>();
+
+    @Transient
+    private final Set<Article> favoriteArticles = new HashSet<>();
+
+    private User(String email, String password) {
+        this(email, password, new Profile(), null);
+    }
 
     private User(String email, String password, Profile profile, String token) {
         this.email = email;
@@ -59,16 +66,16 @@ public class User extends BaseTimeEntity implements Serializable {
     }
 
     // User
-    public static User of(String email, String password, Profile profile) {
-        return new User(email, password, profile, null);
+    public static User of(String email, String password) {
+        return new User(email, password);
     }
 
-    public static User of(String email, String password) {
-        return new User(email, password, new Profile(), null);
+    public static User of(String email, String password, String userName) {
+        return new User(email, password, Profile.from(userName), null);
     }
 
     public String userName() {
-        return profile.getUserName();
+        return this.profile.getUserName();
     }
 
     public boolean isSameUser(User toUser) {
@@ -76,22 +83,23 @@ public class User extends BaseTimeEntity implements Serializable {
     }
 
     // profile
-    public void update(RequestUpdateUser updateUser) {
+    public User update(RequestUpdateUser updateUser) {
         if (StringUtils.hasText(updateUser.getEmail())) {
             this.email = updateUser.getEmail();
         }
         if (StringUtils.hasText(updateUser.getPassword())) {
             this.password = updateUser.getPassword();
         }
-        if (StringUtils.hasText(updateUser.getPassword())) {
-            profile.changeUserName(updateUser.getUserName());
+        if (StringUtils.hasText(updateUser.getUserName())) {
+            this.profile.changeUserName(updateUser.getUserName());
         }
         if (StringUtils.hasText(updateUser.getBio())) {
-            profile.changeBio(updateUser.getBio());
+            this.profile.changeBio(updateUser.getBio());
         }
         if (StringUtils.hasText(updateUser.getImage())) {
-            profile.changeImage(updateUser.getImage());
+            this.profile.changeImage(updateUser.getImage());
         }
+        return this;
     }
 
     // Follow
@@ -133,4 +141,32 @@ public class User extends BaseTimeEntity implements Serializable {
                 .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
     }
 
+    public Article getArticle(String slug) {
+        return this.articles.stream()
+                .filter(article -> article.isSlugMatches(slug))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
+    }
+
+    public void favoriteArticle(Article article) {
+        this.favoriteArticles.add(article);
+    }
+
+    public void unFavoriteArticle(Article article) {
+        this.favoriteArticles.remove(article);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id)
+                && Objects.equals(email, user.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, email);
+    }
 }

@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ProfileTest {
 
     public static Profile createProfile() {
-        return Profile.of("seokrae", "bio hello", null);
+        return Profile.of("seokrae", "bio hello", null, false);
     }
 
     @DisplayName("프로필 엔티티 생성 테스트")

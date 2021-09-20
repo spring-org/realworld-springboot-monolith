@@ -33,7 +33,7 @@ public class FollowBusinessService implements FollowService {
             Follow savedFollow = followRepository.save(newFollow);
             fromUser.follow(savedFollow);
         }
-        return ResponseProfile.of(fromUser.getProfile());
+        return ResponseProfile.of(fromUser);
     }
 
     public ResponseProfile unFollow(String fromEmail, String toEmail) {
@@ -48,7 +48,7 @@ public class FollowBusinessService implements FollowService {
         } else {
             throw new NotFoundFollowException("존재하지 않는 팔로우 관계입니다.");
         }
-        return ResponseProfile.of(fromUser.getProfile());
+        return ResponseProfile.of(fromUser);
     }
 
     private User findUser(String email) {

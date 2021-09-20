@@ -15,13 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserBusinessService {
 
     private final UserRepository userRepository;
 
     // 사용자 저장
+    @Transactional
     public ResponseUser addUser(final RequestSaveUser saveUser) {
         boolean existsUser = userRepository.existsByEmail(saveUser.getEmail());
 
@@ -34,6 +35,7 @@ public class UserBusinessService {
     }
 
     // 사용자 정보 수정
+    @Transactional
     public ResponseUser updateUser(String email, RequestUpdateUser updateUser) {
 
         User user = findUserByEmail(email);
@@ -43,10 +45,9 @@ public class UserBusinessService {
     }
 
     // 사용자 - 프로필 조회
-    @Transactional(readOnly = true)
     public ResponseProfile getProfile(String email) {
         User findUserProfile = findUserByEmail(email);
-        return ResponseProfile.of(findUserProfile.getProfile());
+        return ResponseProfile.of(findUserProfile);
     }
 
     // 사용자 조회

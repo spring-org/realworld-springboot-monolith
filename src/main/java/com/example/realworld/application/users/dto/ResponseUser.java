@@ -15,7 +15,7 @@ public class ResponseUser {
     private final String image;
     private final String token;
 
-    private ResponseUser(String email, String userName, Profile profile, String token) {
+    private ResponseUser(final String email, final String userName, final Profile profile, final String token) {
         this.email = email;
         this.userName = userName;
         this.bio = profile.getBio();
@@ -23,7 +23,7 @@ public class ResponseUser {
         this.token = token;
     }
 
-    public static ResponseUser of(User user) {
+    public static ResponseUser of(final User user) {
         return new ResponseUser(user.getEmail(), user.userName(), user.getProfile(), user.getToken());
     }
 }
