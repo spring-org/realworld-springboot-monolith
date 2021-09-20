@@ -125,4 +125,7 @@ public class Article extends BaseTimeEntity {
         this.tags.add(newTag);
     }
 
+    public boolean isSlugMatches(String slug) {
+        return this.slug.equals(slug);
+    }
 }

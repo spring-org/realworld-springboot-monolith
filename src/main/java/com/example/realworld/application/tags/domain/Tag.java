@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Getter
 @Table(name = "TB_TAG")
@@ -24,5 +25,18 @@ public class Tag {
 
     public static Tag of(String tagName) {
         return new Tag(tagName);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Tag)) return false;
+        Tag tag = (Tag) o;
+        return Objects.equals(tagName, tag.tagName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tagName);
     }
 }
