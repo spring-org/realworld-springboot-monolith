@@ -3,24 +3,32 @@ package com.example.realworld.application.articles.dto;
 import com.example.realworld.application.articles.domain.Article;
 import com.example.realworld.application.tags.domain.Tag;
 import com.example.realworld.application.users.dto.ResponseProfile;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Getter
+@ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ResponseArticle {
 
-    private final String slug;
-    private final String title;
-    private final String description;
-    private final String body;
-    private final Set<Tag> tagList;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
-    private final boolean favorited;
-    private final int favoritesCount;
-    private final ResponseProfile user;
+    private String slug;
+    private String title;
+    private String description;
+    private String body;
+    private Set<Tag> tagList;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime updatedAt;
+    private boolean favorited;
+    private int favoritesCount;
+    private ResponseProfile user;
 
     private ResponseArticle(Article article, ResponseProfile user) {
         this.slug = article.getSlug();

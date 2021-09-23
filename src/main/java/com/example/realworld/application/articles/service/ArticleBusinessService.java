@@ -1,11 +1,8 @@
 package com.example.realworld.application.articles.service;
 
 import com.example.realworld.application.articles.domain.Article;
-import com.example.realworld.application.articles.dto.RequestPageCondition;
-import com.example.realworld.application.articles.dto.RequestSaveArticle;
-import com.example.realworld.application.articles.dto.RequestUpdateArticle;
+import com.example.realworld.application.articles.dto.*;
 import com.example.realworld.application.articles.exception.NotFoundArticleException;
-import com.example.realworld.application.articles.repository.ArticleQuerydslRepository;
 import com.example.realworld.application.articles.repository.ArticleRepository;
 import com.example.realworld.application.users.domain.Follow;
 import com.example.realworld.application.users.domain.User;
@@ -27,53 +24,58 @@ public class ArticleBusinessService implements ArticleService {
 
     private final UserRepository userRepository;
     private final ArticleRepository articleRepository;
-    private final ArticleQuerydslRepository articleQueryDslRepository;
 
     // 조건에 따른 전체 글 리스트를 조회?
     @Override
-    public List<Article> getArticles(RequestPageCondition condition) {
-        return articleQueryDslRepository.searchPageArticle(condition);
+    public ResponseMultiArticles getArticles(RequestPageCondition condition) {
+
+        List<Article> articles = articleRepository.searchPageArticle(condition);
+
+        return ResponseMultiArticles.of(articles);
     }
 
     // 내가 follow한 사용자의 글을 페이징하여 조회( 커스텀 쿼리가 필요한 듯 )
     @Override
-    public List<Article> getFeedArticles(String email, Pageable pageable) {
+    public ResponseMultiArticles getFeedArticles(String email, Pageable pageable) {
 
         User findUser = getUser(email);
-
         Set<Follow> following = findUser.getFollowing();
 
-        return following.stream()
+        List<Article> collect = following.stream()
                 .map(Follow::getToUser)
                 .flatMap(user -> user.getArticles().stream())
                 .collect(Collectors.toList());
+
+        return ResponseMultiArticles.of(collect);
     }
 
     @Override
-    public Article getArticle(String slug) {
-        return articleRepository.findBySlug(slug)
-                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
+    public ResponseArticle getArticle(String slug) {
+
+        Article article = getOrElseThrow(slug);
+
+        return ResponseArticle.of(article);
     }
 
     @Transactional
     @Override
-    public Article postArticle(String email, RequestSaveArticle saveArticle) {
+    public ResponseArticle postArticle(String email, RequestSaveArticle saveArticle) {
 
         User findUser = getUser(email);
         Article article = RequestSaveArticle.toEntity(saveArticle, findUser);
 
-        return articleRepository.save(article);
+        return ResponseArticle.of(articleRepository.save(article));
     }
 
     @Transactional
     @Override
-    public Article updateArticle(String email, String slug, RequestUpdateArticle updateArticle) {
+    public ResponseArticle updateArticle(String email, String slug, RequestUpdateArticle updateArticle) {
 
         User findUser = getUser(email);
         Article findArticle = findUser.getArticle(slug);
         findArticle.update(updateArticle.getTitle(), updateArticle.getDescription(), updateArticle.getBody());
 
-        return findArticle;
+        return ResponseArticle.of(findArticle);
     }
 
     @Transactional
@@ -88,23 +90,30 @@ public class ArticleBusinessService implements ArticleService {
 
     @Transactional
     @Override
-    public Article favoriteArticle(String email, String slug) {
+    public ResponseArticle favoriteArticle(String email, String slug) {
+
         User findUser = getUser(email);
-        Article article = getArticle(slug);
+        Article article = getOrElseThrow(slug);
 
         findUser.favoriteArticle(article);
-        return null;
+
+        return ResponseArticle.of(article);
     }
 
     @Transactional
     @Override
-    public Article unFavoriteArticle(String email, String slug) {
+    public ResponseArticle unFavoriteArticle(String email, String slug) {
         User findUser = getUser(email);
-        Article article = getArticle(slug);
+        Article article = getOrElseThrow(slug);
 
         findUser.unFavoriteArticle(article);
 
-        return null;
+        return ResponseArticle.of(article);
+    }
+
+    private Article getOrElseThrow(String slug) {
+        return articleRepository.findBySlug(slug)
+                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
     }
 
     private User getUser(String email) {

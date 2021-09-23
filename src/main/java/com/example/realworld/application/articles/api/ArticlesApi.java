@@ -1,6 +1,5 @@
 package com.example.realworld.application.articles.api;
 
-import com.example.realworld.application.articles.domain.Article;
 import com.example.realworld.application.articles.domain.Comment;
 import com.example.realworld.application.articles.dto.*;
 import com.example.realworld.application.articles.service.ArticleService;
@@ -13,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -31,9 +29,9 @@ public class ArticlesApi {
      * @return List Articles
      */
     @GetMapping
-    public ResponseEntity<List<Article>> getArticles(RequestPageCondition condition) {
+    public ResponseEntity<ResponseMultiArticles> getArticles(RequestPageCondition condition) {
 
-        List<Article> articles = articleService.getArticles(condition);
+        ResponseMultiArticles articles = articleService.getArticles(condition);
 
         return ResponseEntity.status(HttpStatus.OK).body(articles);
     }
@@ -44,10 +42,12 @@ public class ArticlesApi {
      * @return List Articles
      */
     @GetMapping(value = "/feed")
-    public ResponseEntity<?> feedArticle(
+    public ResponseEntity<ResponseMultiArticles> feedArticle(
             HttpSession session, @PageableDefault(value = 20, size = 10, page = 0) Pageable pageable) {
+
         String email = (String) session.getAttribute(EMAIL);
-        List<Article> feedArticles = articleService.getFeedArticles(email, pageable);
+        ResponseMultiArticles feedArticles = articleService.getFeedArticles(email, pageable);
+
         return ResponseEntity.status(HttpStatus.OK).body(feedArticles);
     }
 
@@ -58,8 +58,10 @@ public class ArticlesApi {
      * @return
      */
     @GetMapping(value = "/{slug}")
-    public ResponseEntity<?> getArticle(@PathVariable("slug") String slug) {
-        Article article = articleService.getArticle(slug);
+    public ResponseEntity<ResponseArticle> getArticle(@PathVariable("slug") String slug) {
+
+        ResponseArticle article = articleService.getArticle(slug);
+
         return ResponseEntity.status(HttpStatus.OK).body(article);
     }
 
@@ -69,12 +71,12 @@ public class ArticlesApi {
      * @return Article
      */
     @PostMapping
-    public ResponseEntity<?> createArticle(HttpSession session, RequestSaveArticle saveArticle) {
+    public ResponseEntity<ResponseArticle> createArticle(HttpSession session, RequestSaveArticle saveArticle) {
 
         String email = (String) session.getAttribute(EMAIL);
-        Article savedArticle = articleService.postArticle(email, saveArticle);
+        ResponseArticle savedArticle = articleService.postArticle(email, saveArticle);
 
-        return ResponseEntity.status(HttpStatus.OK).body(savedArticle);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedArticle);
     }
 
     /**
@@ -88,10 +90,9 @@ public class ArticlesApi {
             HttpSession session, @PathVariable("slug") String slug, RequestUpdateArticle updateArticle) {
 
         String email = (String) session.getAttribute(EMAIL);
-        Article updatedArticle = articleService.updateArticle(email, slug, updateArticle);
+        ResponseArticle updatedArticle = articleService.updateArticle(email, slug, updateArticle);
 
-
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseArticle.of(updatedArticle));
+        return ResponseEntity.status(HttpStatus.OK).body(updatedArticle);
     }
 
     /**
@@ -104,7 +105,6 @@ public class ArticlesApi {
             HttpSession session, @PathVariable("slug") String slug) {
 
         String email = (String) session.getAttribute(EMAIL);
-
         articleService.deleteArticle(email, slug);
 
         return ResponseEntity.noContent().build();
@@ -161,13 +161,13 @@ public class ArticlesApi {
      * @return Article
      */
     @PostMapping(value = "/{slug}/favorite")
-    public ResponseEntity<?> favoriteArticle(
+    public ResponseEntity<ResponseArticle> favoriteArticle(
             HttpSession session, @PathVariable("slug") String slug) {
 
         String email = (String) session.getAttribute(EMAIL);
-        Article article = articleService.favoriteArticle(email, slug);
+        ResponseArticle followArticle = articleService.favoriteArticle(email, slug);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseArticle.of(article));
+        return ResponseEntity.status(HttpStatus.OK).body(followArticle);
     }
 
     /**
@@ -177,12 +177,12 @@ public class ArticlesApi {
      * @return Article
      */
     @DeleteMapping(value = "/{slug}/favorite")
-    public ResponseEntity<?> unFavoriteArticle(
+    public ResponseEntity<ResponseArticle> unFavoriteArticle(
             HttpSession session, @PathVariable("slug") String slug) {
 
         String email = (String) session.getAttribute(EMAIL);
-        Article article = articleService.unFavoriteArticle(email, slug);
+        ResponseArticle unfollowArticle = articleService.unFavoriteArticle(email, slug);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseArticle.of(article));
+        return ResponseEntity.status(HttpStatus.OK).body(unfollowArticle);
     }
 }

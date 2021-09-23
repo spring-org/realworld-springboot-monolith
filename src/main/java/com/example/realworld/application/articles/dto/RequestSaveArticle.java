@@ -2,13 +2,12 @@ package com.example.realworld.application.articles.dto;
 
 import com.example.realworld.application.articles.domain.Article;
 import com.example.realworld.application.users.domain.User;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Getter
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RequestSaveArticle {
 
@@ -29,6 +28,6 @@ public class RequestSaveArticle {
     }
 
     public static Article toEntity(RequestSaveArticle saveArticle, User author) {
-        return Article.of(saveArticle.title, saveArticle.description, saveArticle.getBody(), author);
+        return Article.of(saveArticle.getTitle(), saveArticle.getDescription(), saveArticle.getBody(), author);
     }
 }

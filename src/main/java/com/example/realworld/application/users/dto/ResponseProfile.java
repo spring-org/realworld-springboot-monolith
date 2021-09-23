@@ -2,15 +2,20 @@ package com.example.realworld.application.users.dto;
 
 import com.example.realworld.application.users.domain.Profile;
 import com.example.realworld.application.users.domain.User;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Getter
+@ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ResponseProfile {
 
-    private final String userName;
-    private final String bio;
-    private final String image;
-    private final boolean following;
+    private String userName;
+    private String bio;
+    private String image;
+    private boolean following;
 
     private ResponseProfile(Profile profile, boolean following) {
         this.userName = profile.getUserName();
