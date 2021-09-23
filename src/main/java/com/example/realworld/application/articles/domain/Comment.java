@@ -5,6 +5,7 @@ import com.example.realworld.core.domain.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
@@ -13,9 +14,11 @@ import java.util.Objects;
 
 @Getter
 @Entity
+@ToString
 @Table(name = "TB_COMMENT")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Comment extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "COMMENT_ID", nullable = false)

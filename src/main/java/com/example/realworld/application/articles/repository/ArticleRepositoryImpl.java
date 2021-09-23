@@ -2,7 +2,6 @@ package com.example.realworld.application.articles.repository;
 
 import com.example.realworld.application.articles.domain.Article;
 import com.example.realworld.application.articles.dto.RequestPageCondition;
-import com.example.realworld.application.tags.domain.Tag;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.util.StringUtils;
@@ -23,9 +22,9 @@ public class ArticleRepositoryImpl implements ArticleQuerydslRepository {
     public List<Article> searchPageArticle(RequestPageCondition condition) {
         BooleanBuilder builder = new BooleanBuilder();
         // TODO 확인 필요..
-        if (StringUtils.hasText(condition.getTag())) {
-            builder.and(article.tags.contains(Tag.of(condition.getTag())));
-        }
+//        if (StringUtils.hasText(condition.getTag())) {
+//            builder.and(article.tags.contains(Tag.of(condition.getTag())));
+//        }
         if (StringUtils.hasText(condition.getAuthor())) {
             builder.and(article.author.email.eq(condition.getAuthor()));
         }

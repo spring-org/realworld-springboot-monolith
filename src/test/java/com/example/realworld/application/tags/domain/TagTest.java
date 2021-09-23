@@ -11,8 +11,9 @@ class TagTest {
     @Test
     void when_generateTag_expected_success_newTag() {
 
-        Tag tag = Tag.of("Java");
+        Tag actual = Tag.of("Java");
+        Tag expected = Tag.of("Java");
 
-        assertThat(tag.getTagName()).isEqualTo("Java");
+        assertThat(actual).isEqualTo(expected);
     }
 }

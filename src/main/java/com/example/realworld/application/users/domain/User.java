@@ -83,7 +83,7 @@ public class User extends BaseTimeEntity implements Serializable {
     }
 
     // profile
-    public User update(RequestUpdateUser updateUser) {
+    public void update(RequestUpdateUser updateUser) {
         if (StringUtils.hasText(updateUser.getEmail())) {
             this.email = updateUser.getEmail();
         }
@@ -99,7 +99,6 @@ public class User extends BaseTimeEntity implements Serializable {
         if (StringUtils.hasText(updateUser.getImage())) {
             this.profile.changeImage(updateUser.getImage());
         }
-        return this;
     }
 
     // Follow

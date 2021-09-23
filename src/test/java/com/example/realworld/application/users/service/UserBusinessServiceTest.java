@@ -45,14 +45,12 @@ class UserBusinessServiceTest {
         User actual = RequestSaveUser.toEntity(saveUser);
         // mocking 데이터 생성
         given(userRepository.save(any())).willReturn(actual);
-        given(userRepository.findByEmail(any())).willReturn(Optional.of(actual));
+
         // when
         ResponseUser responseUser = userBusinessService.addUser(saveUser);
-        User userByEmail = userBusinessService.findUserByEmail(actual.getEmail());
 
         // then
         assertThat(actual.getEmail()).isEqualTo(responseUser.getEmail());
-        assertThat(actual.getEmail()).isEqualTo(userByEmail.getEmail());
     }
 
     @DisplayName("사용자 정보 수정 테스트")

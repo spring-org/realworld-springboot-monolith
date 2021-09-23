@@ -51,10 +51,12 @@ public class Article extends BaseTimeEntity {
 
     @OneToMany
     @JoinColumn(name = "COMMENT_ID")
+    @ToString.Exclude
     private final Set<Comment> comments = new HashSet<>();
 
     @OneToMany
     @JoinColumn(name = "TAG_ID")
+    @ToString.Exclude
     private final Set<Tag> tags = new HashSet<>();
 
     private Article(

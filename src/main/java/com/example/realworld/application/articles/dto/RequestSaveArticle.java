@@ -2,7 +2,10 @@ package com.example.realworld.application.articles.dto;
 
 import com.example.realworld.application.articles.domain.Article;
 import com.example.realworld.application.users.domain.User;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 

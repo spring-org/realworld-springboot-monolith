@@ -33,6 +33,6 @@ logging:
   level:
     org:
       hibernate:
-        sql: debug
+        sql: info
         type: trace
 

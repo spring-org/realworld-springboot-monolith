@@ -4,16 +4,9 @@ import com.example.realworld.application.users.domain.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ArticleTest {
-
-    private String makeSlug() {
-        return String.format("%s-%s", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), "title");
-    }
 
     private static User createUser() {
         return User.of("seokrae@gmail.com", "1234");
