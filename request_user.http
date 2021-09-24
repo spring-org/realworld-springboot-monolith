@@ -6,7 +6,7 @@ POST localhost:8087/api/users
 Content-Type: application/json
 
 {
-  "email": "seok2@gmail.com",
+  "email": "seok1@gmail.com",
   "password": "1234",
   "userName": "seok2"
 }

@@ -1,10 +1,12 @@
 package com.example.realworld.application.tags.domain;
 
 import lombok.AccessLevel;
+import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Getter
 @Table(name = "TB_TAG")
@@ -24,5 +26,22 @@ public class Tag {
 
     public static Tag of(String tagName) {
         return new Tag(tagName);
+    }
+
+    // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션
+    @Generated
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Tag)) return false;
+        Tag tag = (Tag) o;
+        return Objects.equals(tagName, tag.tagName);
+    }
+
+    // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션
+    @Generated
+    @Override
+    public int hashCode() {
+        return Objects.hash(tagName);
     }
 }

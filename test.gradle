@@ -8,10 +8,13 @@ test {
 }
 
 def jacocoExclude = [
+        '**/*Config.class',
+        '**/Q*.class',
         '**/*Api.class',
         '**/Request*',
         '**/Response*',
         '**/RealWorldApplication.class',
+        '**/BaseTimeEntity.class',
         '**/*Exception.class'
 ]
 

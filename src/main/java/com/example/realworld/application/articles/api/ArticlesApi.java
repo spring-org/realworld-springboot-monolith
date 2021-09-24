@@ -1,12 +1,27 @@
 package com.example.realworld.application.articles.api;
 
+import com.example.realworld.application.articles.domain.Comment;
+import com.example.realworld.application.articles.dto.*;
+import com.example.realworld.application.articles.service.ArticleService;
+import com.example.realworld.application.articles.service.CommentService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
+import java.util.Set;
+
 @RestController
 @RequestMapping("/api/articles")
+@RequiredArgsConstructor
 public class ArticlesApi {
+
+    public static final String EMAIL = "email";
+    private final ArticleService articleService;
+    private final CommentService commentService;
 
     /**
      * 글 리스트, 인증 옵션
@@ -14,8 +29,11 @@ public class ArticlesApi {
      * @return List Articles
      */
     @GetMapping
-    public ResponseEntity<?> getArticles() {
-        return ResponseEntity.status(HttpStatus.OK).body("{}");
+    public ResponseEntity<ResponseMultiArticles> getArticles(RequestPageCondition condition) {
+
+        ResponseMultiArticles articles = articleService.searchPageArticles(condition);
+
+        return ResponseEntity.status(HttpStatus.OK).body(articles);
     }
 
     /**
@@ -24,8 +42,13 @@ public class ArticlesApi {
      * @return List Articles
      */
     @GetMapping(value = "/feed")
-    public ResponseEntity<?> feedArticle() {
-        return ResponseEntity.status(HttpStatus.OK).body("{}");
+    public ResponseEntity<ResponseMultiArticles> feedArticle(
+            HttpSession session, @PageableDefault(value = 20, size = 10, page = 0) Pageable pageable) {
+
+        String email = (String) session.getAttribute(EMAIL);
+        ResponseMultiArticles feedArticles = articleService.getFeedArticles(email, pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(feedArticles);
     }
 
     /**
@@ -35,8 +58,11 @@ public class ArticlesApi {
      * @return
      */
     @GetMapping(value = "/{slug}")
-    public ResponseEntity<?> getArticle(@PathVariable("slug") String slug) {
-        return ResponseEntity.status(HttpStatus.OK).body("{}");
+    public ResponseEntity<ResponseArticle> getArticle(@PathVariable("slug") String slug) {
+
+        ResponseArticle article = articleService.getArticle(slug);
+
+        return ResponseEntity.status(HttpStatus.OK).body(article);
     }
 
     /**
@@ -45,8 +71,12 @@ public class ArticlesApi {
      * @return Article
      */
     @PostMapping
-    public ResponseEntity<?> createArticle() {
-        return ResponseEntity.status(HttpStatus.OK).body("{}");
+    public ResponseEntity<ResponseArticle> createArticle(HttpSession session, RequestSaveArticle saveArticle) {
+
+        String email = (String) session.getAttribute(EMAIL);
+        ResponseArticle savedArticle = articleService.postArticle(email, saveArticle);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedArticle);
     }
 
     /**
@@ -56,8 +86,13 @@ public class ArticlesApi {
      * @return Article
      */
     @PutMapping(value = "/{slug}")
-    public ResponseEntity<?> updateArticle(@PathVariable("slug") String slug) {
-        return ResponseEntity.status(HttpStatus.OK).body("{}");
+    public ResponseEntity<ResponseArticle> updateArticle(
+            HttpSession session, @PathVariable("slug") String slug, RequestUpdateArticle updateArticle) {
+
+        String email = (String) session.getAttribute(EMAIL);
+        ResponseArticle updatedArticle = articleService.updateArticle(email, slug, updateArticle);
+
+        return ResponseEntity.status(HttpStatus.OK).body(updatedArticle);
     }
 
     /**
@@ -66,7 +101,12 @@ public class ArticlesApi {
      * @param slug
      */
     @DeleteMapping(value = "/{slug}")
-    public ResponseEntity<Void> deleteArticle(@PathVariable("slug") String slug) {
+    public ResponseEntity<Void> deleteArticle(
+            HttpSession session, @PathVariable("slug") String slug) {
+
+        String email = (String) session.getAttribute(EMAIL);
+        articleService.deleteArticle(email, slug);
+
         return ResponseEntity.noContent().build();
     }
 
@@ -76,8 +116,13 @@ public class ArticlesApi {
      * @return
      */
     @PostMapping(value = "/{slug}/comments")
-    public ResponseEntity<?> addCommentsToArticle(@PathVariable("slug") String slug) {
-        return ResponseEntity.status(HttpStatus.OK).body("{}");
+    public ResponseEntity<ResponseSingleComment> addCommentsToArticle(
+            HttpSession session, @PathVariable("slug") String slug, RequestSaveComment saveComment) {
+
+        String email = (String) session.getAttribute(EMAIL);
+        Comment savedComment = commentService.postComment(email, slug, saveComment);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseSingleComment.of(savedComment));
     }
 
     /**
@@ -86,8 +131,11 @@ public class ArticlesApi {
      * @return multiple comments
      */
     @GetMapping(value = "/{slug}/comments")
-    public ResponseEntity<?> getCommentsFromAnArticle(@PathVariable("slug") String slug) {
-        return ResponseEntity.status(HttpStatus.OK).body("{}");
+    public ResponseEntity<Set<Comment>> getCommentsFromAnArticle(@PathVariable("slug") String slug) {
+
+        Set<Comment> comments = commentService.getCommentsByArticle(slug);
+
+        return ResponseEntity.status(HttpStatus.OK).body(comments);
     }
 
     /**
@@ -98,7 +146,11 @@ public class ArticlesApi {
      */
     @DeleteMapping(value = "/{slug}/comments/{id}")
     public ResponseEntity<Void> deleteComments(
-            @PathVariable("slug") String slug, @PathVariable("id") Long id) {
+            HttpSession session, @PathVariable("slug") String slug, @PathVariable("id") Long id) {
+
+        String email = (String) session.getAttribute(EMAIL);
+        commentService.deleteComment(email, slug, id);
+
         return ResponseEntity.noContent().build();
     }
 
@@ -109,8 +161,13 @@ public class ArticlesApi {
      * @return Article
      */
     @PostMapping(value = "/{slug}/favorite")
-    public ResponseEntity<?> favoriteArticle(@PathVariable("slug") String slug) {
-        return ResponseEntity.status(HttpStatus.OK).body("{}");
+    public ResponseEntity<ResponseArticle> favoriteArticle(
+            HttpSession session, @PathVariable("slug") String slug) {
+
+        String email = (String) session.getAttribute(EMAIL);
+        ResponseArticle followArticle = articleService.favoriteArticle(email, slug);
+
+        return ResponseEntity.status(HttpStatus.OK).body(followArticle);
     }
 
     /**
@@ -120,7 +177,12 @@ public class ArticlesApi {
      * @return Article
      */
     @DeleteMapping(value = "/{slug}/favorite")
-    public ResponseEntity<?> unFavoriteArticle(@PathVariable("slug") String slug) {
-        return ResponseEntity.status(HttpStatus.OK).body("{}");
+    public ResponseEntity<ResponseArticle> unFavoriteArticle(
+            HttpSession session, @PathVariable("slug") String slug) {
+
+        String email = (String) session.getAttribute(EMAIL);
+        ResponseArticle unfollowArticle = articleService.unFavoriteArticle(email, slug);
+
+        return ResponseEntity.status(HttpStatus.OK).body(unfollowArticle);
     }
 }

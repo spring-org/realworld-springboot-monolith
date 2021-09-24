@@ -1,9 +1,9 @@
 package com.example.realworld.application.users.api;
 
-import com.example.realworld.application.users.domain.User;
 import com.example.realworld.application.users.dto.RequestLoginUser;
 import com.example.realworld.application.users.dto.RequestSaveUser;
 import com.example.realworld.application.users.dto.ResponseUser;
+import com.example.realworld.application.users.exception.NotFoundUserException;
 import com.example.realworld.application.users.service.UserBusinessService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +36,11 @@ public class AuthApi {
     public ResponseEntity<ResponseUser> login(
             HttpSession session, @Valid @RequestBody RequestLoginUser loginUser) {
 
-        User userByEmail = userBusinessService.findUserByEmail(loginUser.getEmail());
-        session.setAttribute(EMAIL, userByEmail.getEmail());
+        boolean isExistsUser = userBusinessService.existsUserByEmail(loginUser.getEmail());
+        if (!isExistsUser) {
+            throw new NotFoundUserException("사용자가 존재하지 않습니다.");
+        }
+        session.setAttribute(EMAIL, loginUser.getEmail());
         ResponseUser responseUser = ResponseUser.of(RequestLoginUser.toEntity(loginUser));
 
         return ResponseEntity.status(HttpStatus.OK).body(responseUser);

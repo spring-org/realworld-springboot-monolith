@@ -2,26 +2,24 @@ package com.example.realworld.application.articles.domain;
 
 import com.example.realworld.application.users.domain.User;
 import com.example.realworld.core.domain.BaseTimeEntity;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Getter
 @Entity
+@ToString
 @Table(name = "TB_COMMENT")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Comment extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "COMMENT_ID", nullable = false)
     private Long id;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
 
     private String body;
 
@@ -32,6 +30,9 @@ public class Comment extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "ARTICLE_ID", nullable = false)
     private Article article;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
     private Comment(String body, User author) {
         this.body = body;
@@ -44,5 +45,30 @@ public class Comment extends BaseTimeEntity {
 
     public void update(String body) {
         this.body = body;
+    }
+
+    public boolean isMatches(Long id) {
+        return this.id.equals(id);
+    }
+
+    public boolean isAuthor(User currentUser) {
+        return this.author.equals(currentUser);
+    }
+
+    // jacoco 라이브러리가 lombok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션
+    @Generated
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Comment)) return false;
+        Comment comment = (Comment) o;
+        return Objects.equals(id, comment.id);
+    }
+
+    // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션
+    @Generated
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

@@ -1,7 +1,6 @@
 package com.example.realworld.application.users.repository;
 
 import com.example.realworld.application.users.domain.User;
-import com.example.realworld.application.users.dto.RequestUpdateUser;
 import com.example.realworld.application.users.exception.NotFoundUserException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,37 +41,5 @@ class UserRepositoryTest {
 
         // then
         assertThat(findUser.getEmail()).isEqualTo("seokrae@gmail.com");
-    }
-
-    @DisplayName("사용자 수정 테스트")
-    @Test
-    void when_updateUser_expected_changeInfo() {
-        // when
-        RequestUpdateUser updateUser = RequestUpdateUser.of("update@gmail.com", "username", "4321", "gmail.com/image.png", "bio");
-        savedUser.update(updateUser);
-
-        userRepository.flush();
-
-        User findUser = userRepository.findByEmail(savedUser.getEmail())
-                .orElseThrow(() -> new NotFoundUserException("사용자가 존재하지 않습니다."));
-
-        // then
-        assertThat(findUser.getProfile().getImage()).isNotNull();
-    }
-
-    @DisplayName("사용자 수정 요청 데이터 없는 경우의 테스트")
-    @Test
-    void when_updatedUser_expected_noData_changeInfo() {
-        // when
-        RequestUpdateUser updateUser = RequestUpdateUser.of("update@gmail.com", "username", null, null, null);
-        savedUser.update(updateUser);
-
-        userRepository.flush();
-
-        User findUser = userRepository.findByEmail(savedUser.getEmail())
-                .orElseThrow(() -> new NotFoundUserException("사용자가 존재하지 않습니다."));
-
-        // then
-        assertThat(findUser.getProfile().getImage()).isNull();
     }
 }

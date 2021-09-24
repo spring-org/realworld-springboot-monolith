@@ -5,35 +5,30 @@ import com.example.realworld.application.users.dto.RequestSaveUser;
 import com.example.realworld.application.users.dto.RequestUpdateUser;
 import com.example.realworld.application.users.dto.ResponseProfile;
 import com.example.realworld.application.users.dto.ResponseUser;
+import com.example.realworld.application.users.exception.DuplicateUserException;
+import com.example.realworld.application.users.exception.NotFoundUserException;
 import com.example.realworld.application.users.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-/**
- * @SpringBootTest 대신 @ExtendWith(MockitoExtension.class) 를 사용하여 <br/>
- * IOC Container가 생성되지 않으며, 필요한 서비스 객체만 실제로 생성되어 빠른 테스트를 제공
- */
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 class UserBusinessServiceTest {
 
+    @Autowired
     private UserBusinessService userBusinessService;
 
-    @Mock
+    @Autowired
     private UserRepository userRepository;
 
-    @BeforeEach
-    void setUp() {
-        this.userBusinessService = new UserBusinessService(userRepository);
+    @AfterEach
+    void tearDown() {
+        userRepository.deleteAll();
     }
 
     @DisplayName("사용자 등록 테스트")
@@ -42,51 +37,123 @@ class UserBusinessServiceTest {
         // given
         RequestSaveUser saveUser =
                 RequestSaveUser.of("seokrae@gmail.com", "seok", "1234");
-        User actual = RequestSaveUser.toEntity(saveUser);
-        // mocking 데이터 생성
-        given(userRepository.save(any())).willReturn(actual);
-        given(userRepository.findByEmail(any())).willReturn(Optional.of(actual));
+
         // when
         ResponseUser responseUser = userBusinessService.addUser(saveUser);
-        User userByEmail = userBusinessService.findUserByEmail(actual.getEmail());
 
         // then
-        assertThat(actual.getEmail()).isEqualTo(responseUser.getEmail());
-        assertThat(actual.getEmail()).isEqualTo(userByEmail.getEmail());
+        assertThat(saveUser.getEmail()).isEqualTo(responseUser.getEmail());
+    }
+
+    @DisplayName("중복된 사용자 등록 테스트")
+    @Test
+    void when_duplicateAddUser_expect_fail_exception() {
+        // given
+        String email = "seokrae@gmail.com";
+        RequestSaveUser saveUser =
+                RequestSaveUser.of(email, "seok", "1234");
+        User actual = RequestSaveUser.toEntity(saveUser);
+        // when
+        userRepository.save(actual);
+        // then
+        assertThatExceptionOfType(DuplicateUserException.class)
+                .isThrownBy(() -> userBusinessService.addUser(saveUser));
+    }
+
+    @DisplayName("사용자 프로필 조회 테스트")
+    @Test
+    void when_getProfile_expect_success_profile_info() {
+        String email = "seokrae@gmail.com";
+        RequestSaveUser saveUser =
+                RequestSaveUser.of(email, "seok", "1234");
+
+        ResponseUser responseUser = userBusinessService.addUser(saveUser);
+        ResponseProfile profile = userBusinessService.getProfile(email);
+
+        assertThat(responseUser.getUserName()).isEqualTo(profile.getUserName());
+    }
+
+    @DisplayName("사용자 프로필 조회 실패 테스트")
+    @Test
+    void when_getProfile_expect_fail_profile_info() {
+        String email = "seokrae@gmail.com";
+        RequestSaveUser saveUser =
+                RequestSaveUser.of(email, "seok", "1234");
+
+        userBusinessService.addUser(saveUser);
+
+        assertThatExceptionOfType(NotFoundUserException.class)
+                .isThrownBy(() -> userBusinessService.getProfile("fail@gmail.com"));
+
+    }
+
+    @DisplayName("현재 사용자 조회 테스트")
+    @Test
+    void when_getUserByEmail_expect_success_currentUser() {
+        String email = "seokrae@gmail.com";
+        RequestSaveUser saveUser =
+                RequestSaveUser.of(email, "seok", "1234");
+
+        userBusinessService.addUser(saveUser);
+        ResponseUser currentUser = userBusinessService.getUserByEmail(email);
+
+        assertThat(currentUser.getUserName()).isEqualTo(saveUser.getUserName());
     }
 
     @DisplayName("사용자 정보 수정 테스트")
     @Test
     void when_updateUser_expect_success_change_username() {
+        String email = "seokrae@gmail.com";
         RequestSaveUser saveUser =
-                RequestSaveUser.of("seokrae@gmail.com", "seok", "1234");
-        User savedUser = RequestSaveUser.toEntity(saveUser);
-
+                RequestSaveUser.of(email, "seok", "1234");
         RequestUpdateUser updateUser =
-                RequestUpdateUser.of("seokrae@gmail.com", "seokrae", "", "", "");
+                RequestUpdateUser.of(email, "seokrae", "12345", "/image.png", "hello bio");
 
-        given(userRepository.save(any())).willReturn(savedUser);
-        given(userRepository.findByEmail(any())).willReturn(Optional.of(savedUser));
-
-        ResponseUser responseUser = userBusinessService.addUser(saveUser);
-        ResponseUser updatedUser = userBusinessService.updateUser(responseUser.getEmail(), updateUser);
+        userBusinessService.addUser(saveUser);
+        ResponseUser updatedUser = userBusinessService.updateUser(email, updateUser);
 
         assertThat(updatedUser.getUserName()).isEqualTo("seokrae");
     }
 
+    @DisplayName("사용자 정보 수정 요청 시 변동 없는 테스트(수정 데이터 입력X)")
+    @Test
+    void when_updateUser_expect_success_no_data() {
+        RequestSaveUser saveUser =
+                RequestSaveUser.of("seokrae@gmail.com", "seok", "1234");
+        RequestUpdateUser updateUser =
+                RequestUpdateUser.of("", "", "", "", "");
+
+        ResponseUser responseUser = userBusinessService.addUser(saveUser);
+        ResponseUser updatedUser = userBusinessService.updateUser(responseUser.getEmail(), updateUser);
+
+        assertThat(updatedUser.getEmail()).isEqualTo(responseUser.getEmail());
+    }
+
     @DisplayName("특정 사용자의 프로필 조회 테스트")
     @Test
-    void testCase1() {
+    void when_getProfile_expect_success_user_profile() {
         String email = "seokrae@gmail.com";
 
         RequestSaveUser saveUser =
                 RequestSaveUser.of(email, "seok", "1234");
-        User savedUser = RequestSaveUser.toEntity(saveUser);
 
-        given(userRepository.findByEmail(any())).willReturn(Optional.of(savedUser));
-
+        userBusinessService.addUser(saveUser);
         ResponseProfile profile = userBusinessService.getProfile(email);
 
         assertThat(profile.getUserName()).isEqualTo("seok");
+    }
+
+    @DisplayName("사용자가 존재하는지 확인하는 테스트")
+    @Test
+    void when_existsUserByEmail_expect_success_true() {
+        String email = "seokrae@gmail.com";
+
+        RequestSaveUser saveUser =
+                RequestSaveUser.of(email, "seok", "1234");
+
+        userBusinessService.addUser(saveUser);
+        boolean exists = userBusinessService.existsUserByEmail(email);
+
+        assertThat(exists).isTrue();
     }
 }
