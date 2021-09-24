@@ -2,10 +2,7 @@ package com.example.realworld.application.articles.domain;
 
 import com.example.realworld.application.users.domain.User;
 import com.example.realworld.core.domain.BaseTimeEntity;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
@@ -58,6 +55,8 @@ public class Comment extends BaseTimeEntity {
         return this.author.equals(currentUser);
     }
 
+    // jacoco 라이브러리가 lombok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션
+    @Generated
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -66,6 +65,8 @@ public class Comment extends BaseTimeEntity {
         return Objects.equals(id, comment.id);
     }
 
+    // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션
+    @Generated
     @Override
     public int hashCode() {
         return Objects.hashCode(id);

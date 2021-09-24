@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -109,9 +110,6 @@ class ArticleRepositoryTest {
         assertThat(updatedArticle.getTitle()).isEqualTo("updateTitle-1");
     }
 
-    /**
-     * 수정 정보에 title이 없는 경우 기존 데이터가 수정되어선 안된다.
-     */
     @DisplayName("특정 글에 데이터 없이 정보 수정요청 테스트")
     @Test
     void when_updateArticle_expected_success_article_no_data() {
@@ -161,21 +159,72 @@ class ArticleRepositoryTest {
         List<Article> articles = articleRepository.saveAll(dummyArticles);
 
         // when
-        RequestPageCondition condition = RequestPageCondition.of("Java", email, "SR", 20, 0);
+        RequestPageCondition condition = RequestPageCondition.of("", email, "", 20, 0);
         List<Article> searchArticles = articleRepository.searchPageArticle(condition);
 
+        // then
         assertThat(searchArticles.size()).isEqualTo(5);
+
+        Article actual = searchArticles.get(0);
+        Article expected = articles.get(0);
+
         assertAll("slug",
-                () -> {
-                    Article actual = searchArticles.get(0);
-                    Article expected = articles.get(0);
-                    assertThat(actual.getSlug()).isEqualTo(makeSlug(expected.getTitle()));
-                },
-                () -> {
-                    Article actual = searchArticles.get(1);
-                    Article expected = articles.get(1);
-                    assertThat(actual.getSlug()).isEqualTo(makeSlug(expected.getTitle()));
-                }
+                () -> assertThat(actual.getSlug()).isEqualTo(makeSlug(expected.getTitle()))
         );
+        assertAll("author",
+                () -> assertThat(actual.getAuthor()).isEqualTo(expected.getAuthor())
+        );
+    }
+
+    @DisplayName("글 조건 조회 테스트(조건 없는 경우)")
+    @Test
+    void when_searchPageArticle_expect_success_no_data() {
+        // given
+        List<Article> articles = getDummyArticles();
+
+        // when
+        RequestPageCondition condition = RequestPageCondition.of("", "", "SR", 20, 0);
+        List<Article> searchArticles = articleRepository.searchPageArticle(condition);
+
+        // then
+        assertThat(searchArticles.size()).isEqualTo(3);
+
+        Article actual = searchArticles.get(0);
+        Article expected = articles.get(0);
+
+        assertAll("slug",
+                () -> assertThat(actual.getSlug()).isEqualTo(makeSlug(expected.getTitle()))
+        );
+        assertAll("author",
+                () -> assertThat(actual.getAuthor()).isEqualTo(expected.getAuthor())
+        );
+    }
+
+    private List<Article> getDummyArticles() {
+        User sr = userRepository.save(User.of("seokrae@gmail.com", "1234", "SR"));
+        User seok = userRepository.save(User.of("other@gmail.com", "1234", "seok"));
+
+        List<RequestSaveArticle> srArticles = List.of(
+                RequestSaveArticle.of("타이틀-1", "설명", "바디", List.of("Java")),
+                RequestSaveArticle.of("타이틀-2", "설명", "바디", List.of("Java")),
+                RequestSaveArticle.of("타이틀-3", "설명", "바디", List.of("Java"))
+        );
+
+        List<RequestSaveArticle> seokArticles = List.of(
+                RequestSaveArticle.of("타이틀-4", "설명", "바디", List.of("Java")),
+                RequestSaveArticle.of("타이틀-5", "설명", "바디", List.of("Java"))
+        );
+
+        List<Article> dummySrArticles = srArticles.stream()
+                .map(request -> RequestSaveArticle.toEntity(request, sr))
+                .collect(Collectors.toList());
+
+        List<Article> dummySeokArticles = seokArticles.stream()
+                .map(request -> RequestSaveArticle.toEntity(request, seok))
+                .collect(Collectors.toList());
+
+        List<Article> dummyArticles = Stream.concat(dummySrArticles.stream(), dummySeokArticles.stream())
+                .collect(Collectors.toList());
+        return articleRepository.saveAll(dummyArticles);
     }
 }

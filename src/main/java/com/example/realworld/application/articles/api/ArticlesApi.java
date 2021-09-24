@@ -31,7 +31,7 @@ public class ArticlesApi {
     @GetMapping
     public ResponseEntity<ResponseMultiArticles> getArticles(RequestPageCondition condition) {
 
-        ResponseMultiArticles articles = articleService.getArticles(condition);
+        ResponseMultiArticles articles = articleService.searchPageArticles(condition);
 
         return ResponseEntity.status(HttpStatus.OK).body(articles);
     }

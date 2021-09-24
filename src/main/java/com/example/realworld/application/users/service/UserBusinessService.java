@@ -13,8 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
-
 @Slf4j
 @Service
 @Transactional(readOnly = true)
@@ -67,10 +65,8 @@ public class UserBusinessService implements UserService {
 
     @Override
     public boolean existsUserByEmail(String email) {
-
-        User findUser = findUserByEmail(email);
-
-        return !Objects.isNull(findUser);
+        return userRepository.findByEmail(email)
+                .isPresent();
     }
 
     // 사용자 조회

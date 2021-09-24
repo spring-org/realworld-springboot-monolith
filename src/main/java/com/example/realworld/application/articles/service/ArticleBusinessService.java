@@ -27,7 +27,7 @@ public class ArticleBusinessService implements ArticleService {
 
     // 조건에 따른 전체 글 리스트를 조회?
     @Override
-    public ResponseMultiArticles getArticles(RequestPageCondition condition) {
+    public ResponseMultiArticles searchPageArticles(RequestPageCondition condition) {
 
         List<Article> articles = articleRepository.searchPageArticle(condition);
 
@@ -63,8 +63,11 @@ public class ArticleBusinessService implements ArticleService {
 
         User findUser = getUser(email);
         Article article = RequestSaveArticle.toEntity(saveArticle, findUser);
+        Article savedArticle = articleRepository.save(article);
 
-        return ResponseArticle.of(articleRepository.save(article));
+        findUser.postArticles(article);
+
+        return ResponseArticle.of(savedArticle);
     }
 
     @Transactional

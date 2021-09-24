@@ -5,14 +5,13 @@ import com.example.realworld.application.articles.exception.NotFoundArticleExcep
 import com.example.realworld.application.users.dto.RequestUpdateUser;
 import com.example.realworld.application.users.exception.NotFoundFollowException;
 import com.example.realworld.core.domain.BaseTimeEntity;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -36,6 +35,9 @@ public class User extends BaseTimeEntity implements Serializable {
 
     @Embedded
     private Profile profile;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
     private String token;
 
@@ -155,6 +157,8 @@ public class User extends BaseTimeEntity implements Serializable {
         this.favoriteArticles.remove(article);
     }
 
+    // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션
+    @Generated
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -164,6 +168,8 @@ public class User extends BaseTimeEntity implements Serializable {
                 && Objects.equals(email, user.email);
     }
 
+    // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션
+    @Generated
     @Override
     public int hashCode() {
         return Objects.hash(id, email);

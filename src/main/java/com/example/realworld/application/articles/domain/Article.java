@@ -4,10 +4,7 @@ import com.example.realworld.application.articles.exception.NotFoundCommentExcep
 import com.example.realworld.application.tags.domain.Tag;
 import com.example.realworld.application.users.domain.User;
 import com.example.realworld.core.domain.BaseTimeEntity;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.util.StringUtils;
 
@@ -16,6 +13,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -71,6 +69,11 @@ public class Article extends BaseTimeEntity {
         this.author = author;
     }
 
+    public static Article of(
+            String title, String description, String body, User author) {
+        return new Article(title, description, body, false, 0, author);
+    }
+
     private String makeSlug(String title) {
         return String.format("%s-%s", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), title);
     }
@@ -78,11 +81,6 @@ public class Article extends BaseTimeEntity {
     // Article
     public String author() {
         return author.getProfile().getUserName();
-    }
-
-    public static Article of(
-            String title, String description, String body, User author) {
-        return new Article(title, description, body, false, 0, author);
     }
 
     public void update(String title, String description, String body) {
@@ -129,5 +127,22 @@ public class Article extends BaseTimeEntity {
 
     public boolean isSlugMatches(String slug) {
         return this.slug.equals(slug);
+    }
+
+    // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션
+    @Generated
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Article)) return false;
+        Article article = (Article) o;
+        return Objects.equals(id, article.id);
+    }
+
+    // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션
+    @Generated
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
