@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.Optional;
 
 @Getter
 @ToString

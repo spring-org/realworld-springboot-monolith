@@ -143,7 +143,7 @@ public class ArticlesApi {
     /**
      * 커멘트 삭제, 인증 필요
      *
-     * @param slug unique uri article
+     * @param slug      unique uri article
      * @param commentId comment PK
      */
     @DeleteMapping(value = "/{slug}/comments/{id}")

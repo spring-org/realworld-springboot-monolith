@@ -4,7 +4,6 @@ import com.example.realworld.application.articles.domain.Article;
 import com.example.realworld.application.articles.dto.ResponseArticle;
 import com.example.realworld.application.articles.exception.DuplicateFavoriteArticleException;
 import com.example.realworld.application.articles.repository.ArticleRepository;
-import com.example.realworld.application.favorites.domain.FavoriteArticle;
 import com.example.realworld.application.favorites.exception.NotYetFavoriteArticleException;
 import com.example.realworld.application.favorites.repository.FavoriteArticleRepository;
 import com.example.realworld.application.users.domain.User;
@@ -14,8 +13,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
