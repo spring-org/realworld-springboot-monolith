@@ -25,8 +25,11 @@ public class ResponseProfile {
         this.following = following;
     }
 
-    // TODO following 값은 어떻게 보여줘야 할까?
-    public static ResponseProfile of(User user) {
-        return new ResponseProfile(user, false);
+    public static ResponseProfile of(User fromUser) {
+        return new ResponseProfile(fromUser, false);
+    }
+
+    public static ResponseProfile of(User fromUser, User toUser) {
+        return new ResponseProfile(fromUser, fromUser.isFollowing(toUser));
     }
 }

@@ -10,14 +10,14 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
-@Entity
+@Entity(name = "comments")
 @ToString
 @Table(name = "TB_COMMENT")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Comment extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "COMMENT_ID", nullable = false)
     private Long id;
 
@@ -34,13 +34,14 @@ public class Comment extends BaseTimeEntity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    private Comment(String body, User author) {
+    private Comment(String body, User author, Article article) {
         this.body = body;
         this.author = author;
+        this.article = article;
     }
 
-    public static Comment of(String body, User author) {
-        return new Comment(body, author);
+    public static Comment of(String body, User author, Article article) {
+        return new Comment(body, author, article);
     }
 
     public void update(String body) {

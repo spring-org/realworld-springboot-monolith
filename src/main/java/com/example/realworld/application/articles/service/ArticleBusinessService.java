@@ -4,7 +4,7 @@ import com.example.realworld.application.articles.domain.Article;
 import com.example.realworld.application.articles.dto.*;
 import com.example.realworld.application.articles.exception.NotFoundArticleException;
 import com.example.realworld.application.articles.repository.ArticleRepository;
-import com.example.realworld.application.users.domain.Follow;
+import com.example.realworld.application.follows.domain.Follow;
 import com.example.realworld.application.users.domain.User;
 import com.example.realworld.application.users.exception.NotFoundUserException;
 import com.example.realworld.application.users.repository.UserRepository;
@@ -52,9 +52,9 @@ public class ArticleBusinessService implements ArticleService {
     @Override
     public ResponseArticle getArticle(String slug) {
 
-        Article article = getOrElseThrow(slug);
+        Article findArticle = getOrElseThrow(slug);
 
-        return ResponseArticle.of(article);
+        return ResponseArticle.from(findArticle);
     }
 
     @Transactional
@@ -62,12 +62,12 @@ public class ArticleBusinessService implements ArticleService {
     public ResponseArticle postArticle(String email, RequestSaveArticle saveArticle) {
 
         User findUser = getUser(email);
-        Article article = RequestSaveArticle.toEntity(saveArticle, findUser);
-        Article savedArticle = articleRepository.save(article);
+        Article savedArticle = articleRepository.save(
+                RequestSaveArticle.toEntity(saveArticle, findUser));
 
-        findUser.postArticles(article);
+        findUser.addArticle(savedArticle);
 
-        return ResponseArticle.of(savedArticle);
+        return ResponseArticle.from(savedArticle);
     }
 
     @Transactional
@@ -75,10 +75,10 @@ public class ArticleBusinessService implements ArticleService {
     public ResponseArticle updateArticle(String email, String slug, RequestUpdateArticle updateArticle) {
 
         User findUser = getUser(email);
-        Article findArticle = findUser.getArticle(slug);
+        Article findArticle = findUser.getArticleBySlug(slug);
         findArticle.update(updateArticle.getTitle(), updateArticle.getDescription(), updateArticle.getBody());
 
-        return ResponseArticle.of(findArticle);
+        return ResponseArticle.from(findArticle);
     }
 
     @Transactional
@@ -86,32 +86,10 @@ public class ArticleBusinessService implements ArticleService {
     public void deleteArticle(String email, String slug) {
 
         User findUser = getUser(email);
-        Article findArticle = findUser.getArticle(slug);
+        Article findArticle = findUser.getArticleBySlug(slug);
 
+        findUser.removeArticle(findArticle);
         articleRepository.delete(findArticle);
-    }
-
-    @Transactional
-    @Override
-    public ResponseArticle favoriteArticle(String email, String slug) {
-
-        User findUser = getUser(email);
-        Article article = getOrElseThrow(slug);
-
-        findUser.favoriteArticle(article);
-
-        return ResponseArticle.of(article);
-    }
-
-    @Transactional
-    @Override
-    public ResponseArticle unFavoriteArticle(String email, String slug) {
-        User findUser = getUser(email);
-        Article article = getOrElseThrow(slug);
-
-        findUser.unFavoriteArticle(article);
-
-        return ResponseArticle.of(article);
     }
 
     private Article getOrElseThrow(String slug) {

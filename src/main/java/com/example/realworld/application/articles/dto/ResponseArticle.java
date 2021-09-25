@@ -2,6 +2,7 @@ package com.example.realworld.application.articles.dto;
 
 import com.example.realworld.application.articles.domain.Article;
 import com.example.realworld.application.tags.domain.Tag;
+import com.example.realworld.application.users.domain.User;
 import com.example.realworld.application.users.dto.ResponseProfile;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AccessLevel;
@@ -31,6 +32,10 @@ public class ResponseArticle {
     private ResponseProfile user;
 
     private ResponseArticle(Article article, ResponseProfile user) {
+        this(article, user, null);
+    }
+
+    private ResponseArticle(Article article, ResponseProfile user, User favoriteUser) {
         this.slug = article.getSlug();
         this.title = article.getTitle();
         this.description = article.getDescription();
@@ -38,12 +43,16 @@ public class ResponseArticle {
         this.tagList = article.getTags();
         this.createdAt = article.getCreatedAt();
         this.updatedAt = article.getUpdatedAt();
-        this.favorited = article.isFavorites();
-        this.favoritesCount = article.getFavoritesCount();
+        this.favorited = article.containsFavUser(favoriteUser);
+        this.favoritesCount = article.getFavUserCount();
         this.user = user;
     }
 
-    public static ResponseArticle of(Article article) {
+    public static ResponseArticle from(Article article) {
         return new ResponseArticle(article, ResponseProfile.of(article.getAuthor()));
+    }
+
+    public static ResponseArticle of(Article article, User favoriteUser) {
+        return new ResponseArticle(article, ResponseProfile.of(article.getAuthor()), favoriteUser);
     }
 }

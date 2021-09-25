@@ -1,4 +1,4 @@
-package com.example.realworld.application.users.exception;
+package com.example.realworld.application.follows.exception;
 
 public class DuplicateFollowException extends RuntimeException {
     public DuplicateFollowException() {

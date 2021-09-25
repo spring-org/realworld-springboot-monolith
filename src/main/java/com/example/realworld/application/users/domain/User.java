@@ -2,8 +2,11 @@ package com.example.realworld.application.users.domain;
 
 import com.example.realworld.application.articles.domain.Article;
 import com.example.realworld.application.articles.exception.NotFoundArticleException;
+import com.example.realworld.application.favorites.domain.FavoriteArticle;
+import com.example.realworld.application.favorites.exception.NotFoundFavoriteArticleException;
+import com.example.realworld.application.follows.domain.Follow;
+import com.example.realworld.application.follows.exception.NotFoundFollowException;
 import com.example.realworld.application.users.dto.RequestUpdateUser;
-import com.example.realworld.application.users.exception.NotFoundFollowException;
 import com.example.realworld.core.domain.BaseTimeEntity;
 import lombok.*;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -17,10 +20,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.CascadeType.REMOVE;
+
 @Getter
 @ToString
 @Table(name = "TB_USER")
-@Entity(name = "user")
+@Entity(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity implements Serializable {
     @Id
@@ -41,20 +47,21 @@ public class User extends BaseTimeEntity implements Serializable {
 
     private String token;
 
-    @OneToMany(mappedBy = "fromUser", orphanRemoval = true)
+    @OneToMany(mappedBy = "fromUser", fetch = FetchType.LAZY, orphanRemoval = true, cascade = {PERSIST, REMOVE})
     @ToString.Exclude
     private final Set<Follow> following = new HashSet<>();
 
-    @OneToMany(mappedBy = "toUser")
+    @OneToMany(mappedBy = "toUser", fetch = FetchType.LAZY)
     @ToString.Exclude
     private final Set<Follow> followers = new HashSet<>();
 
-    @OneToMany(mappedBy = "author", orphanRemoval = true)
+    @OneToMany(mappedBy = "author", orphanRemoval = true, cascade = {PERSIST, REMOVE})
     @ToString.Exclude
     private final Set<Article> articles = new HashSet<>();
 
-    @Transient
-    private final Set<Article> favoriteArticles = new HashSet<>();
+    @OneToMany(mappedBy = "favoriteUser", orphanRemoval = true, cascade = {PERSIST, REMOVE})
+    @ToString.Exclude
+    private final Set<FavoriteArticle> favoriteArticles = new HashSet<>();
 
     private User(String email, String password) {
         this(email, password, new Profile(), null);
@@ -105,9 +112,7 @@ public class User extends BaseTimeEntity implements Serializable {
 
     // Follow
     public void follow(Follow newFollow) {
-        if (!isFollowing(newFollow.getToUser())) {
-            this.following.add(newFollow);
-        }
+        this.following.add(newFollow);
     }
 
     public void unFollow(Follow findFollow) {
@@ -120,41 +125,63 @@ public class User extends BaseTimeEntity implements Serializable {
     }
 
     public Follow findFollowing(User toUser) {
-        return this.following.stream()
+        return this.getFollowing()
+                .stream()
                 .filter(follow -> follow.isSameToUser(toUser))
                 .findAny()
                 .orElseThrow(() -> new NotFoundFollowException("사용자 간의 팔로우 관계가 존재하지 않습니다."));
     }
 
     // Article
-    public void postArticles(List<Article> articles) {
+    public void addArticles(List<Article> articles) {
         this.articles.addAll(articles);
     }
 
-    public void postArticles(Article article) {
+    public void addArticle(Article article) {
         this.articles.add(article);
     }
 
-    public Article findArticleByTitle(String title) {
-        return articles.stream()
+    public void removeArticle(Article findArticle) {
+        this.articles.remove(findArticle);
+    }
+
+    public Article getArticleByTitle(String title) {
+        return this.articles.stream()
                 .filter(article -> article.isMatches(title))
-                .findAny()
+                .findFirst()
                 .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
     }
 
-    public Article getArticle(String slug) {
+    public Article getArticleBySlug(String slug) {
         return this.articles.stream()
                 .filter(article -> article.isSlugMatches(slug))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
     }
 
-    public void favoriteArticle(Article article) {
-        this.favoriteArticles.add(article);
+    // Favorite
+    public Article favArticle(FavoriteArticle favoriteArticle) {
+        this.favoriteArticles.add(favoriteArticle);
+        Article article = favoriteArticle.getFavoritedArticle();
+        return article.addFavArticle(favoriteArticle);
     }
 
-    public void unFavoriteArticle(Article article) {
-        this.favoriteArticles.remove(article);
+    public Article unFavArticle(FavoriteArticle favoriteArticle) {
+        this.favoriteArticles.remove(favoriteArticle);
+        Article article = favoriteArticle.getFavoritedArticle();
+        return article.removeFavArticle(favoriteArticle);
+    }
+
+    public boolean isMatchesArticleBySlug(String slug) {
+        return this.favoriteArticles.stream()
+                .anyMatch(favArticle -> favArticle.isMatchesArticleBySlug(slug));
+    }
+
+    public FavoriteArticle getFavArticle(String slug) {
+        return favoriteArticles.stream()
+                .filter(favArticle -> favArticle.isMatchesArticleBySlug(slug))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundFavoriteArticleException("Favorite 관계에 대한 정보가 존재하지 않습니다."));
     }
 
     // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션
@@ -174,4 +201,5 @@ public class User extends BaseTimeEntity implements Serializable {
     public int hashCode() {
         return Objects.hash(id, email);
     }
+
 }

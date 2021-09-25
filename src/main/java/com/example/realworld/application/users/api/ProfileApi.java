@@ -1,8 +1,8 @@
 package com.example.realworld.application.users.api;
 
+import com.example.realworld.application.follows.exception.CannotFollowException;
+import com.example.realworld.application.follows.service.FollowService;
 import com.example.realworld.application.users.dto.ResponseProfile;
-import com.example.realworld.application.users.exception.CannotFollowException;
-import com.example.realworld.application.users.service.FollowService;
 import com.example.realworld.application.users.service.UserBusinessService;
 import com.example.realworld.core.exception.UnauthorizedUserException;
 import lombok.RequiredArgsConstructor;

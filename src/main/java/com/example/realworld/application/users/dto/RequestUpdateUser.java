@@ -27,5 +27,4 @@ public class RequestUpdateUser {
     public static RequestUpdateUser of(String email, String userName, String password, String image, String bio) {
         return new RequestUpdateUser(email, userName, password, image, bio);
     }
-
 }

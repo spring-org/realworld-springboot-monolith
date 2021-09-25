@@ -1,5 +1,6 @@
 package com.example.realworld.application.articles.dto;
 
+import com.example.realworld.application.articles.domain.Article;
 import com.example.realworld.application.articles.domain.Comment;
 import com.example.realworld.application.users.domain.User;
 import lombok.Getter;
@@ -16,7 +17,7 @@ public class RequestSaveComment {
         return new RequestSaveComment(body);
     }
 
-    public static Comment of(RequestSaveComment saveComment, User author) {
-        return Comment.of(saveComment.getBody(), author);
+    public static Comment of(RequestSaveComment saveComment, User author, Article article) {
+        return Comment.of(saveComment.getBody(), author, article);
     }
 }

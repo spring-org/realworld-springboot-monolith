@@ -1,5 +1,6 @@
-package com.example.realworld.application.users.domain;
+package com.example.realworld.application.follows.domain;
 
+import com.example.realworld.application.users.domain.User;
 import com.example.realworld.core.domain.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,7 +10,7 @@ import lombok.ToString;
 import javax.persistence.*;
 
 @Getter
-@Entity
+@Entity(name = "follows")
 @Table(name = "TB_FOLLOW")
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,11 +20,11 @@ public class Follow extends BaseTimeEntity {
     @Column(name = "FOLLOW_ID", nullable = false)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "FROM_USER_ID")
     private User fromUser;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "TO_USER_ID")
     private User toUser;
 

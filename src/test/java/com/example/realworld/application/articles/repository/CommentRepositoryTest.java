@@ -33,8 +33,8 @@ class CommentRepositoryTest {
         Article savedArticle = articleRepository.save(article);
 
         // when
-        Comment newComment = Comment.of("comment write", savedUser);
-        savedArticle.postComment(newComment);
+        Comment newComment = Comment.of("comment write", savedUser, savedArticle);
+        savedArticle.addComment(newComment);
         Comment savedComment = commentRepository.save(newComment);
 
         // then
@@ -50,13 +50,13 @@ class CommentRepositoryTest {
         Article savedArticle = articleRepository.save(article);
 
         // when
-        Comment newComment1 = Comment.of("comment write1", savedUser);
-        Comment newComment2 = Comment.of("comment write2", savedUser);
-        Comment newComment3 = Comment.of("comment write3", savedUser);
+        Comment newComment1 = Comment.of("comment write1", savedUser, savedArticle);
+        Comment newComment2 = Comment.of("comment write2", savedUser, savedArticle);
+        Comment newComment3 = Comment.of("comment write3", savedUser, savedArticle);
 
         List<Comment> savedComments = commentRepository.saveAll(List.of(newComment1, newComment2, newComment3));
 
-        savedArticle.postComments(savedComments);
+        savedArticle.addComments(savedComments);
         int tagSize = savedArticle.getComments().size();
 
         assertThat(tagSize).isEqualTo(3);
@@ -72,17 +72,17 @@ class CommentRepositoryTest {
         Article article = Article.of("title", "description", "body", savedUser);
         Article savedArticle = articleRepository.save(article);
 
-        Comment newComment = Comment.of("comment write", savedUser);
+        Comment newComment = Comment.of("comment write", savedUser, savedArticle);
         Comment savedComment = commentRepository.save(newComment);
-        savedArticle.postComment(savedComment);
-        savedUser.postArticles(savedArticle);
+        savedArticle.addComment(savedComment);
+        savedUser.addArticle(savedArticle);
 
         // when
         savedComment.update("updateBody");
 
         // then
-        String actual = savedUser.findArticleByTitle("title")
-                .findComment(savedComment.getBody()).getBody();
+        String actual = savedUser.getArticleByTitle("title")
+                .getComments(savedComment.getId()).getBody();
 
         assertThat(actual).isEqualTo(savedComment.getBody());
     }
@@ -97,13 +97,13 @@ class CommentRepositoryTest {
         Article article = Article.of("title", "description", "body", savedUser);
         Article savedArticle = articleRepository.save(article);
 
-        Comment newComment = Comment.of("comment write", savedUser);
+        Comment newComment = Comment.of("comment write", savedUser, savedArticle);
         Comment savedComment = commentRepository.save(newComment);
 
-        savedArticle.postComment(savedComment);
-        savedUser.postArticles(savedArticle);
+        savedArticle.addComment(savedComment);
+        savedUser.addArticle(savedArticle);
 
-        savedArticle.deleteComment(savedComment);
+        savedArticle.removeComment(savedComment);
 
         assertThat(savedArticle.getTags().size()).isZero();
     }
