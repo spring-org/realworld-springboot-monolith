@@ -19,7 +19,7 @@ public class ResponseMultiArticles {
 
     public static ResponseMultiArticles of(List<Article> articles) {
         List<ResponseArticle> responseArticles = articles.stream()
-                .map(ResponseArticle::of)
+                .map(ResponseArticle::from)
                 .collect(Collectors.toList());
         return new ResponseMultiArticles(responseArticles, articles.size());
     }

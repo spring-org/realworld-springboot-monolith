@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
-@Entity
+@Entity(name = "comments")
 @ToString
 @Table(name = "TB_COMMENT")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

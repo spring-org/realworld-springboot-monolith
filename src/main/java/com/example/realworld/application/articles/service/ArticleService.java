@@ -15,8 +15,4 @@ public interface ArticleService {
     ResponseArticle updateArticle(String email, String slug, RequestUpdateArticle updateArticle);
 
     void deleteArticle(String email, String slug);
-
-    ResponseArticle favoriteArticle(String email, String slug);
-
-    ResponseArticle unFavoriteArticle(String email, String slug);
 }

@@ -1,6 +1,7 @@
 package com.example.realworld.application.articles.domain;
 
 import com.example.realworld.application.articles.exception.NotFoundCommentException;
+import com.example.realworld.application.favorites.domain.FavoriteArticle;
 import com.example.realworld.application.tags.domain.Tag;
 import com.example.realworld.application.users.domain.User;
 import com.example.realworld.core.domain.BaseTimeEntity;
@@ -16,10 +17,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.CascadeType.REMOVE;
+
 @Getter
-@Entity
 @ToString
 @Table(name = "TB_ARTICLE")
+@Entity(name = "articles")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Article extends BaseTimeEntity {
 
@@ -39,32 +43,36 @@ public class Article extends BaseTimeEntity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    private boolean favorites;
+    private boolean favorited;
 
     private Integer favoritesCount;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "USER_ID", nullable = false)
     private User author;
 
-    @OneToMany
+    @OneToMany(mappedBy = "favoritedArticle", orphanRemoval = true, cascade = {PERSIST, REMOVE})
+    @ToString.Exclude
+    private final Set<FavoriteArticle> favoriteUser = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = {PERSIST, REMOVE})
     @JoinColumn(name = "COMMENT_ID")
     @ToString.Exclude
     private final Set<Comment> comments = new HashSet<>();
 
-    @OneToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "TAG_ID")
     @ToString.Exclude
     private final Set<Tag> tags = new HashSet<>();
 
     private Article(
             String title, String description, String body,
-            boolean favorites, Integer favoritesCount, User author) {
+            boolean favorited, Integer favoritesCount, User author) {
         this.slug = makeSlug(title);
         this.title = title;
         this.description = description;
         this.body = body;
-        this.favorites = favorites;
+        this.favorited = favorited;
         this.favoritesCount = favoritesCount;
         this.author = author;
     }
@@ -129,6 +137,32 @@ public class Article extends BaseTimeEntity {
         return this.slug.equals(slug);
     }
 
+    // favorite
+    public Integer getFavoritesCount() {
+        return favoriteUser.size();
+    }
+
+    public Article addFavoriteArticle(FavoriteArticle favArticle) {
+        this.favoriteUser.add(favArticle);
+        return confirmFavorited(favArticle.getFavoriteUser());
+    }
+
+    public Article deleteFavoriteArticle(FavoriteArticle favArticle) {
+        this.favoriteUser.remove(favArticle);
+        return confirmFavorited(favArticle.getFavoriteUser());
+    }
+
+    private Article confirmFavorited(User favoriteUser) {
+        favorited = this.favoriteUser.stream()
+                .anyMatch(favoriteArticle -> favoriteArticle.getFavoriteUser().equals(favoriteUser));
+        return this;
+    }
+
+    public boolean isFavorited(User favoriteUser) {
+        return this.favoriteUser.stream()
+                .anyMatch(favoriteArticle -> favoriteArticle.isMatchesUser(favoriteUser));
+    }
+
     // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션
     @Generated
     @Override
@@ -140,6 +174,7 @@ public class Article extends BaseTimeEntity {
     }
 
     // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션
+
     @Generated
     @Override
     public int hashCode() {

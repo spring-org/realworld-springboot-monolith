@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -101,23 +102,24 @@ class ArticleBusinessServiceTest {
         assertThat(actual.getSlug()).isEqualTo(expected);
     }
 
+    // 갑자기 delete 처리가 안되는 문제 발생
     @DisplayName("글 삭제 테스트")
+    @Transactional
     @Test
     void when_deleteArticle_expect_success_deleted_article() {
         // given
         String email = "seokrae@gmail.com";
         User user = User.of(email, "1234", "seokrae");
-        RequestSaveArticle saveArticle = RequestSaveArticle.of("타이틀", "설명", "바디", List.of("java"));
+        RequestSaveArticle saveArticle = RequestSaveArticle.of("삭제 타이틀", "설명", "바디", List.of("java"));
 
         // when
         userRepository.save(user);
-        ResponseArticle postArticle = articleService.postArticle(email, saveArticle);
-        articleService.deleteArticle(email, postArticle.getSlug());
+        ResponseArticle responseArticle = articleService.postArticle(email, saveArticle);
+        articleService.deleteArticle(email, responseArticle.getSlug());
 
-        Optional<Article> existsArticle = articleRepository.findBySlug(postArticle.getSlug());
-
+        Optional<Article> actualArticle = articleRepository.findBySlug(responseArticle.getSlug());
         // then
-        assertThat(existsArticle).isEmpty();
+        assertThat(actualArticle).isEmpty();
     }
 
     @DisplayName("글 삭제 실패 테스트")
@@ -141,7 +143,7 @@ class ArticleBusinessServiceTest {
     @Test
     void when_searchPage_expect_success_condition() {
         // given
-        List<Article> dummyArticles = getDummyArticles();
+        getDummyArticles();
         RequestPageCondition requestCondition = RequestPageCondition.of("", "", "seok", 20, 0);
 
         // when
@@ -180,13 +182,4 @@ class ArticleBusinessServiceTest {
         return articleRepository.saveAll(dummyArticles);
     }
 
-    @DisplayName("사용자의 글 좋아요 처리 테스트")
-    @Test
-    void when_favoriteArticle_expect_success_add_article() {
-        getDummyArticles();
-
-        ResponseArticle responseArticle = articleService.favoriteArticle("seokrae@gmail.com", makeSlug("타이틀-1"));
-
-        assertThat(responseArticle.getFavoritesCount()).isOne();
-    }
 }

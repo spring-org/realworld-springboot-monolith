@@ -1,4 +1,4 @@
-package com.example.realworld.application.users.service;
+package com.example.realworld.application.follows.service;
 
 import com.example.realworld.application.users.dto.ResponseProfile;
 

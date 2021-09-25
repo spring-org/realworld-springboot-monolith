@@ -4,6 +4,7 @@ import com.example.realworld.application.articles.domain.Comment;
 import com.example.realworld.application.articles.dto.*;
 import com.example.realworld.application.articles.service.ArticleService;
 import com.example.realworld.application.articles.service.CommentService;
+import com.example.realworld.application.favorites.service.FavoriteArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -20,6 +21,7 @@ import java.util.Set;
 public class ArticlesApi {
 
     public static final String EMAIL = "email";
+    private final FavoriteArticleService favoriteArticleService;
     private final ArticleService articleService;
     private final CommentService commentService;
 
@@ -165,7 +167,7 @@ public class ArticlesApi {
             HttpSession session, @PathVariable("slug") String slug) {
 
         String email = (String) session.getAttribute(EMAIL);
-        ResponseArticle followArticle = articleService.favoriteArticle(email, slug);
+        ResponseArticle followArticle = favoriteArticleService.favoriteArticle(email, slug);
 
         return ResponseEntity.status(HttpStatus.OK).body(followArticle);
     }
@@ -181,7 +183,7 @@ public class ArticlesApi {
             HttpSession session, @PathVariable("slug") String slug) {
 
         String email = (String) session.getAttribute(EMAIL);
-        ResponseArticle unfollowArticle = articleService.unFavoriteArticle(email, slug);
+        ResponseArticle unfollowArticle = favoriteArticleService.unFavoriteArticle(email, slug);
 
         return ResponseEntity.status(HttpStatus.OK).body(unfollowArticle);
     }

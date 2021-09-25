@@ -1,16 +1,14 @@
 package com.example.realworld.application.tags.domain;
 
-import lombok.AccessLevel;
-import lombok.Generated;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Objects;
 
 @Getter
+@ToString
 @Table(name = "TB_TAG")
-@Entity(name = "tag")
+@Entity(name = "tags")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Tag {
     @Id

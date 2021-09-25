@@ -1,5 +1,6 @@
-package com.example.realworld.application.users.domain;
+package com.example.realworld.application.follows.domain;
 
+import com.example.realworld.application.users.domain.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
