@@ -25,7 +25,7 @@ class FavoriteArticleRepositoryTest {
 
         FavoriteArticle savedFavoriteArticle = favoriteArticleRepository.save(favoriteArticle);
 
-        assertThat(savedFavoriteArticle.getFavoriteUser()).isEqualTo(author);
-        assertThat(savedFavoriteArticle.getFavoritedArticle()).isEqualTo(article);
+        assertThat(savedFavoriteArticle.user()).isEqualTo(author);
+        assertThat(savedFavoriteArticle.article()).isEqualTo(article);
     }
 }

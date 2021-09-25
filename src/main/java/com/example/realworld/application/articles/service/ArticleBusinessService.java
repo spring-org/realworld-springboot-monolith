@@ -65,7 +65,7 @@ public class ArticleBusinessService implements ArticleService {
         Article savedArticle = articleRepository.save(
                 RequestSaveArticle.toEntity(saveArticle, findUser));
 
-        findUser.postArticles(savedArticle);
+        findUser.addArticle(savedArticle);
 
         return ResponseArticle.from(savedArticle);
     }
@@ -75,7 +75,7 @@ public class ArticleBusinessService implements ArticleService {
     public ResponseArticle updateArticle(String email, String slug, RequestUpdateArticle updateArticle) {
 
         User findUser = getUser(email);
-        Article findArticle = findUser.getArticle(slug);
+        Article findArticle = findUser.getArticleBySlug(slug);
         findArticle.update(updateArticle.getTitle(), updateArticle.getDescription(), updateArticle.getBody());
 
         return ResponseArticle.from(findArticle);
@@ -86,7 +86,7 @@ public class ArticleBusinessService implements ArticleService {
     public void deleteArticle(String email, String slug) {
 
         User findUser = getUser(email);
-        Article findArticle = findUser.getArticle(slug);
+        Article findArticle = findUser.getArticleBySlug(slug);
 
         findUser.removeArticle(findArticle);
         articleRepository.delete(findArticle);

@@ -14,16 +14,13 @@ class CommentTest {
         // given
         User author = User.of("seokrae@gmail.com", "1234");
         Article article = Article.of("title", "description", "body", author);
-        Comment actualComment = Comment.of("comment write", author);
+        Comment actualComment = Comment.of("comment write", author, article);
 
         // when
-        article.postComment(actualComment);
-
+        article.addComment(actualComment);
         int actualCommentSize = article.getComments().size();
-        Comment expectedComment = article.findComment(actualComment.getBody());
 
         // then
         assertThat(actualCommentSize).isOne();
-        assertThat(actualComment.getBody()).isEqualTo(expectedComment.getBody());
     }
 }

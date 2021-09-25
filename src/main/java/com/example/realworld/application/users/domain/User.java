@@ -3,6 +3,7 @@ package com.example.realworld.application.users.domain;
 import com.example.realworld.application.articles.domain.Article;
 import com.example.realworld.application.articles.exception.NotFoundArticleException;
 import com.example.realworld.application.favorites.domain.FavoriteArticle;
+import com.example.realworld.application.favorites.exception.NotFoundFavoriteArticleException;
 import com.example.realworld.application.follows.domain.Follow;
 import com.example.realworld.application.follows.exception.NotFoundFollowException;
 import com.example.realworld.application.users.dto.RequestUpdateUser;
@@ -111,9 +112,7 @@ public class User extends BaseTimeEntity implements Serializable {
 
     // Follow
     public void follow(Follow newFollow) {
-        if (!isFollowing(newFollow.getToUser())) {
-            this.following.add(newFollow);
-        }
+        this.following.add(newFollow);
     }
 
     public void unFollow(Follow findFollow) {
@@ -134,11 +133,11 @@ public class User extends BaseTimeEntity implements Serializable {
     }
 
     // Article
-    public void postArticles(List<Article> articles) {
+    public void addArticles(List<Article> articles) {
         this.articles.addAll(articles);
     }
 
-    public void postArticles(Article article) {
+    public void addArticle(Article article) {
         this.articles.add(article);
     }
 
@@ -146,14 +145,14 @@ public class User extends BaseTimeEntity implements Serializable {
         this.articles.remove(findArticle);
     }
 
-    public Article findArticleByTitle(String title) {
-        return articles.stream()
+    public Article getArticleByTitle(String title) {
+        return this.articles.stream()
                 .filter(article -> article.isMatches(title))
-                .findAny()
+                .findFirst()
                 .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
     }
 
-    public Article getArticle(String slug) {
+    public Article getArticleBySlug(String slug) {
         return this.articles.stream()
                 .filter(article -> article.isSlugMatches(slug))
                 .findFirst()
@@ -161,21 +160,28 @@ public class User extends BaseTimeEntity implements Serializable {
     }
 
     // Favorite
-    public Article favoriteArticle(FavoriteArticle favoriteArticle) {
+    public Article favArticle(FavoriteArticle favoriteArticle) {
         this.favoriteArticles.add(favoriteArticle);
         Article article = favoriteArticle.getFavoritedArticle();
-        return article.addFavoriteArticle(favoriteArticle);
+        return article.addFavArticle(favoriteArticle);
     }
 
-    public Article unFavoriteArticle(FavoriteArticle favoriteArticle) {
+    public Article unFavArticle(FavoriteArticle favoriteArticle) {
         this.favoriteArticles.remove(favoriteArticle);
         Article article = favoriteArticle.getFavoritedArticle();
-        return article.deleteFavoriteArticle(favoriteArticle);
+        return article.removeFavArticle(favoriteArticle);
     }
 
-    public boolean isMatchesArticle(String slug) {
+    public boolean isMatchesArticleBySlug(String slug) {
         return this.favoriteArticles.stream()
-                .anyMatch(already -> already.isMatchesArticleBySlug(slug));
+                .anyMatch(favArticle -> favArticle.isMatchesArticleBySlug(slug));
+    }
+
+    public FavoriteArticle getFavArticle(String slug) {
+        return favoriteArticles.stream()
+                .filter(favArticle -> favArticle.isMatchesArticleBySlug(slug))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundFavoriteArticleException("Favorite 관계에 대한 정보가 존재하지 않습니다."));
     }
 
     // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션

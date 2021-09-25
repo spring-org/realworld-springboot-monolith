@@ -45,7 +45,7 @@ public class ArticlesApi {
      */
     @GetMapping(value = "/feed")
     public ResponseEntity<ResponseMultiArticles> feedArticle(
-            HttpSession session, @PageableDefault(value = 20, size = 10, page = 0) Pageable pageable) {
+            HttpSession session, @PageableDefault(value = 20) Pageable pageable) {
 
         String email = (String) session.getAttribute(EMAIL);
         ResponseMultiArticles feedArticles = articleService.getFeedArticles(email, pageable);
@@ -56,8 +56,8 @@ public class ArticlesApi {
     /**
      * 단일 글 조회, 인증 불필요
      *
-     * @param slug
-     * @return
+     * @param slug unique uri article
+     * @return Article
      */
     @GetMapping(value = "/{slug}")
     public ResponseEntity<ResponseArticle> getArticle(@PathVariable("slug") String slug) {
@@ -84,7 +84,7 @@ public class ArticlesApi {
     /**
      * 글 수정, 인증 필요
      *
-     * @param slug
+     * @param slug unique uri article
      * @return Article
      */
     @PutMapping(value = "/{slug}")
@@ -100,7 +100,7 @@ public class ArticlesApi {
     /**
      * 글 지우기, 인증 필요
      *
-     * @param slug
+     * @param slug unique uri article
      */
     @DeleteMapping(value = "/{slug}")
     public ResponseEntity<Void> deleteArticle(
@@ -115,7 +115,7 @@ public class ArticlesApi {
     /**
      * 글에 커멘트 달기, 인증 필요
      *
-     * @return
+     * @return single comment
      */
     @PostMapping(value = "/{slug}/comments")
     public ResponseEntity<ResponseSingleComment> addCommentsToArticle(
@@ -143,15 +143,15 @@ public class ArticlesApi {
     /**
      * 커멘트 삭제, 인증 필요
      *
-     * @param slug
-     * @param id
+     * @param slug unique uri article
+     * @param commentId comment PK
      */
     @DeleteMapping(value = "/{slug}/comments/{id}")
     public ResponseEntity<Void> deleteComments(
-            HttpSession session, @PathVariable("slug") String slug, @PathVariable("id") Long id) {
+            HttpSession session, @PathVariable("slug") String slug, @PathVariable("id") Long commentId) {
 
         String email = (String) session.getAttribute(EMAIL);
-        commentService.deleteComment(email, slug, id);
+        commentService.deleteComment(email, slug, commentId);
 
         return ResponseEntity.noContent().build();
     }
@@ -159,7 +159,7 @@ public class ArticlesApi {
     /**
      * 글 좋아요 요청, 인증 필요
      *
-     * @param slug
+     * @param slug unique uri article
      * @return Article
      */
     @PostMapping(value = "/{slug}/favorite")
@@ -175,7 +175,7 @@ public class ArticlesApi {
     /**
      * 글 좋아요 취소, 인증 필요
      *
-     * @param slug
+     * @param slug unique uri article
      * @return Article
      */
     @DeleteMapping(value = "/{slug}/favorite")

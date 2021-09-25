@@ -32,16 +32,7 @@ public class ResponseArticle {
     private ResponseProfile user;
 
     private ResponseArticle(Article article, ResponseProfile user) {
-        this.slug = article.getSlug();
-        this.title = article.getTitle();
-        this.description = article.getDescription();
-        this.body = article.getBody();
-        this.tagList = article.getTags();
-        this.createdAt = article.getCreatedAt();
-        this.updatedAt = article.getUpdatedAt();
-        this.favorited = article.isFavorited();
-        this.favoritesCount = article.getFavoritesCount();
-        this.user = user;
+        this(article, user, null);
     }
 
     private ResponseArticle(Article article, ResponseProfile user, User favoriteUser) {
@@ -52,8 +43,8 @@ public class ResponseArticle {
         this.tagList = article.getTags();
         this.createdAt = article.getCreatedAt();
         this.updatedAt = article.getUpdatedAt();
-        this.favorited = article.isFavorited(favoriteUser);
-        this.favoritesCount = article.getFavoritesCount();
+        this.favorited = article.containsFavUser(favoriteUser);
+        this.favoritesCount = article.getFavUserCount();
         this.user = user;
     }
 

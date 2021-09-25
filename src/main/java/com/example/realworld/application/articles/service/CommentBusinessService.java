@@ -4,7 +4,6 @@ import com.example.realworld.application.articles.domain.Article;
 import com.example.realworld.application.articles.domain.Comment;
 import com.example.realworld.application.articles.dto.RequestSaveComment;
 import com.example.realworld.application.articles.exception.NotFoundArticleException;
-import com.example.realworld.application.articles.exception.NotFoundCommentException;
 import com.example.realworld.application.articles.repository.ArticleRepository;
 import com.example.realworld.application.articles.repository.CommentRepository;
 import com.example.realworld.application.users.domain.User;
@@ -28,40 +27,37 @@ public class CommentBusinessService implements CommentService {
 
     @Override
     public Set<Comment> getCommentsByArticle(String slug) {
-        Article article = articleRepository.findBySlug(slug)
-                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
 
-        return article.getComments();
+        Article findArticle = getArticle(slug);
+
+        return findArticle.getComments();
     }
 
     @Transactional
     @Override
-    public Comment postComment(String email, String slug, RequestSaveComment saveComment) {
+    public Comment postComment(final String email, final String slug, final RequestSaveComment saveComment) {
 
         User findUser = getUser(email);
+        Article article = getArticle(slug);
 
-        Article article = findUser.getArticle(slug);
-        Comment savedComment = commentRepository.save(RequestSaveComment.of(saveComment, findUser));
-        article.postComment(savedComment);
+        Comment savedComment = commentRepository.save(RequestSaveComment.of(saveComment, findUser, article));
+        article.addComment(savedComment);
 
         return savedComment;
     }
 
     @Transactional
     @Override
-    public void deleteComment(String email, String slug, Long id) {
+    public void deleteComment(final String email, final String slug, final Long commentId) {
         User findUser = getUser(email);
-        Article findArticle = findUser.getArticle(slug);
+        Article findArticle = getArticle(slug);
 
-        Comment findComment = findArticle.getComments().stream()
-                .filter(comment -> comment.isMatches(id))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundCommentException("존재하지 않는 커멘트입니다."));
+        Comment findComment = findArticle.getComments(commentId);
 
         boolean isAuth = findComment.isAuthor(findUser);
         if (isAuth) {
             commentRepository.delete(findComment);
-            findArticle.deleteComment(findComment);
+            findArticle.removeComment(findComment);
         } else {
             throw new UnauthorizedUserException("권한이 존재하지 않습니다.");
         }
@@ -70,5 +66,10 @@ public class CommentBusinessService implements CommentService {
     private User getUser(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundUserException("존재하지 않는 사용자입니다."));
+    }
+
+    private Article getArticle(String slug) {
+        return articleRepository.findBySlug(slug)
+                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
     }
 }

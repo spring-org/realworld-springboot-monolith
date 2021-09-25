@@ -6,7 +6,7 @@ import com.example.realworld.application.articles.exception.DuplicateFavoriteArt
 import com.example.realworld.application.articles.exception.NotFoundArticleException;
 import com.example.realworld.application.articles.repository.ArticleRepository;
 import com.example.realworld.application.favorites.domain.FavoriteArticle;
-import com.example.realworld.application.favorites.exception.NotFoundFavoriteArticleException;
+import com.example.realworld.application.favorites.exception.NotYetFavoriteArticleException;
 import com.example.realworld.application.favorites.repository.FavoriteArticleRepository;
 import com.example.realworld.application.users.domain.User;
 import com.example.realworld.application.users.exception.NotFoundUserException;
@@ -32,35 +32,33 @@ public class FavoriteArticleBusinessService implements FavoriteArticleService {
         User findUser = findUser(email);
         Article findArticle = findArticleByEmail(slug);
 
-        boolean existsFavorite = findUser.isMatchesArticle(slug);
+        boolean existsFavorite = findUser.isMatchesArticleBySlug(slug);
 
         if (existsFavorite) {
             throw new DuplicateFavoriteArticleException("이미 Favorite 관계이다.");
         }
 
         FavoriteArticle savedFavoriteArticle = favoriteArticleRepository.save(FavoriteArticle.of(findUser, findArticle));
-        Article resultArticle = findUser.favoriteArticle(savedFavoriteArticle);
+        Article resultArticle = findUser.favArticle(savedFavoriteArticle);
 
         return ResponseArticle.of(resultArticle, findUser);
     }
 
+    @Transactional
     @Override
     public ResponseArticle unFavoriteArticle(String email, String slug) {
         // 존재하는 사용자와 글이 있으며, 좋아요 관계가 성립되는 경우
         User findUser = findUser(email);
 
-        boolean existsFavorite = findUser.isMatchesArticle(slug);
+        boolean existsFavorite = findUser.isMatchesArticleBySlug(slug);
 
         if (!existsFavorite) {
-            throw new DuplicateFavoriteArticleException("Favorite 관계가 아닙니다.");
+            throw new NotYetFavoriteArticleException("Favorite 관계가 아닙니다.");
         }
 
-        FavoriteArticle alreadyFavoriteArticle = findUser.getFavoriteArticles().stream()
-                .filter(favoriteArticle -> favoriteArticle.isMatchesArticleBySlug(slug))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundFavoriteArticleException("Favorite 관계에 대한 정보가 존재하지 않습니다."));
-
-        Article resultArticle = findUser.unFavoriteArticle(alreadyFavoriteArticle);
+        FavoriteArticle alreadyFavoriteArticle = findUser.getFavArticle(slug);
+        Article resultArticle = findUser.unFavArticle(alreadyFavoriteArticle);
+        favoriteArticleRepository.delete(alreadyFavoriteArticle);
 
         return ResponseArticle.of(resultArticle, findUser);
     }

@@ -28,7 +28,7 @@ import static javax.persistence.CascadeType.REMOVE;
 public class Article extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ARTICLE_ID", nullable = false)
     private Long id;
 
@@ -105,18 +105,18 @@ public class Article extends BaseTimeEntity {
     }
 
     // Comment
-    public void postComment(Comment comment) {
+    public void addComment(Comment comment) {
         this.comments.add(comment);
     }
 
-    public void postComments(List<Comment> comments) {
+    public void addComments(List<Comment> comments) {
         this.comments.addAll(comments);
     }
 
-    public Comment findComment(String body) {
+    public Comment getComments(Long commentId) {
         return this.comments.stream()
-                .filter(comment -> comment.getBody().equals(body))
-                .findAny()
+                .filter(comment -> comment.isMatches(commentId))
+                .findFirst()
                 .orElseThrow(() -> new NotFoundCommentException("존재하지 않는 커멘트입니다."));
     }
 
@@ -124,7 +124,7 @@ public class Article extends BaseTimeEntity {
         return this.title.equals(title);
     }
 
-    public void deleteComment(Comment savedComment) {
+    public void removeComment(Comment savedComment) {
         this.comments.remove(savedComment);
     }
 
@@ -138,27 +138,27 @@ public class Article extends BaseTimeEntity {
     }
 
     // favorite
-    public Integer getFavoritesCount() {
+    public Integer getFavUserCount() {
         return favoriteUser.size();
     }
 
-    public Article addFavoriteArticle(FavoriteArticle favArticle) {
+    public Article addFavArticle(FavoriteArticle favArticle) {
         this.favoriteUser.add(favArticle);
-        return confirmFavorited(favArticle.getFavoriteUser());
+        return updateFavFlag(favArticle.user());
     }
 
-    public Article deleteFavoriteArticle(FavoriteArticle favArticle) {
+    public Article removeFavArticle(FavoriteArticle favArticle) {
         this.favoriteUser.remove(favArticle);
-        return confirmFavorited(favArticle.getFavoriteUser());
+        return updateFavFlag(favArticle.user());
     }
 
-    private Article confirmFavorited(User favoriteUser) {
+    private Article updateFavFlag(User favoriteUser) {
         favorited = this.favoriteUser.stream()
-                .anyMatch(favoriteArticle -> favoriteArticle.getFavoriteUser().equals(favoriteUser));
+                .anyMatch(favoriteArticle -> favoriteArticle.isMatchesUser(favoriteUser));
         return this;
     }
 
-    public boolean isFavorited(User favoriteUser) {
+    public boolean containsFavUser(User favoriteUser) {
         return this.favoriteUser.stream()
                 .anyMatch(favoriteArticle -> favoriteArticle.isMatchesUser(favoriteUser));
     }
