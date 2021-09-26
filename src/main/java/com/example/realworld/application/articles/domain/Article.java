@@ -55,13 +55,11 @@ public class Article extends BaseTimeEntity {
     @ToString.Exclude
     private final Set<FavoriteArticle> favoriteUser = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = {PERSIST, REMOVE})
-    @JoinColumn(name = "COMMENT_ID")
+    @OneToMany(mappedBy = "article", fetch = FetchType.LAZY, orphanRemoval = true, cascade = {PERSIST, REMOVE})
     @ToString.Exclude
     private final Set<Comment> comments = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "TAG_ID")
     @ToString.Exclude
     private final Set<Tag> tags = new HashSet<>();
 
