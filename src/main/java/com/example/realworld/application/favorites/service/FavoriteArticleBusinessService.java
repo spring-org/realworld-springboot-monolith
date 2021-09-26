@@ -1,16 +1,14 @@
 package com.example.realworld.application.favorites.service;
 
 import com.example.realworld.application.articles.domain.Article;
+import com.example.realworld.application.articles.domain.ArticleDomainService;
 import com.example.realworld.application.articles.dto.ResponseArticle;
 import com.example.realworld.application.articles.exception.DuplicateFavoriteArticleException;
-import com.example.realworld.application.articles.exception.NotFoundArticleException;
-import com.example.realworld.application.articles.repository.ArticleRepository;
 import com.example.realworld.application.favorites.domain.FavoriteArticle;
 import com.example.realworld.application.favorites.exception.NotYetFavoriteArticleException;
 import com.example.realworld.application.favorites.repository.FavoriteArticleRepository;
 import com.example.realworld.application.users.domain.User;
-import com.example.realworld.application.users.exception.NotFoundUserException;
-import com.example.realworld.application.users.repository.UserRepository;
+import com.example.realworld.application.users.domain.UserDomainService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,22 +18,21 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class FavoriteArticleBusinessService implements FavoriteArticleService {
 
-    private final UserRepository userRepository;
-    private final ArticleRepository articleRepository;
+    private final UserDomainService userDomainService;
     private final FavoriteArticleRepository favoriteArticleRepository;
-
+    private final ArticleDomainService articleDomainService;
 
     @Transactional
     @Override
     public ResponseArticle favoriteArticle(String email, String slug) {
 
-        User findUser = findUser(email);
-        Article findArticle = findArticleByEmail(slug);
+        User findUser = userDomainService.findUserByEmail(email);
+        Article findArticle = articleDomainService.getArticleOrElseThrow(slug);
 
         boolean existsFavorite = findUser.isMatchesArticleBySlug(slug);
 
         if (existsFavorite) {
-            throw new DuplicateFavoriteArticleException("이미 Favorite 관계이다.");
+            throw new DuplicateFavoriteArticleException("이미 좋아요 누른 글입니다.");
         }
 
         FavoriteArticle savedFavoriteArticle = favoriteArticleRepository.save(FavoriteArticle.of(findUser, findArticle));
@@ -48,12 +45,12 @@ public class FavoriteArticleBusinessService implements FavoriteArticleService {
     @Override
     public ResponseArticle unFavoriteArticle(String email, String slug) {
         // 존재하는 사용자와 글이 있으며, 좋아요 관계가 성립되는 경우
-        User findUser = findUser(email);
+        User findUser = userDomainService.findUserByEmail(email);
 
         boolean existsFavorite = findUser.isMatchesArticleBySlug(slug);
 
         if (!existsFavorite) {
-            throw new NotYetFavoriteArticleException("Favorite 관계가 아닙니다.");
+            throw new NotYetFavoriteArticleException("좋아요 누른 글이 아닙니다.");
         }
 
         FavoriteArticle alreadyFavoriteArticle = findUser.getFavArticle(slug);
@@ -61,15 +58,5 @@ public class FavoriteArticleBusinessService implements FavoriteArticleService {
         favoriteArticleRepository.delete(alreadyFavoriteArticle);
 
         return ResponseArticle.of(resultArticle, findUser);
-    }
-
-    private User findUser(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundUserException("존재하지 않는 사용자 입니다."));
-    }
-
-    private Article findArticleByEmail(String slug) {
-        return articleRepository.findBySlug(slug)
-                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 팔로우 관계입니다."));
     }
 }

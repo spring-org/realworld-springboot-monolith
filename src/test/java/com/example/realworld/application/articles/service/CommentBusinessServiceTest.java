@@ -1,7 +1,7 @@
 package com.example.realworld.application.articles.service;
 
-import com.example.realworld.application.articles.domain.Article;
 import com.example.realworld.application.articles.dto.*;
+import com.example.realworld.application.articles.exception.NotFoundCommentException;
 import com.example.realworld.application.articles.repository.ArticleRepository;
 import com.example.realworld.application.articles.repository.CommentRepository;
 import com.example.realworld.application.users.domain.User;
@@ -111,7 +111,7 @@ class CommentBusinessServiceTest {
         assertThat(commentsByArticle.getCommentsSize()).isOne();
     }
 
-    @DisplayName("특정 글의 커멘트 삭제 예외 테스트")
+    @DisplayName("특정 글의 커멘트 삭제 (권한 예외) 테스트")
     @Test
     void when_deleteComment_expect_fail_unAuthorization_exception() {
         // given
@@ -132,5 +132,28 @@ class CommentBusinessServiceTest {
         // then
         assertThatExceptionOfType(UnauthorizedUserException.class)
                 .isThrownBy(() -> commentService.deleteComment(authEmail, slug, id));
+    }
+
+    @DisplayName("특정 글의 커멘트 삭제 (존재하지 않는 커멘트) 테스트")
+    @Test
+    void when_deleteComment_expect_fail_not_exists_comment_exception() {
+        // given
+        String authEmail = "seok@gmail.com";
+        User authorUser = User.of(authEmail, "1234", "seok");
+        userRepository.save(authorUser);
+
+        String otherUserEmail = "other@gmail.com";
+        User otherUser = User.of(otherUserEmail, "1234", "otherName");
+        userRepository.save(otherUser);
+        ResponseArticle responseArticle = articleService.postArticle(authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", List.of("Text")));
+
+        // when
+        String slug = responseArticle.getSlug();
+        commentService.postComment(otherUserEmail, slug, RequestSaveComment.from("커멘트 내용1")).getId();
+        commentService.postComment(otherUserEmail, slug, RequestSaveComment.from("커멘트 내용2"));
+        long notExistsCommentId = 2L;
+        // then
+        assertThatExceptionOfType(NotFoundCommentException.class)
+                .isThrownBy(() -> commentService.deleteComment(authEmail, slug, notExistsCommentId));
     }
 }

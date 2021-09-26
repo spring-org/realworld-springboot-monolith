@@ -1,31 +1,30 @@
 package com.example.realworld.application.articles.service;
 
 import com.example.realworld.application.articles.domain.Article;
+import com.example.realworld.application.articles.domain.ArticleDomainService;
 import com.example.realworld.application.articles.dto.*;
-import com.example.realworld.application.articles.exception.NotFoundArticleException;
 import com.example.realworld.application.articles.repository.ArticleRepository;
-import com.example.realworld.application.follows.domain.Follow;
 import com.example.realworld.application.users.domain.User;
+import com.example.realworld.application.users.domain.UserDomainService;
 import com.example.realworld.application.users.exception.NotFoundUserException;
-import com.example.realworld.application.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ArticleBusinessService implements ArticleService {
 
-    private final UserRepository userRepository;
+    private final UserDomainService userDomainService;
     private final ArticleRepository articleRepository;
+    private final ArticleDomainService articleDomainService;
 
     // 조건에 따른 전체 글 리스트를 조회?
+    @Transactional(readOnly = true)
     @Override
     public ResponseMultiArticles searchPageArticles(RequestPageCondition condition) {
 
@@ -35,24 +34,25 @@ public class ArticleBusinessService implements ArticleService {
     }
 
     // 내가 follow한 사용자의 글을 페이징하여 조회( 커스텀 쿼리가 필요한 듯 )
+    @Transactional(readOnly = true)
     @Override
     public ResponseMultiArticles getFeedArticles(String email, Pageable pageable) {
 
-        User findUser = getUserOrElseThrow(email);
-        Set<Follow> following = findUser.getFollowing();
+        boolean exists = userDomainService.existsByEmail(email);
+        if (!exists) {
+            throw new NotFoundUserException("존재하지 않는 사용자입니다.");
+        }
+        // User(1) -> Follow(N) -> User(N) -> Article(N)
+        List<Article> articles = articleRepository.searchPageFeed(email, pageable);
 
-        List<Article> collect = following.stream()
-                .map(Follow::getToUser)
-                .flatMap(user -> user.getArticles().stream())
-                .collect(Collectors.toList());
-
-        return ResponseMultiArticles.of(collect);
+        return ResponseMultiArticles.of(articles);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public ResponseArticle getArticle(String slug) {
 
-        Article findArticle = getArticleOrElseThrow(slug);
+        Article findArticle = articleDomainService.getArticleOrElseThrow(slug);
 
         return ResponseArticle.from(findArticle);
     }
@@ -61,7 +61,7 @@ public class ArticleBusinessService implements ArticleService {
     @Override
     public ResponseArticle postArticle(String email, RequestSaveArticle saveArticle) {
 
-        User findUser = getUserOrElseThrow(email);
+        User findUser = userDomainService.findUserByEmail(email);
         Article savedArticle = articleRepository.save(
                 RequestSaveArticle.toEntity(saveArticle, findUser));
 
@@ -74,7 +74,7 @@ public class ArticleBusinessService implements ArticleService {
     @Override
     public ResponseArticle updateArticle(String email, String slug, RequestUpdateArticle updateArticle) {
 
-        User findUser = getUserOrElseThrow(email);
+        User findUser = userDomainService.findUserByEmail(email);
         Article findArticle = findUser.getArticleBySlug(slug);
         findArticle.update(updateArticle.getTitle(), updateArticle.getDescription(), updateArticle.getBody());
 
@@ -85,20 +85,10 @@ public class ArticleBusinessService implements ArticleService {
     @Override
     public void deleteArticle(String email, String slug) {
 
-        User findUser = getUserOrElseThrow(email);
+        User findUser = userDomainService.findUserByEmail(email);
         Article findArticle = findUser.getArticleBySlug(slug);
 
         findUser.removeArticle(findArticle);
         articleRepository.delete(findArticle);
-    }
-
-    private Article getArticleOrElseThrow(String slug) {
-        return articleRepository.findBySlug(slug)
-                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
-    }
-
-    private User getUserOrElseThrow(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundUserException("존재하지 않는 사용자입니다."));
     }
 }

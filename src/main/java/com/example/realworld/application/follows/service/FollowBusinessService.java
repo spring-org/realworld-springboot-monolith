@@ -5,9 +5,8 @@ import com.example.realworld.application.follows.exception.DuplicateFollowExcept
 import com.example.realworld.application.follows.exception.NotFoundFollowException;
 import com.example.realworld.application.follows.repository.FollowRepository;
 import com.example.realworld.application.users.domain.User;
+import com.example.realworld.application.users.domain.UserDomainService;
 import com.example.realworld.application.users.dto.ResponseProfile;
-import com.example.realworld.application.users.exception.NotFoundUserException;
-import com.example.realworld.application.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,15 +16,15 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class FollowBusinessService implements FollowService {
 
-    private final UserRepository userRepository;
     private final FollowRepository followRepository;
+    private final UserDomainService userDomainService;
 
     @Transactional
     @Override
     public ResponseProfile followUser(String fromEmail, String toEmail) {
 
-        User fromUser = findUser(fromEmail);
-        User toUser = findUser(toEmail);
+        User fromUser = userDomainService.findUserByEmail(fromEmail);
+        User toUser = userDomainService.findUserByEmail(toEmail);
 
         if (fromUser.isFollowing(toUser)) {
             throw new DuplicateFollowException("이미 팔로잉 중입니다.");
@@ -40,8 +39,8 @@ public class FollowBusinessService implements FollowService {
     @Transactional
     @Override
     public ResponseProfile unFollow(String fromEmail, String toEmail) {
-        User fromUser = findUser(fromEmail);
-        User toUser = findUser(toEmail);
+        User fromUser = userDomainService.findUserByEmail(fromEmail);
+        User toUser = userDomainService.findUserByEmail(toEmail);
 
         if (fromUser.isFollowing(toUser)) {
             Follow findFollow = fromUser.findFollowing(toUser);
@@ -52,10 +51,4 @@ public class FollowBusinessService implements FollowService {
         }
         return ResponseProfile.of(fromUser, toUser);
     }
-
-    private User findUser(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundUserException("존재하지 않는 사용자입니다."));
-    }
-
 }

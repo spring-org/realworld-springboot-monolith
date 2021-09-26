@@ -181,5 +181,4 @@ class ArticleBusinessServiceTest {
                 .collect(Collectors.toList());
         return articleRepository.saveAll(dummyArticles);
     }
-
 }
