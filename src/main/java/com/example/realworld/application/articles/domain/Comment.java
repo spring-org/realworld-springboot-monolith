@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
-@Entity(name = "comments")
 @ToString
+@Entity(name = "comments")
 @Table(name = "TB_COMMENT")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Comment extends BaseTimeEntity {

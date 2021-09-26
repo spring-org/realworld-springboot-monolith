@@ -30,7 +30,7 @@ class UserTest {
         User expected = createUser("seokrae@gmail.com");
 
         // then
-        assertThat(actual.getEmail()).isEqualTo(expected.getEmail());
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("사용자 엔티티 비교 실패 테스트")
@@ -43,6 +43,6 @@ class UserTest {
         User expected = createUser("seok@gmail.com");
 
         // then
-        assertThat(actual.getEmail()).isNotEqualTo(expected.getEmail());
+        assertThat(actual).isNotEqualTo(expected);
     }
 }

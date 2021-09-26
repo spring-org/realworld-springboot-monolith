@@ -38,7 +38,7 @@ public class ArticleBusinessService implements ArticleService {
     @Override
     public ResponseMultiArticles getFeedArticles(String email, Pageable pageable) {
 
-        User findUser = getUser(email);
+        User findUser = getUserOrElseThrow(email);
         Set<Follow> following = findUser.getFollowing();
 
         List<Article> collect = following.stream()
@@ -52,7 +52,7 @@ public class ArticleBusinessService implements ArticleService {
     @Override
     public ResponseArticle getArticle(String slug) {
 
-        Article findArticle = getOrElseThrow(slug);
+        Article findArticle = getArticleOrElseThrow(slug);
 
         return ResponseArticle.from(findArticle);
     }
@@ -61,7 +61,7 @@ public class ArticleBusinessService implements ArticleService {
     @Override
     public ResponseArticle postArticle(String email, RequestSaveArticle saveArticle) {
 
-        User findUser = getUser(email);
+        User findUser = getUserOrElseThrow(email);
         Article savedArticle = articleRepository.save(
                 RequestSaveArticle.toEntity(saveArticle, findUser));
 
@@ -74,7 +74,7 @@ public class ArticleBusinessService implements ArticleService {
     @Override
     public ResponseArticle updateArticle(String email, String slug, RequestUpdateArticle updateArticle) {
 
-        User findUser = getUser(email);
+        User findUser = getUserOrElseThrow(email);
         Article findArticle = findUser.getArticleBySlug(slug);
         findArticle.update(updateArticle.getTitle(), updateArticle.getDescription(), updateArticle.getBody());
 
@@ -85,19 +85,19 @@ public class ArticleBusinessService implements ArticleService {
     @Override
     public void deleteArticle(String email, String slug) {
 
-        User findUser = getUser(email);
+        User findUser = getUserOrElseThrow(email);
         Article findArticle = findUser.getArticleBySlug(slug);
 
         findUser.removeArticle(findArticle);
         articleRepository.delete(findArticle);
     }
 
-    private Article getOrElseThrow(String slug) {
+    private Article getArticleOrElseThrow(String slug) {
         return articleRepository.findBySlug(slug)
                 .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
     }
 
-    private User getUser(String email) {
+    private User getUserOrElseThrow(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundUserException("존재하지 않는 사용자입니다."));
     }

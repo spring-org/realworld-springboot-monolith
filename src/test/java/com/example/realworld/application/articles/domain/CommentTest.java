@@ -4,6 +4,8 @@ import com.example.realworld.application.users.domain.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CommentTest {
@@ -18,9 +20,11 @@ class CommentTest {
 
         // when
         article.addComment(actualComment);
-        int actualCommentSize = article.getComments().size();
+        Set<Comment> comments = article.getComments();
+        int actualCommentSize = comments.size();
 
         // then
         assertThat(actualCommentSize).isOne();
+        assertThat(comments.contains(actualComment)).isTrue();
     }
 }

@@ -1,6 +1,5 @@
 package com.example.realworld.application.articles.api;
 
-import com.example.realworld.application.articles.domain.Comment;
 import com.example.realworld.application.articles.dto.*;
 import com.example.realworld.application.articles.service.ArticleService;
 import com.example.realworld.application.articles.service.CommentService;
@@ -13,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/articles")
@@ -122,9 +120,9 @@ public class ArticlesApi {
             HttpSession session, @PathVariable("slug") String slug, RequestSaveComment saveComment) {
 
         String email = (String) session.getAttribute(EMAIL);
-        Comment savedComment = commentService.postComment(email, slug, saveComment);
+        ResponseSingleComment savedComment = commentService.postComment(email, slug, saveComment);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseSingleComment.of(savedComment));
+        return ResponseEntity.status(HttpStatus.OK).body(savedComment);
     }
 
     /**
@@ -133,9 +131,9 @@ public class ArticlesApi {
      * @return multiple comments
      */
     @GetMapping(value = "/{slug}/comments")
-    public ResponseEntity<Set<Comment>> getCommentsFromAnArticle(@PathVariable("slug") String slug) {
+    public ResponseEntity<ResponseMultiComments> getCommentsFromAnArticle(@PathVariable("slug") String slug) {
 
-        Set<Comment> comments = commentService.getCommentsByArticle(slug);
+        ResponseMultiComments comments = commentService.getCommentsByArticle(slug);
 
         return ResponseEntity.status(HttpStatus.OK).body(comments);
     }
