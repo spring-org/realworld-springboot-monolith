@@ -1,8 +1,6 @@
 package com.example.realworld.application.users.persistence;
 
-import com.example.realworld.application.articles.exception.NotFoundArticleException;
 import com.example.realworld.application.articles.persistence.Article;
-import com.example.realworld.application.favorites.exception.NotFoundFavoriteArticleException;
 import com.example.realworld.application.favorites.persistence.FavoriteArticle;
 import com.example.realworld.application.follows.exception.NotFoundFollowException;
 import com.example.realworld.application.follows.persistence.Follow;
@@ -15,10 +13,7 @@ import org.springframework.util.StringUtils;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.CascadeType.REMOVE;
@@ -145,30 +140,28 @@ public class User extends BaseTimeEntity implements Serializable {
         this.articles.remove(findArticle);
     }
 
-    public Article getArticleByTitle(String title) {
+    public Optional<Article> getArticleByTitle(String title) {
         return this.articles.stream()
                 .filter(article -> article.isMatches(title))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
+                .findFirst();
     }
 
-    public Article getArticleBySlug(String slug) {
+    public Optional<Article> getArticleBySlug(String slug) {
         return this.articles.stream()
                 .filter(article -> article.isSlugMatches(slug))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
+                .findFirst();
     }
 
     // Favorite
     public Article favArticle(FavoriteArticle favoriteArticle) {
         this.favoriteArticles.add(favoriteArticle);
-        Article article = favoriteArticle.getFavoritedArticle();
+        Article article = favoriteArticle.article();
         return article.addFavArticle(favoriteArticle);
     }
 
     public Article unFavArticle(FavoriteArticle favoriteArticle) {
         this.favoriteArticles.remove(favoriteArticle);
-        Article article = favoriteArticle.getFavoritedArticle();
+        Article article = favoriteArticle.article();
         return article.removeFavArticle(favoriteArticle);
     }
 
@@ -177,11 +170,11 @@ public class User extends BaseTimeEntity implements Serializable {
                 .anyMatch(favArticle -> favArticle.isMatchesArticleBySlug(slug));
     }
 
-    public FavoriteArticle getFavArticle(String slug) {
-        return favoriteArticles.stream()
+    public Optional<FavoriteArticle> getFavArticle(String slug) {
+        return this.favoriteArticles.stream()
                 .filter(favArticle -> favArticle.isMatchesArticleBySlug(slug))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundFavoriteArticleException("Favorite 관계에 대한 정보가 존재하지 않습니다."));
+                .findFirst();
+
     }
 
     // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션

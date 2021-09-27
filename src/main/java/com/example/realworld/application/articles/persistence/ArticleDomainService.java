@@ -2,11 +2,11 @@ package com.example.realworld.application.articles.persistence;
 
 import com.example.realworld.application.articles.exception.NotFoundArticleException;
 import com.example.realworld.application.articles.persistence.repository.ArticleRepository;
+import com.example.realworld.core.annotations.DomainService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+@DomainService
 @RequiredArgsConstructor
 public class ArticleDomainService {
 

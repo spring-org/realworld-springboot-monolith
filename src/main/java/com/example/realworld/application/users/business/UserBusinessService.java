@@ -7,7 +7,6 @@ import com.example.realworld.application.users.dto.ResponseUser;
 import com.example.realworld.application.users.exception.DuplicateUserException;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.persistence.UserDomainService;
-import com.example.realworld.application.users.persistence.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,20 +18,19 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserBusinessService implements UserService {
 
-    private final UserRepository userRepository;
     private final UserDomainService userDomainService;
 
     // 사용자 저장
     @Transactional
     @Override
     public ResponseUser addUser(final RequestSaveUser saveUser) {
-        boolean existsUser = userRepository.existsByEmail(saveUser.getEmail());
+        boolean existsUser = userDomainService.existsByEmail(saveUser.getEmail());
 
         if (existsUser) {
             throw new DuplicateUserException("이미 존재하는 사용자입니다.");
         }
 
-        User savedUser = userRepository.save(RequestSaveUser.toEntity(saveUser));
+        User savedUser = userDomainService.save(RequestSaveUser.toEntity(saveUser));
         return ResponseUser.of(savedUser);
     }
 
@@ -66,7 +64,6 @@ public class UserBusinessService implements UserService {
 
     @Override
     public boolean existsUserByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .isPresent();
+        return userDomainService.existsByEmail(email);
     }
 }

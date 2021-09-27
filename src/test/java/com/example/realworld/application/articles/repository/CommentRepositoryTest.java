@@ -1,5 +1,6 @@
 package com.example.realworld.application.articles.repository;
 
+import com.example.realworld.application.articles.exception.NotFoundArticleException;
 import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.persistence.Comment;
 import com.example.realworld.application.articles.persistence.repository.ArticleRepository;
@@ -82,11 +83,12 @@ class CommentRepositoryTest {
         // when
         savedComment.update("updateBody");
 
-        // then
-        String actual = savedUser.getArticleByTitle("title")
-                .getComments(savedComment.getId()).getBody();
+        Article findArticle = savedUser.getArticleByTitle("title")
+                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
+        String body = findArticle.getComments(savedComment.getId()).getBody();
 
-        assertThat(actual).isEqualTo(savedComment.getBody());
+        // then
+        assertThat(body).isEqualTo(savedComment.getBody());
     }
 
     @DisplayName("커멘트 삭제 테스트")

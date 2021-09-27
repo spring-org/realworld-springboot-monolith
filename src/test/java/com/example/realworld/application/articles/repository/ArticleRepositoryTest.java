@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -80,9 +81,10 @@ class ArticleRepositoryTest {
         List<Article> savedArticles = articleRepository.saveAll(articles);
 
         savedUser.addArticles(savedArticles);
-
+        Optional<Article> actualArticle = savedUser.getArticleByTitle("title");
+        // then
         assertThatExceptionOfType(NotFoundArticleException.class)
-                .isThrownBy(() -> savedUser.getArticleByTitle("title"));
+                .isThrownBy(() -> actualArticle.orElseThrow(NotFoundArticleException::new));
     }
 
     @DisplayName("특정 글 정보 수정 테스트")
@@ -99,14 +101,16 @@ class ArticleRepositoryTest {
         List<Article> savedArticles = articleRepository.saveAll(articles);
         savedUser.addArticles(savedArticles);
 
-        Article article = savedUser.getArticleByTitle("title-1");
+        Article article = savedUser.getArticleByTitle("title-1")
+                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
 
         article.update("updateTitle-1", "description", "body");
 
         User findUser = userRepository.findByEmail(savedUser.getEmail())
                 .orElseThrow(() -> new NotFoundUserException("사용자가 존재하지 않습니다."));
 
-        Article updatedArticle = findUser.getArticleByTitle("updateTitle-1");
+        Article updatedArticle = findUser.getArticleByTitle("updateTitle-1")
+                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
 
         assertThat(updatedArticle.getTitle()).isEqualTo("updateTitle-1");
     }
@@ -125,14 +129,16 @@ class ArticleRepositoryTest {
         List<Article> savedArticles = articleRepository.saveAll(articles);
         savedUser.addArticles(savedArticles);
 
-        Article article = savedUser.getArticleByTitle("title-1");
+        Article article = savedUser.getArticleByTitle("title-1")
+                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
 
         article.update(null, null, null);
 
         User findUser = userRepository.findByEmail(savedUser.getEmail())
                 .orElseThrow(() -> new NotFoundUserException("사용자가 존재하지 않습니다."));
 
-        Article updatedArticle = findUser.getArticleByTitle("title-1");
+        Article updatedArticle = findUser.getArticleByTitle("title-1")
+                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
 
         assertThat(updatedArticle.getTitle()).isEqualTo("title-1");
     }

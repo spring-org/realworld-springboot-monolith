@@ -27,14 +27,13 @@ public class FavoriteArticleBusinessService implements FavoriteArticleService {
     public ResponseArticle favoriteArticle(String email, String slug) {
 
         User findUser = userDomainService.findUserByEmail(email);
-        Article findArticle = articleDomainService.getArticleOrElseThrow(slug);
-
         boolean existsFavorite = findUser.isMatchesArticleBySlug(slug);
 
         if (existsFavorite) {
             throw new DuplicateFavoriteArticleException("이미 좋아요 누른 글입니다.");
         }
 
+        Article findArticle = articleDomainService.getArticleOrElseThrow(slug);
         FavoriteArticle savedFavoriteArticle = favoriteArticleRepository.save(FavoriteArticle.of(findUser, findArticle));
         Article resultArticle = findUser.favArticle(savedFavoriteArticle);
 
@@ -46,16 +45,11 @@ public class FavoriteArticleBusinessService implements FavoriteArticleService {
     public ResponseArticle unFavoriteArticle(String email, String slug) {
         // 존재하는 사용자와 글이 있으며, 좋아요 관계가 성립되는 경우
         User findUser = userDomainService.findUserByEmail(email);
+        FavoriteArticle favoriteArticle = findUser.getFavArticle(slug)
+                .orElseThrow(() -> new NotYetFavoriteArticleException("좋아요 누른 글이 아닙니다."));
 
-        boolean existsFavorite = findUser.isMatchesArticleBySlug(slug);
-
-        if (!existsFavorite) {
-            throw new NotYetFavoriteArticleException("좋아요 누른 글이 아닙니다.");
-        }
-
-        FavoriteArticle alreadyFavoriteArticle = findUser.getFavArticle(slug);
-        Article resultArticle = findUser.unFavArticle(alreadyFavoriteArticle);
-        favoriteArticleRepository.delete(alreadyFavoriteArticle);
+        Article resultArticle = findUser.unFavArticle(favoriteArticle);
+        favoriteArticleRepository.delete(favoriteArticle);
 
         return ResponseArticle.of(resultArticle, findUser);
     }

@@ -1,6 +1,7 @@
 package com.example.realworld.application.articles.business;
 
 import com.example.realworld.application.articles.dto.*;
+import com.example.realworld.application.articles.exception.NotFoundArticleException;
 import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.persistence.ArticleDomainService;
 import com.example.realworld.application.articles.persistence.repository.ArticleRepository;
@@ -75,7 +76,8 @@ public class ArticleBusinessService implements ArticleService {
     public ResponseArticle updateArticle(String email, String slug, RequestUpdateArticle updateArticle) {
 
         User findUser = userDomainService.findUserByEmail(email);
-        Article findArticle = findUser.getArticleBySlug(slug);
+        Article findArticle = findUser.getArticleBySlug(slug)
+                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
         findArticle.update(updateArticle.getTitle(), updateArticle.getDescription(), updateArticle.getBody());
 
         return ResponseArticle.from(findArticle);
@@ -86,7 +88,8 @@ public class ArticleBusinessService implements ArticleService {
     public void deleteArticle(String email, String slug) {
 
         User findUser = userDomainService.findUserByEmail(email);
-        Article findArticle = findUser.getArticleBySlug(slug);
+        Article findArticle = findUser.getArticleBySlug(slug)
+                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
 
         findUser.removeArticle(findArticle);
         articleRepository.delete(findArticle);

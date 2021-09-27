@@ -102,6 +102,24 @@ class ArticleBusinessServiceTest {
         assertThat(actual.getSlug()).isEqualTo(expected);
     }
 
+    @DisplayName("글 수정 예외(존재하지 않는 글) 테스트")
+    @Test
+    void when_updateArticle_expect_fail_not_found_article() {
+        // given
+        String email = "seokrae@gmail.com";
+        User user = User.of(email, "1234", "seokrae");
+        RequestSaveArticle saveArticle = RequestSaveArticle.of("타이틀", "설명", "바디", List.of("java"));
+        RequestUpdateArticle updateArticle = RequestUpdateArticle.of("수정된_타이틀", "설명", "바디");
+
+        // when
+        userRepository.save(user);
+        articleService.postArticle(email, saveArticle);
+        String not_found_article_title = makeSlug("not_found_article_title");
+        // then
+        assertThatExceptionOfType(NotFoundArticleException.class)
+                .isThrownBy(() -> articleService.updateArticle(email, not_found_article_title, updateArticle));
+    }
+
     // 갑자기 delete 처리가 안되는 문제 발생
     @DisplayName("글 삭제 테스트")
     @Transactional
@@ -122,7 +140,7 @@ class ArticleBusinessServiceTest {
         assertThat(actualArticle).isEmpty();
     }
 
-    @DisplayName("글 삭제 실패 테스트")
+    @DisplayName("글 삭제 실패(존재하지 않는 글) 테스트")
     @Test
     void when_deleteArticle_expect_fail_exception() {
         // given
