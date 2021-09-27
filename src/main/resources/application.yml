@@ -28,11 +28,10 @@ spring:
       enabled: true
       path: /h2-console
 
-
 logging:
   level:
     org:
       hibernate:
-        sql: info
+        sql: debug
         type: trace
 

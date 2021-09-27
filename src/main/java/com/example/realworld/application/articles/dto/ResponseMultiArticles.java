@@ -1,12 +1,14 @@
 package com.example.realworld.application.articles.dto;
 
-import com.example.realworld.application.articles.domain.Article;
+import com.example.realworld.application.articles.persistence.Article;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
+@ToString
 public class ResponseMultiArticles {
 
     private final List<ResponseArticle> articles;
@@ -17,7 +19,7 @@ public class ResponseMultiArticles {
         this.articleCount = articleCount;
     }
 
-    public static ResponseMultiArticles of(List<Article> articles) {
+    public static ResponseMultiArticles of(final List<Article> articles) {
         List<ResponseArticle> responseArticles = articles.stream()
                 .map(ResponseArticle::from)
                 .collect(Collectors.toList());

@@ -1,8 +1,9 @@
 package com.example.realworld.application.favorites.repository;
 
-import com.example.realworld.application.articles.domain.Article;
-import com.example.realworld.application.favorites.domain.FavoriteArticle;
-import com.example.realworld.application.users.domain.User;
+import com.example.realworld.application.articles.persistence.Article;
+import com.example.realworld.application.favorites.persistence.FavoriteArticle;
+import com.example.realworld.application.favorites.persistence.repository.FavoriteArticleRepository;
+import com.example.realworld.application.users.persistence.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

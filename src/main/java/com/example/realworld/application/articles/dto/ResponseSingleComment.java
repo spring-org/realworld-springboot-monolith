@@ -1,6 +1,6 @@
 package com.example.realworld.application.articles.dto;
 
-import com.example.realworld.application.articles.domain.Comment;
+import com.example.realworld.application.articles.persistence.Comment;
 import com.example.realworld.application.users.dto.ResponseProfile;
 import lombok.Getter;
 

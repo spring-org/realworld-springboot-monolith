@@ -1,7 +1,7 @@
 package com.example.realworld.application.articles.dto;
 
-import com.example.realworld.application.articles.domain.Article;
-import com.example.realworld.application.users.domain.User;
+import com.example.realworld.application.articles.persistence.Article;
+import com.example.realworld.application.users.persistence.User;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

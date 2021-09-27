@@ -1,10 +1,11 @@
 package com.example.realworld.application.tags.repository;
 
-import com.example.realworld.application.articles.domain.Article;
-import com.example.realworld.application.articles.repository.ArticleRepository;
-import com.example.realworld.application.tags.domain.Tag;
-import com.example.realworld.application.users.domain.User;
-import com.example.realworld.application.users.repository.UserRepository;
+import com.example.realworld.application.articles.persistence.Article;
+import com.example.realworld.application.articles.persistence.repository.ArticleRepository;
+import com.example.realworld.application.tags.persistence.Tag;
+import com.example.realworld.application.tags.persistence.repository.TagRepository;
+import com.example.realworld.application.users.persistence.User;
+import com.example.realworld.application.users.persistence.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
