@@ -1,9 +1,9 @@
 package com.example.realworld.application.users.presentation;
 
-import com.example.realworld.application.follows.exception.CannotFollowException;
 import com.example.realworld.application.follows.business.FollowService;
-import com.example.realworld.application.users.dto.ResponseProfile;
+import com.example.realworld.application.follows.exception.CannotFollowException;
 import com.example.realworld.application.users.business.UserBusinessService;
+import com.example.realworld.application.users.dto.ResponseProfile;
 import com.example.realworld.core.exception.UnauthorizedUserException;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;

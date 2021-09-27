@@ -1,7 +1,7 @@
 package com.example.realworld.application.articles.persistence.repository;
 
-import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.dto.RequestPageCondition;
+import com.example.realworld.application.articles.persistence.Article;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;

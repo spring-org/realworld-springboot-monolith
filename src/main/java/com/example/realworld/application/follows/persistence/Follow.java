@@ -1,7 +1,7 @@
 package com.example.realworld.application.follows.persistence;
 
 import com.example.realworld.application.users.persistence.User;
-import com.example.realworld.core.domain.BaseTimeEntity;
+import com.example.realworld.core.persistence.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

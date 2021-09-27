@@ -1,8 +1,8 @@
 package com.example.realworld.application.users.presentation;
 
+import com.example.realworld.application.users.business.UserService;
 import com.example.realworld.application.users.dto.RequestUpdateUser;
 import com.example.realworld.application.users.dto.ResponseUser;
-import com.example.realworld.application.users.business.UserService;
 import com.example.realworld.core.exception.UnauthorizedUserException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,12 +1,12 @@
 package com.example.realworld.application.users.business;
 
-import com.example.realworld.application.users.persistence.User;
-import com.example.realworld.application.users.persistence.UserDomainService;
 import com.example.realworld.application.users.dto.RequestSaveUser;
 import com.example.realworld.application.users.dto.RequestUpdateUser;
 import com.example.realworld.application.users.dto.ResponseProfile;
 import com.example.realworld.application.users.dto.ResponseUser;
 import com.example.realworld.application.users.exception.DuplicateUserException;
+import com.example.realworld.application.users.persistence.User;
+import com.example.realworld.application.users.persistence.UserDomainService;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

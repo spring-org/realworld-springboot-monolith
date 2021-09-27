@@ -1,8 +1,8 @@
 package com.example.realworld.application.favorites.business;
 
-import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.dto.ResponseArticle;
 import com.example.realworld.application.articles.exception.DuplicateFavoriteArticleException;
+import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.persistence.repository.ArticleRepository;
 import com.example.realworld.application.favorites.exception.NotYetFavoriteArticleException;
 import com.example.realworld.application.favorites.persistence.repository.FavoriteArticleRepository;

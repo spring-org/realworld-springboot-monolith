@@ -1,13 +1,13 @@
 package com.example.realworld.application.users.persistence;
 
-import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.exception.NotFoundArticleException;
-import com.example.realworld.application.favorites.persistence.FavoriteArticle;
+import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.favorites.exception.NotFoundFavoriteArticleException;
-import com.example.realworld.application.follows.persistence.Follow;
+import com.example.realworld.application.favorites.persistence.FavoriteArticle;
 import com.example.realworld.application.follows.exception.NotFoundFollowException;
+import com.example.realworld.application.follows.persistence.Follow;
 import com.example.realworld.application.users.dto.RequestUpdateUser;
-import com.example.realworld.core.domain.BaseTimeEntity;
+import com.example.realworld.core.persistence.BaseTimeEntity;
 import lombok.*;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.util.StringUtils;

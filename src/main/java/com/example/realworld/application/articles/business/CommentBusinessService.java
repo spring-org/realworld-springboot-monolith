@@ -1,11 +1,11 @@
 package com.example.realworld.application.articles.business;
 
-import com.example.realworld.application.articles.persistence.Article;
-import com.example.realworld.application.articles.persistence.ArticleDomainService;
-import com.example.realworld.application.articles.persistence.Comment;
 import com.example.realworld.application.articles.dto.RequestSaveComment;
 import com.example.realworld.application.articles.dto.ResponseMultiComments;
 import com.example.realworld.application.articles.dto.ResponseSingleComment;
+import com.example.realworld.application.articles.persistence.Article;
+import com.example.realworld.application.articles.persistence.ArticleDomainService;
+import com.example.realworld.application.articles.persistence.Comment;
 import com.example.realworld.application.articles.persistence.repository.CommentRepository;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.persistence.UserDomainService;

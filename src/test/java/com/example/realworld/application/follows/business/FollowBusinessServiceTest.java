@@ -1,16 +1,16 @@
 package com.example.realworld.application.follows.business;
 
-import com.example.realworld.application.articles.persistence.Article;
+import com.example.realworld.application.articles.business.ArticleService;
 import com.example.realworld.application.articles.dto.RequestSaveArticle;
 import com.example.realworld.application.articles.dto.ResponseMultiArticles;
+import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.persistence.repository.ArticleRepository;
-import com.example.realworld.application.articles.business.ArticleService;
 import com.example.realworld.application.follows.exception.DuplicateFollowException;
 import com.example.realworld.application.follows.exception.NotFoundFollowException;
 import com.example.realworld.application.follows.persistence.repository.FollowRepository;
-import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.dto.ResponseProfile;
 import com.example.realworld.application.users.exception.NotFoundUserException;
+import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;

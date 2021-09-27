@@ -1,4 +1,4 @@
-package com.example.realworld.core.domain;
+package com.example.realworld.core.persistence;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;

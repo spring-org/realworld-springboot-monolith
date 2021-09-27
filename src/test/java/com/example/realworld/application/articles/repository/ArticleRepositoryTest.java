@@ -1,12 +1,12 @@
 package com.example.realworld.application.articles.repository;
 
-import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.dto.RequestPageCondition;
 import com.example.realworld.application.articles.dto.RequestSaveArticle;
 import com.example.realworld.application.articles.exception.NotFoundArticleException;
+import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.persistence.repository.ArticleRepository;
-import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.exception.NotFoundUserException;
+import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
