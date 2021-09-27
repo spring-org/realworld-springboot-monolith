@@ -1,7 +1,7 @@
 package com.example.realworld.application.users.dto;
 
-import com.example.realworld.application.users.domain.Profile;
-import com.example.realworld.application.users.domain.User;
+import com.example.realworld.application.users.persistence.Profile;
+import com.example.realworld.application.users.persistence.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 

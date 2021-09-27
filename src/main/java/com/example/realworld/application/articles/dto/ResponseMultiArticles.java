@@ -1,6 +1,6 @@
 package com.example.realworld.application.articles.dto;
 
-import com.example.realworld.application.articles.domain.Article;
+import com.example.realworld.application.articles.persistence.Article;
 import lombok.Getter;
 import lombok.ToString;
 

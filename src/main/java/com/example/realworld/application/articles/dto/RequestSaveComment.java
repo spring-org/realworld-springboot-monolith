@@ -1,8 +1,8 @@
 package com.example.realworld.application.articles.dto;
 
-import com.example.realworld.application.articles.domain.Article;
-import com.example.realworld.application.articles.domain.Comment;
-import com.example.realworld.application.users.domain.User;
+import com.example.realworld.application.articles.persistence.Article;
+import com.example.realworld.application.articles.persistence.Comment;
+import com.example.realworld.application.users.persistence.User;
 import lombok.Getter;
 
 @Getter
