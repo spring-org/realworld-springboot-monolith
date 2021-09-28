@@ -44,6 +44,7 @@ public class ArticleRepositoryImpl implements ArticleQuerydslRepository {
                 .fetch());
     }
 
+    @Override
     public List<Article> searchPageFeed(String email, Pageable pageable) {
         return Collections.unmodifiableList(queryFactory
                 .select(article)

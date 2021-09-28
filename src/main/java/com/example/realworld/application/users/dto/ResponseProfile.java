@@ -17,7 +17,7 @@ public class ResponseProfile {
     private String image;
     private boolean following;
 
-    private ResponseProfile(User author, boolean following) {
+    private ResponseProfile(final User author, final boolean following) {
         this.email = author.getEmail();
         this.userName = author.getProfile().getUserName();
         this.bio = author.getProfile().getBio();
@@ -25,11 +25,11 @@ public class ResponseProfile {
         this.following = following;
     }
 
-    public static ResponseProfile of(User fromUser) {
+    public static ResponseProfile of(final User fromUser) {
         return new ResponseProfile(fromUser, false);
     }
 
-    public static ResponseProfile of(User fromUser, User toUser) {
+    public static ResponseProfile of(final User fromUser, final User toUser) {
         return new ResponseProfile(fromUser, fromUser.isFollowing(toUser));
     }
 }

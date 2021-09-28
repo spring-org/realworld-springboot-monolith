@@ -54,4 +54,8 @@ public class Profile implements Serializable {
     public void changeBio(String bio) {
         this.bio = bio;
     }
+
+    public void changeFollowing(boolean following) {
+        this.following = following;
+    }
 }

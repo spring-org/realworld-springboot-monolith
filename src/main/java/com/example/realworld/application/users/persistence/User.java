@@ -1,6 +1,7 @@
 package com.example.realworld.application.users.persistence;
 
 import com.example.realworld.application.articles.persistence.Article;
+import com.example.realworld.application.favorites.exception.NotYetFavoriteArticleException;
 import com.example.realworld.application.favorites.persistence.FavoriteArticle;
 import com.example.realworld.application.follows.exception.NotFoundFollowException;
 import com.example.realworld.application.follows.persistence.Follow;
@@ -69,7 +70,7 @@ public class User extends BaseTimeEntity implements Serializable {
         this.token = token;
     }
 
-    // User
+    // ========================================== User
     public static User of(String email, String password) {
         return new User(email, password);
     }
@@ -86,7 +87,8 @@ public class User extends BaseTimeEntity implements Serializable {
         return this.getEmail().equals(toUser.getEmail());
     }
 
-    // profile
+    // ========================================== profile
+    // 프로필 업데이트
     public void update(RequestUpdateUser updateUser) {
         if (StringUtils.hasText(updateUser.getEmail())) {
             this.email = updateUser.getEmail();
@@ -105,76 +107,108 @@ public class User extends BaseTimeEntity implements Serializable {
         }
     }
 
-    // Follow
+    // ========================================== Follow
+    // 팔로우 추가
     public void follow(Follow newFollow) {
         this.following.add(newFollow);
+        newFollow.toUser()
+                .addFollow(newFollow);
     }
 
-    public void unFollow(Follow findFollow) {
-        this.following.remove(findFollow);
+    // 언팔
+    public void unFollow(Follow newFollow) {
+        this.following.remove(newFollow);
+        newFollow.toUser()
+                .removeFollow(newFollow);
     }
 
+    private void removeFollow(Follow newFollow) {
+        this.followers.remove(newFollow);
+        updateFollowFlag(newFollow.fromUser());
+    }
+
+    private void addFollow(Follow newFollow) {
+        this.followers.add(newFollow);
+        updateFollowFlag(newFollow.fromUser());
+    }
+
+    private void updateFollowFlag(User toUser) {
+        boolean anyMatch = this.followers.stream()
+                .anyMatch(follow -> follow.isSameToUser(toUser));
+        this.profile.changeFollowing(anyMatch);
+    }
+
+    // 팔로우 관계인지 확인
     public boolean isFollowing(User toUser) {
         return this.following.stream()
                 .anyMatch(follow -> follow.isSameToUser(toUser));
     }
 
+    // 팔로우 관계를 찾기위한 검색
     public Follow findFollowing(User toUser) {
-        return this.getFollowing()
-                .stream()
+        return this.following.stream()
                 .filter(follow -> follow.isSameToUser(toUser))
-                .findAny()
+                .findFirst()
                 .orElseThrow(() -> new NotFoundFollowException("사용자 간의 팔로우 관계가 존재하지 않습니다."));
     }
 
-    // Article
+    // ========================================== Article
+    // 글 다중 등록
     public void addArticles(List<Article> articles) {
         this.articles.addAll(articles);
     }
 
+    // 글 추가
     public void addArticle(Article article) {
         this.articles.add(article);
     }
 
+    // 글 삭제
     public void removeArticle(Article findArticle) {
         this.articles.remove(findArticle);
     }
 
+    // 글 타이틀로 조회
     public Optional<Article> getArticleByTitle(String title) {
         return this.articles.stream()
                 .filter(article -> article.isMatches(title))
                 .findFirst();
     }
 
+    // 글 Slug로 조회
     public Optional<Article> getArticleBySlug(String slug) {
         return this.articles.stream()
                 .filter(article -> article.isSlugMatches(slug))
                 .findFirst();
     }
 
-    // Favorite
-    public Article favArticle(FavoriteArticle favoriteArticle) {
-        this.favoriteArticles.add(favoriteArticle);
-        Article article = favoriteArticle.article();
-        return article.addFavArticle(favoriteArticle);
+    // ========================================== Favorite
+    // 글 좋아요 처리
+    public Article favArticle(FavoriteArticle newFavArticle) {
+        this.favoriteArticles.add(newFavArticle);
+        Article article = newFavArticle.article();
+        return article.addFavArticle(newFavArticle);
     }
 
+    // 글 좋아요 취소 처리
     public Article unFavArticle(FavoriteArticle favoriteArticle) {
         this.favoriteArticles.remove(favoriteArticle);
         Article article = favoriteArticle.article();
         return article.removeFavArticle(favoriteArticle);
     }
 
+    // 관심 글 확인
     public boolean isMatchesArticleBySlug(String slug) {
         return this.favoriteArticles.stream()
                 .anyMatch(favArticle -> favArticle.isMatchesArticleBySlug(slug));
     }
 
-    public Optional<FavoriteArticle> getFavArticle(String slug) {
+    // 관심 글 Slug로 검색
+    public FavoriteArticle getFavArticle(String slug) {
         return this.favoriteArticles.stream()
                 .filter(favArticle -> favArticle.isMatchesArticleBySlug(slug))
-                .findFirst();
-
+                .findFirst()
+                .orElseThrow(() -> new NotYetFavoriteArticleException("좋아요 누른 글이 아닙니다."));
     }
 
     // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션
