@@ -84,7 +84,7 @@ public class Article extends BaseTimeEntity {
         return String.format("%s-%s", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), title);
     }
 
-    // Article
+    // ========================================== Article
     public String author() {
         return author.getProfile().getUserName();
     }
@@ -102,7 +102,7 @@ public class Article extends BaseTimeEntity {
         }
     }
 
-    // Comment
+    // ========================================== Comment
     public void addComment(Comment comment) {
         this.comments.add(comment);
     }
@@ -126,7 +126,7 @@ public class Article extends BaseTimeEntity {
         this.comments.remove(savedComment);
     }
 
-    // Tag
+    // ========================================== Tag
     public void hashTag(Tag newTag) {
         this.tags.add(newTag);
     }
@@ -135,7 +135,7 @@ public class Article extends BaseTimeEntity {
         return this.slug.equals(slug);
     }
 
-    // favorite
+    // ========================================== Favorite
     public Integer getFavUserCount() {
         return favoriteUser.size();
     }

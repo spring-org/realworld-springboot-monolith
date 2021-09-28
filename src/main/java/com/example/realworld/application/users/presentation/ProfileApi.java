@@ -1,9 +1,9 @@
 package com.example.realworld.application.users.presentation;
 
-import com.example.realworld.application.follows.business.FollowService;
 import com.example.realworld.application.follows.exception.CannotFollowException;
-import com.example.realworld.application.users.business.UserBusinessService;
+import com.example.realworld.application.follows.service.FollowService;
 import com.example.realworld.application.users.dto.ResponseProfile;
+import com.example.realworld.application.users.service.UserBusinessService;
 import com.example.realworld.core.exception.UnauthorizedUserException;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
@@ -22,6 +22,12 @@ public class ProfileApi {
     private final UserBusinessService userService;
     private final FollowService followService;
 
+    /**
+     * 특정 사용자의 프로필 조회
+     *
+     * @param toEmail 특정 사용자의 이메일 정보
+     * @return 특정 사용자의 프로필 정보 반환
+     */
     @GetMapping(value = "/{toEmail}")
     public ResponseEntity<ResponseProfile> getProfile(
             @PathVariable("toEmail") String toEmail) {
@@ -31,6 +37,13 @@ public class ProfileApi {
         return ResponseEntity.status(HttpStatus.OK).body(responseProfile);
     }
 
+    /**
+     * 특정 사용자와 팔로우 관계 생성
+     *
+     * @param session 현재 사용자의 정보를 갖는 세션
+     * @param toEmail 특정 사용자의 이메일 정보
+     * @return 특정 사용자와의 팔로우 관계 및 프로필 정보를 반환
+     */
     @PostMapping(value = "/{toEmail}/follow")
     public ResponseEntity<ResponseProfile> postFollowUser(
             HttpSession session, @PathVariable("toEmail") String toEmail) {
@@ -43,11 +56,18 @@ public class ProfileApi {
         if (fromEmail.equals(toEmail)) {
             throw new CannotFollowException("자기 자신을 팔로우 할 수 없습니다.");
         }
-        ResponseProfile responseProfile = followService.followUser(fromEmail, toEmail);
+        ResponseProfile responseProfile = followService.follow(fromEmail, toEmail);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseProfile);
     }
 
+    /**
+     * 특정 사용자와의 팔로우 관계를 취소
+     *
+     * @param session 현재 사용자의 정보를 갖는 세션
+     * @param toEmail 특정 사용자의 이메일 정보
+     * @return 특정 사용자와의 팔로우 관계 및 프로필 정보를 반환
+     */
     @DeleteMapping(value = "/{toEmail}/follow")
     public ResponseEntity<ResponseProfile> deleteUnFollowUser(
             HttpSession session, @PathVariable("toEmail") String toEmail) {

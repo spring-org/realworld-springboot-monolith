@@ -1,9 +1,9 @@
 package com.example.realworld.application.articles.presentation;
 
-import com.example.realworld.application.articles.business.ArticleService;
-import com.example.realworld.application.articles.business.CommentService;
 import com.example.realworld.application.articles.dto.*;
-import com.example.realworld.application.favorites.business.FavoriteArticleService;
+import com.example.realworld.application.articles.service.ArticleService;
+import com.example.realworld.application.articles.service.CommentService;
+import com.example.realworld.application.favorites.service.FavoriteArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -24,9 +24,10 @@ public class ArticlesApi {
     private final CommentService commentService;
 
     /**
-     * 글 리스트, 인증 옵션
+     * 전체 글 조회
      *
-     * @return List Articles
+     * @param condition 페이징 및 조건 조회를 위한 파라미터
+     * @return 페이징 및 조건 조회 글 리스트
      */
     @GetMapping
     public ResponseEntity<ResponseMultiArticles> getArticles(RequestPageCondition condition) {
@@ -37,9 +38,11 @@ public class ArticlesApi {
     }
 
     /**
-     * 글 피드, 인증 필요
+     * Follow 한 사용자의 글(피드)들을 가져오는 인터페이스
      *
-     * @return List Articles
+     * @param session  현재 사용자의 정보
+     * @param pageable 피드 정보를 페이징 하기 위한 정보
+     * @return 피드 리스트
      */
     @GetMapping(value = "/feed")
     public ResponseEntity<ResponseMultiArticles> feedArticle(
@@ -52,13 +55,14 @@ public class ArticlesApi {
     }
 
     /**
-     * 단일 글 조회, 인증 불필요
+     * 단일 글 상세 조회
      *
-     * @param slug unique uri article
-     * @return Article
+     * @param slug 특정 글의 slug
+     * @return 특정 글을 반환
      */
     @GetMapping(value = "/{slug}")
-    public ResponseEntity<ResponseArticle> getArticle(@PathVariable("slug") String slug) {
+    public ResponseEntity<ResponseArticle> getArticle(
+            @PathVariable("slug") String slug) {
 
         ResponseArticle article = articleService.getArticle(slug);
 
@@ -66,12 +70,15 @@ public class ArticlesApi {
     }
 
     /**
-     * 글 생성, 인증 필요
+     * 글 생성
      *
-     * @return Article
+     * @param session     현재 사용자의 정보
+     * @param saveArticle 글 등록을 위한 정보
+     * @return 등록된 글 반환
      */
     @PostMapping
-    public ResponseEntity<ResponseArticle> createArticle(HttpSession session, RequestSaveArticle saveArticle) {
+    public ResponseEntity<ResponseArticle> createArticle(
+            HttpSession session, RequestSaveArticle saveArticle) {
 
         String email = (String) session.getAttribute(EMAIL);
         ResponseArticle savedArticle = articleService.postArticle(email, saveArticle);
@@ -80,10 +87,12 @@ public class ArticlesApi {
     }
 
     /**
-     * 글 수정, 인증 필요
+     * 글 수정
      *
-     * @param slug unique uri article
-     * @return Article
+     * @param session       현재 사용자의 정보
+     * @param slug          특정 글의 slug
+     * @param updateArticle 특정 글을 수정하기 위한 정보
+     * @return 수정된 글 반환
      */
     @PutMapping(value = "/{slug}")
     public ResponseEntity<ResponseArticle> updateArticle(
@@ -96,9 +105,11 @@ public class ArticlesApi {
     }
 
     /**
-     * 글 지우기, 인증 필요
+     * 글 삭제
      *
-     * @param slug unique uri article
+     * @param session 현재 사용자 정보
+     * @param slug    특정 글의 slug
+     * @return TODO 삭제 처리 후 어떤 내용을 반환?
      */
     @DeleteMapping(value = "/{slug}")
     public ResponseEntity<Void> deleteArticle(
@@ -111,9 +122,12 @@ public class ArticlesApi {
     }
 
     /**
-     * 글에 커멘트 달기, 인증 필요
+     * 특정 글에 커멘트 등록
      *
-     * @return single comment
+     * @param session     현재 사용자의 정보
+     * @param slug        특정 글의 Slug
+     * @param saveComment 커멘트 등록을 위한 정보
+     * @return 등록된 커멘트의 정보
      */
     @PostMapping(value = "/{slug}/comments")
     public ResponseEntity<ResponseSingleComment> addCommentsToArticle(
@@ -126,9 +140,10 @@ public class ArticlesApi {
     }
 
     /**
-     * 글에 달린 커멘트 가져오기, 인증 옵션
+     * 특정 글의 모든 커멘트를 조회
      *
-     * @return multiple comments
+     * @param slug 특정 글의 Slug
+     * @return 특정 글의 모든 커멘트를 반환
      */
     @GetMapping(value = "/{slug}/comments")
     public ResponseEntity<ResponseMultiComments> getCommentsFromAnArticle(@PathVariable("slug") String slug) {
@@ -139,10 +154,12 @@ public class ArticlesApi {
     }
 
     /**
-     * 커멘트 삭제, 인증 필요
+     * 커멘트 삭제
      *
-     * @param slug      unique uri article
-     * @param commentId comment PK
+     * @param session   현재 사용자의 정보
+     * @param slug      특정 글의 Slug
+     * @param commentId 특정 커멘트의 Id 정보
+     * @return TODO 삭제 처리 후 어떤 내용을 반환?
      */
     @DeleteMapping(value = "/{slug}/comments/{id}")
     public ResponseEntity<Void> deleteComments(
@@ -155,10 +172,11 @@ public class ArticlesApi {
     }
 
     /**
-     * 글 좋아요 요청, 인증 필요
+     * 관심 글로 등록
      *
-     * @param slug unique uri article
-     * @return Article
+     * @param session 현재 사용자의 정보
+     * @param slug    특정 글의 Slug
+     * @return 관심 글로 처리된 글의 정보를 반환
      */
     @PostMapping(value = "/{slug}/favorite")
     public ResponseEntity<ResponseArticle> favoriteArticle(
@@ -170,11 +188,13 @@ public class ArticlesApi {
         return ResponseEntity.status(HttpStatus.OK).body(followArticle);
     }
 
+
     /**
-     * 글 좋아요 취소, 인증 필요
+     * 관심 글 취소
      *
-     * @param slug unique uri article
-     * @return Article
+     * @param session 현재 사용자의 정보
+     * @param slug    특정 글의 Slug
+     * @return 관심 글 취소 된 글의 정보를 반환
      */
     @DeleteMapping(value = "/{slug}/favorite")
     public ResponseEntity<ResponseArticle> unFavoriteArticle(
