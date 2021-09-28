@@ -22,11 +22,21 @@ public class FavoriteArticleDomainService {
      * @param article 특정 글
      * @return 현재 사용자와 특정 글 간의 관계 형성
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public FavoriteArticle save(User user, Article article) {
 
         FavoriteArticle favoriteArticle = FavoriteArticle.of(user, article);
 
         return favoriteArticleRepository.save(favoriteArticle);
+    }
+
+    /**
+     * 관심 글 삭제
+     *
+     * @param favoriteArticle 사용자의 관심 글 관계
+     */
+    @Transactional
+    public void delete(FavoriteArticle favoriteArticle) {
+        favoriteArticleRepository.delete(favoriteArticle);
     }
 }

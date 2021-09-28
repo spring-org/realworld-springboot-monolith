@@ -19,7 +19,6 @@ public class FavoriteArticleBusinessService implements FavoriteArticleService {
 
     private final UserDomainService userDomainService;
     private final ArticleDomainService articleDomainService;
-    private final FavoriteArticleRepository favoriteArticleRepository;
     private final FavoriteArticleDomainService favoriteDomainService;
 
     /**
@@ -63,7 +62,7 @@ public class FavoriteArticleBusinessService implements FavoriteArticleService {
         FavoriteArticle favoriteArticle = findUser.getFavArticle(slug);
         Article resultArticle = findUser.unFavArticle(favoriteArticle);
 
-        favoriteArticleRepository.delete(favoriteArticle);
+        favoriteDomainService.delete(favoriteArticle);
 
         return ResponseArticle.of(resultArticle, findUser);
     }

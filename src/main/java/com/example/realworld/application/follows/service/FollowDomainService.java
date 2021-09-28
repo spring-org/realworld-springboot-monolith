@@ -27,4 +27,9 @@ public class FollowDomainService {
 
         return followRepository.save(following);
     }
+
+    @Transactional
+    public void delete(Follow findFollow) {
+        followRepository.delete(findFollow);
+    }
 }

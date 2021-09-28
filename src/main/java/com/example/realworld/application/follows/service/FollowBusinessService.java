@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class FollowBusinessService implements FollowService {
 
-    private final FollowRepository followRepository;
     private final UserDomainService userDomainService;
     private final FollowDomainService followDomainService;
 
@@ -63,7 +62,7 @@ public class FollowBusinessService implements FollowService {
 
         Follow findFollow = fromUser.findFollowing(toUser);
         fromUser.unFollow(findFollow);
-        followRepository.delete(findFollow);
+        followDomainService.delete(findFollow);
 
         return ResponseProfile.of(fromUser, toUser);
     }
