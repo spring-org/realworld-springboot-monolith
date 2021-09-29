@@ -5,7 +5,6 @@ import com.example.realworld.application.articles.exception.DuplicateFavoriteArt
 import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.service.ArticleDomainService;
 import com.example.realworld.application.favorites.persistence.FavoriteArticle;
-import com.example.realworld.application.favorites.persistence.repository.FavoriteArticleRepository;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.service.UserDomainService;
 import lombok.RequiredArgsConstructor;

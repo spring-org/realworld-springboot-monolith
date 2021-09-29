@@ -24,13 +24,14 @@ public class ArticleRepositoryImpl implements ArticleQuerydslRepository {
     }
 
     @Override
-    public List<Article> searchPageArticle(RequestPageCondition condition) {
+    public List<Article> searchPageArticle(RequestPageCondition condition) { // string
         BooleanBuilder builder = new BooleanBuilder();
         // TODO 확인 필요..
 //        if (StringUtils.hasText(condition.getTag())) {
 //            builder.and(article.tags.contains(Tag.of(condition.getTag())));
 //        }
         if (StringUtils.hasText(condition.getAuthor())) {
+            //
             builder.and(article.author.email.eq(condition.getAuthor()));
         }
         if (StringUtils.hasText(condition.getFavorited())) {

@@ -3,7 +3,6 @@ package com.example.realworld.application.archunit;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.junit.AnalyzeClasses;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -41,16 +40,6 @@ class LayeredArchitectureTest {
         classes()
                 .that().haveSimpleNameEndingWith("DomainService")
                 .should().accessClassesThat().haveSimpleNameEndingWith("Repository")
-                .check(classes);
-    }
-
-    @Disabled
-    @DisplayName("DomainService 레이어의 클래스는 Service 레이어 또는 API 클래스를 호출하지 않고 있는지 확인하는 테스트")
-    @Test
-    void article_domainService_reverse_call_service_api_layer() {
-        noClasses()
-                .that().haveSimpleNameEndingWith("DomainService")
-                .should().accessClassesThat().haveSimpleNameEndingWith("Service")
                 .check(classes);
     }
 

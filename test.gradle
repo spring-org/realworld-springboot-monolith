@@ -8,6 +8,7 @@ test {
 }
 
 def jacocoExclude = [
+        '**/Tag*.class',
         '**/*Config.class',
         '**/Q*.class',
         '**/*Api.class',

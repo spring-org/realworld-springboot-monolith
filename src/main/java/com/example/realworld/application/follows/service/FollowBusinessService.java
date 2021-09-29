@@ -3,7 +3,6 @@ package com.example.realworld.application.follows.service;
 import com.example.realworld.application.follows.exception.DuplicateFollowException;
 import com.example.realworld.application.follows.exception.NotFoundFollowException;
 import com.example.realworld.application.follows.persistence.Follow;
-import com.example.realworld.application.follows.persistence.repository.FollowRepository;
 import com.example.realworld.application.users.dto.ResponseProfile;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.service.UserDomainService;
