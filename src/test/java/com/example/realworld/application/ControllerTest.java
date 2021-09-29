@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.MockMvc;
 @SpringBootTest
 @AutoConfigureMockMvc
 public abstract class ControllerTest {
-
     @Autowired
     protected MockMvc mockMvc;
 
@@ -39,5 +38,4 @@ public abstract class ControllerTest {
     void tearDown() {
         userRepository.deleteAll();
     }
-
 }
