@@ -2,6 +2,9 @@
 
 ---
 
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=spring-org_realworld-springboot-monolith&metric=coverage)](https://sonarcloud.io/dashboard?id=spring-org_realworld-springboot-monolith)
+
+
 > ### realworld-spring-boot-example-sr
 
 - 해당 프로젝트는 SpringBoot를 기반으로 CRUD 작업 및 인증, 라우팅, 페이징 기능을 구현하기 위한 프로젝트이다.
