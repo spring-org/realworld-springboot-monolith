@@ -9,9 +9,9 @@ test {
 
 def jacocoExclude = [
         '**/Tag*.class',
+        '**/ArticlesApi.class',
         '**/*Config.class',
         '**/Q*.class',
-        '**/*Api.class',
         '**/Request*',
         '**/Response*',
         '**/RealWorldApplication.class',

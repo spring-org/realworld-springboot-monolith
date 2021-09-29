@@ -1,7 +1,9 @@
 package com.example.realworld.application.users.dto;
 
 import com.example.realworld.application.users.persistence.User;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 

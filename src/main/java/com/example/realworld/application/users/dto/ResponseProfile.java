@@ -29,7 +29,7 @@ public class ResponseProfile {
         return new ResponseProfile(fromUser, false);
     }
 
-    public static ResponseProfile of(final User fromUser, final User toUser) {
-        return new ResponseProfile(fromUser, fromUser.isFollowing(toUser));
+    public static ResponseProfile followProfile(final User toUser, final User fromUser) {
+        return new ResponseProfile(toUser, toUser.isFollowing(fromUser));
     }
 }

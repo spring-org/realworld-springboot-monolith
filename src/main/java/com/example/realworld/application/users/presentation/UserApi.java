@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-@Slf4j
 @RestController
 @RequestMapping(value = "/api/user")
 @RequiredArgsConstructor
@@ -59,7 +58,7 @@ public class UserApi {
 
         ResponseUser responseUser = userService.updateUser(email, updateUser);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
+        return ResponseEntity.status(HttpStatus.OK).body(responseUser);
     }
 
 }
