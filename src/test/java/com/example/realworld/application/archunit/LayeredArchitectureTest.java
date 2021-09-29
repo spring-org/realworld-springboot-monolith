@@ -44,16 +44,6 @@ class LayeredArchitectureTest {
                 .check(classes);
     }
 
-    @Disabled
-    @DisplayName("DomainService 레이어의 클래스는 Service 레이어 또는 API 클래스를 호출하지 않고 있는지 확인하는 테스트")
-    @Test
-    void article_domainService_reverse_call_service_api_layer() {
-        noClasses()
-                .that().haveSimpleNameEndingWith("DomainService")
-                .should().accessClassesThat().haveSimpleNameEndingWith("Service")
-                .check(classes);
-    }
-
     @DisplayName("Article 서비스 패키지 의존성 테스트")
     @Test
     void dependency_article_service_check() {

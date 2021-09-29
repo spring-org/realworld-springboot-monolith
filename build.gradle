@@ -45,7 +45,6 @@ test {
 }
 
 // sonar cloud
-
 sonarqube {
     properties {
         property "sonar.projectKey", "spring-org_realworld-springboot-monolith"
