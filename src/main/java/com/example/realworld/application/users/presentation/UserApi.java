@@ -5,7 +5,6 @@ import com.example.realworld.application.users.dto.ResponseUser;
 import com.example.realworld.application.users.service.UserService;
 import com.example.realworld.core.exception.UnauthorizedUserException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-@Slf4j
 @RestController
 @RequestMapping(value = "/api/user")
 @RequiredArgsConstructor
@@ -59,7 +57,7 @@ public class UserApi {
 
         ResponseUser responseUser = userService.updateUser(email, updateUser);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
+        return ResponseEntity.status(HttpStatus.OK).body(responseUser);
     }
 
 }

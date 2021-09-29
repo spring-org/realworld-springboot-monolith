@@ -3,10 +3,8 @@ package com.example.realworld.application.users.presentation;
 import com.example.realworld.application.users.dto.RequestLoginUser;
 import com.example.realworld.application.users.dto.RequestSaveUser;
 import com.example.realworld.application.users.dto.ResponseUser;
-import com.example.realworld.application.users.exception.NotFoundUserException;
 import com.example.realworld.application.users.service.UserBusinessService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-@Slf4j
 @RestController
 @RequestMapping(value = "/api/users")
 @RequiredArgsConstructor
@@ -49,12 +46,8 @@ public class AuthApi {
     public ResponseEntity<ResponseUser> login(
             HttpSession session, @Valid @RequestBody RequestLoginUser loginUser) {
 
-        boolean isExistsUser = userBusinessService.existsUserByEmail(loginUser.getEmail());
-        if (!isExistsUser) {
-            throw new NotFoundUserException("사용자가 존재하지 않습니다.");
-        }
-        session.setAttribute(EMAIL, loginUser.getEmail());
-        ResponseUser responseUser = ResponseUser.of(RequestLoginUser.toEntity(loginUser));
+        ResponseUser responseUser = userBusinessService.getUserByEmail(loginUser.getEmail());
+        session.setAttribute(EMAIL, responseUser.getEmail());
 
         return ResponseEntity.status(HttpStatus.OK).body(responseUser);
     }
@@ -63,7 +56,7 @@ public class AuthApi {
      * 사용자 로그아웃
      *
      * @param session 현재 사용자의 정보를 갖는 세션
-     * @return TODO 로그아웃 시 반환해야 할 정보는 무엇일까?
+     * @return 204 코드
      */
     @DeleteMapping("/logout")
     public ResponseEntity<Void> logout(HttpSession session) {

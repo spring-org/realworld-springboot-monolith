@@ -56,7 +56,7 @@ public class ProfileApi {
         if (fromEmail.equals(toEmail)) {
             throw new CannotFollowException("자기 자신을 팔로우 할 수 없습니다.");
         }
-        ResponseProfile responseProfile = followService.follow(fromEmail, toEmail);
+        ResponseProfile responseProfile = followService.follow(toEmail, fromEmail);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseProfile);
     }
@@ -77,10 +77,7 @@ public class ProfileApi {
             throw new UnauthorizedUserException("접근 권한이 부족합니다.");
         }
 
-        if (fromEmail.equals(toEmail)) {
-            throw new CannotFollowException("팔로우 관계가 아닙니다.");
-        }
-        ResponseProfile responseProfile = followService.unFollow(fromEmail, toEmail);
+        ResponseProfile responseProfile = followService.unFollow(toEmail, fromEmail);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseProfile);
     }
