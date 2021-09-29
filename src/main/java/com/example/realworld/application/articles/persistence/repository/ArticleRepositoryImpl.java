@@ -2,7 +2,6 @@ package com.example.realworld.application.articles.persistence.repository;
 
 import com.example.realworld.application.articles.dto.RequestPageCondition;
 import com.example.realworld.application.articles.persistence.Article;
-import com.example.realworld.application.tags.persistence.Tag;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Pageable;
