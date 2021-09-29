@@ -8,21 +8,20 @@ test {
 }
 
 def jacocoExclude = [
-        '**/Tag*.class',
-        '**/ArticlesApi.class',
-        '**/*Config.class',
-        '**/Q*.class',
-        '**/Request*',
-        '**/Response*',
         '**/RealWorldApplication.class',
-        '**/BaseTimeEntity.class',
-        '**/*Exception.class'
+        '**/*Exception.class',
+        '**/*Config.class',
+        '**/Response*.class',
+        '**/Request*.class',
+        '**/Q*.class',
+        '**/Tag*.class',
+        '**/ArticlesApi.class'
 ]
 
 jacocoTestReport {
     reports {
         html.enabled true
-        xml.enabled true
+        // xml.enabled true
         // csv.enabled true
     }
     afterEvaluate {

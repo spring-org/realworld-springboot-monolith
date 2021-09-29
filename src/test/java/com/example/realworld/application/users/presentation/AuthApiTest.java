@@ -118,7 +118,7 @@ class AuthApiTest {
     @Test
     void when_logout_expect_success_fail_exception() throws Exception {
         // given
-        RequestSaveUser saveUser = RequestSaveUser.of( "seokrae@gmail.com", "seok", "1234");
+        RequestSaveUser saveUser = RequestSaveUser.of("seokrae@gmail.com", "seok", "1234");
 
         // when
         userService.addUser(saveUser);

@@ -5,7 +5,6 @@ import com.example.realworld.application.users.dto.ResponseUser;
 import com.example.realworld.application.users.service.UserService;
 import com.example.realworld.core.exception.UnauthorizedUserException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
