@@ -1,20 +1,11 @@
 package com.example.realworld.application.users.presentation;
 
+import com.example.realworld.application.ControllerTest;
 import com.example.realworld.application.users.dto.RequestLoginUser;
 import com.example.realworld.application.users.dto.RequestSaveUser;
-import com.example.realworld.application.users.persistence.repository.UserRepository;
-import com.example.realworld.application.users.service.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpSession;
-import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -22,34 +13,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-class AuthApiTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    protected MockHttpSession session;
-
-    @Autowired
-    private ObjectMapper mapper;
-
-    @BeforeEach
-    void setUp() {
-        session = new MockHttpSession();
-        session.setAttribute("email", "seokrae@gmail.com");
-    }
-
-    @AfterEach
-    void tearDown() {
-        userRepository.deleteAll();
-    }
+class AuthApiTest extends ControllerTest {
 
     @DisplayName("사용자 등록 테스트")
     @Test

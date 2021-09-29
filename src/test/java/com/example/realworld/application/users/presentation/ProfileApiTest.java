@@ -1,21 +1,14 @@
 package com.example.realworld.application.users.presentation;
 
+import com.example.realworld.application.ControllerTest;
 import com.example.realworld.application.follows.exception.CannotFollowException;
 import com.example.realworld.application.follows.service.FollowService;
 import com.example.realworld.application.users.dto.RequestSaveUser;
-import com.example.realworld.application.users.persistence.repository.UserRepository;
-import com.example.realworld.application.users.service.UserService;
 import com.example.realworld.core.exception.UnauthorizedUserException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,37 +17,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-class ProfileApiTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private UserService userService;
+class ProfileApiTest extends ControllerTest {
 
     @Autowired
     private FollowService followService;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ObjectMapper mapper;
-
-    protected MockHttpSession session;
-
-    @BeforeEach
-    void setUp() {
-        session = new MockHttpSession();
-        session.setAttribute("email", "seokrae@gmail.com");
-    }
-
-    @AfterEach
-    void tearDown() {
-        userRepository.deleteAll();
-    }
 
     @DisplayName("프로필 조회 테스트")
     @Test
