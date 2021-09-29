@@ -2,6 +2,7 @@ package com.example.realworld.application.articles.persistence.repository;
 
 import com.example.realworld.application.articles.dto.RequestPageCondition;
 import com.example.realworld.application.articles.persistence.Article;
+import com.example.realworld.application.tags.persistence.Tag;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Pageable;
@@ -24,13 +25,14 @@ public class ArticleRepositoryImpl implements ArticleQuerydslRepository {
     }
 
     @Override
-    public List<Article> searchPageArticle(RequestPageCondition condition) {
+    public List<Article> searchPageArticle(RequestPageCondition condition) { // string
         BooleanBuilder builder = new BooleanBuilder();
         // TODO 확인 필요..
-//        if (StringUtils.hasText(condition.getTag())) {
-//            builder.and(article.tags.contains(Tag.of(condition.getTag())));
-//        }
+        if (StringUtils.hasText(condition.getTag())) {
+            builder.and(article.tags.contains(Tag.of(condition.getTag())));
+        }
         if (StringUtils.hasText(condition.getAuthor())) {
+            //
             builder.and(article.author.email.eq(condition.getAuthor()));
         }
         if (StringUtils.hasText(condition.getFavorited())) {

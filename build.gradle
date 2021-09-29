@@ -3,6 +3,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
     id 'jacoco'
+    id "org.sonarqube" version "3.3"
 }
 
 group = 'com.example'
@@ -41,6 +42,16 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+// sonar cloud
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "spring-org_realworld-springboot-monolith"
+        property "sonar.organization", "spring-org"
+        property "sonar.host.url", "https://sonarcloud.io"
+    }
 }
 
 // querydsl 적용
