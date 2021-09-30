@@ -50,8 +50,16 @@ sonarqube {
         property "sonar.projectKey", "spring-org_realworld-springboot-monolith"
         property "sonar.organization", "spring-org"
         property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.sources", "src"
+        property "sonar.language", "java"
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.test.inclusions", "**/*Test.java"
+        property "sonar.exclusions", "**/RealWorldApplication.java, **/*Exception.java, **/*Config.java, **/Response*.java, **/Request*.java, **/Q*.java, **/Tag*.java, **/ArticlesApi.java"
+        property "sonar.java.junit.reportPaths", "${buildDir}/test-results"
+        property "sonar.jacoco.reportPaths", "${buildDir}/jaococ/jacoco.exec"
     }
 }
+
 
 // querydsl 적용
 def generated='src/main/generated'
