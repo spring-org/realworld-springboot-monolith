@@ -1,10 +1,14 @@
 package com.example.realworld.application.users.presentation;
 
-import com.example.realworld.application.ControllerTest;
+import com.example.realworld.application.BaseSpringBootTest;
 import com.example.realworld.application.follows.exception.CannotFollowException;
 import com.example.realworld.application.follows.service.FollowService;
 import com.example.realworld.application.users.dto.RequestSaveUser;
+import com.example.realworld.application.users.persistence.repository.UserRepository;
+import com.example.realworld.application.users.service.UserService;
 import com.example.realworld.core.exception.UnauthorizedUserException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +21,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class ProfileApiTest extends ControllerTest {
 
+class ProfileApiTest extends BaseSpringBootTest {
     @Autowired
     private FollowService followService;
+    @Autowired
+    protected UserService userService;
+    @Autowired
+    protected UserRepository userRepository;
+
+    @BeforeEach
+    void setUp() {
+        session = new MockHttpSession();
+        session.setAttribute("email", "seokrae@gmail.com");
+    }
+
+    @AfterEach
+    void tearDown() {
+        userRepository.deleteAll();
+    }
 
     @DisplayName("프로필 조회 테스트")
     @Test
@@ -30,7 +49,7 @@ class ProfileApiTest extends ControllerTest {
         RequestSaveUser saveUser = RequestSaveUser.of(email, "seok", "1234");
 
         // when
-        userService.addUser(saveUser);
+        userService.postUser(saveUser);
 
         // then
         mockMvc.perform(
@@ -51,8 +70,8 @@ class ProfileApiTest extends ControllerTest {
         RequestSaveUser toUser = RequestSaveUser.of(toUserEmail, "seok", "1234");
 
         // when
-        userService.addUser(fromUser);
-        userService.addUser(toUser);
+        userService.postUser(fromUser);
+        userService.postUser(toUser);
 
         // then
         mockMvc.perform(
@@ -78,8 +97,8 @@ class ProfileApiTest extends ControllerTest {
         session.setAttribute("email", "");
 
         // when
-        userService.addUser(fromUser);
-        userService.addUser(toUser);
+        userService.postUser(fromUser);
+        userService.postUser(toUser);
 
         // then
         MvcResult mvcResult = mockMvc.perform(
@@ -101,7 +120,7 @@ class ProfileApiTest extends ControllerTest {
         RequestSaveUser fromUser = RequestSaveUser.of(fromUserEmail, "seokrae", "1234");
 
         // when
-        userService.addUser(fromUser);
+        userService.postUser(fromUser);
 
         // then
         MvcResult mvcResult = mockMvc.perform(
@@ -123,8 +142,8 @@ class ProfileApiTest extends ControllerTest {
         String toUserEmail = "seok@gmail.com";
         RequestSaveUser toUser = RequestSaveUser.of(toUserEmail, "seok", "1234");
         // when
-        userService.addUser(fromUser);
-        userService.addUser(toUser);
+        userService.postUser(fromUser);
+        userService.postUser(toUser);
 
         followService.follow(toUserEmail, fromUser.getEmail());
 
@@ -152,8 +171,8 @@ class ProfileApiTest extends ControllerTest {
         session.setAttribute("email", "");
 
         // when
-        userService.addUser(fromUser);
-        userService.addUser(toUser);
+        userService.postUser(fromUser);
+        userService.postUser(toUser);
 
         // then
         final MvcResult mvcResult = mockMvc.perform(

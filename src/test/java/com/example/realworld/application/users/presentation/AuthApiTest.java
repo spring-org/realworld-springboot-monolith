@@ -1,11 +1,17 @@
 package com.example.realworld.application.users.presentation;
 
-import com.example.realworld.application.ControllerTest;
+import com.example.realworld.application.BaseSpringBootTest;
 import com.example.realworld.application.users.dto.RequestLoginUser;
 import com.example.realworld.application.users.dto.RequestSaveUser;
+import com.example.realworld.application.users.persistence.repository.UserRepository;
+import com.example.realworld.application.users.service.UserService;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -14,7 +20,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-class AuthApiTest extends ControllerTest {
+class AuthApiTest extends BaseSpringBootTest {
+    @Autowired
+    protected UserService userService;
+    @Autowired
+    protected UserRepository userRepository;
+
+    @BeforeEach
+    void setUp() {
+        session = new MockHttpSession();
+        session.setAttribute("email", "seokrae@gmail.com");
+    }
+
+    @AfterEach
+    void tearDown() {
+        userRepository.deleteAll();
+    }
 
     @DisplayName("사용자 등록 테스트")
     @Test
@@ -43,7 +64,7 @@ class AuthApiTest extends ControllerTest {
         RequestLoginUser loginUser = RequestLoginUser.of(email, "1234");
 
         // when
-        userService.addUser(saveUser);
+        userService.postUser(saveUser);
 
         // then
         mockMvc.perform(
@@ -66,7 +87,7 @@ class AuthApiTest extends ControllerTest {
         RequestLoginUser loginUser = RequestLoginUser.of(email, "1234");
 
         // when
-        userService.addUser(saveUser);
+        userService.postUser(saveUser);
 
         // then
         mockMvc.perform(
@@ -86,7 +107,7 @@ class AuthApiTest extends ControllerTest {
         RequestSaveUser saveUser = RequestSaveUser.of("seokrae@gmail.com", "seok", "1234");
 
         // when
-        userService.addUser(saveUser);
+        userService.postUser(saveUser);
 
         // then
         mockMvc.perform(

@@ -30,7 +30,7 @@ public class AuthApi {
     public ResponseEntity<ResponseUser> signUpUser(
             @Valid @RequestBody RequestSaveUser saveUser) {
 
-        ResponseUser responseUser = userBusinessService.addUser(saveUser);
+        ResponseUser responseUser = userBusinessService.postUser(saveUser);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
     }

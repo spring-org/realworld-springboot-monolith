@@ -1,7 +1,7 @@
 package com.example.realworld.application.articles.dto;
 
 import com.example.realworld.application.articles.persistence.Article;
-import com.example.realworld.application.tags.persistence.Tag;
+import com.example.realworld.application.tags.dto.ResponseMultiTags;
 import com.example.realworld.application.users.dto.ResponseProfile;
 import com.example.realworld.application.users.persistence.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Getter
 @ToString
@@ -22,7 +21,7 @@ public class ResponseArticle {
     private String title;
     private String description;
     private String body;
-    private Set<Tag> tagList;
+    private ResponseMultiTags tagList;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
@@ -40,7 +39,7 @@ public class ResponseArticle {
         this.title = article.getTitle();
         this.description = article.getDescription();
         this.body = article.getBody();
-        this.tagList = article.getTags();
+        this.tagList = ResponseMultiTags.from(article.getTags());
         this.createdAt = article.getCreatedAt();
         this.updatedAt = article.getUpdatedAt();
         this.favorited = article.containsFavUser(favoriteUser);

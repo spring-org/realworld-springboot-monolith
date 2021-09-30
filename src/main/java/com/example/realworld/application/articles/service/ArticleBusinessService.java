@@ -86,9 +86,7 @@ public class ArticleBusinessService implements ArticleService {
     public ResponseArticle postArticle(final String email, final RequestSaveArticle saveArticle) {
 
         final User findUser = userDomainService.findUserByEmail(email);
-        Article savedArticle = articleRepository.save(
-                RequestSaveArticle.toEntity(saveArticle, findUser));
-
+        Article savedArticle = articleDomainService.addArticle(saveArticle, findUser);
         findUser.addArticle(savedArticle);
 
         return ResponseArticle.from(savedArticle);

@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/articles")
@@ -30,7 +31,8 @@ public class ArticlesApi {
      * @return 페이징 및 조건 조회 글 리스트
      */
     @GetMapping
-    public ResponseEntity<ResponseMultiArticles> getArticles(RequestPageCondition condition) {
+    public ResponseEntity<ResponseMultiArticles> getArticles(
+            @Valid @RequestBody RequestPageCondition condition) {
 
         ResponseMultiArticles articles = articleService.searchPageArticles(condition);
 
@@ -55,6 +57,23 @@ public class ArticlesApi {
     }
 
     /**
+     * 글 생성
+     *
+     * @param session     현재 사용자의 정보
+     * @param saveArticle 글 등록을 위한 정보
+     * @return 등록된 글 반환
+     */
+    @PostMapping
+    public ResponseEntity<ResponseArticle> createArticle(
+            HttpSession session, @Valid @RequestBody RequestSaveArticle saveArticle) {
+
+        String email = (String) session.getAttribute(EMAIL);
+        ResponseArticle savedArticle = articleService.postArticle(email, saveArticle);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedArticle);
+    }
+
+    /**
      * 단일 글 상세 조회
      *
      * @param slug 특정 글의 slug
@@ -70,23 +89,6 @@ public class ArticlesApi {
     }
 
     /**
-     * 글 생성
-     *
-     * @param session     현재 사용자의 정보
-     * @param saveArticle 글 등록을 위한 정보
-     * @return 등록된 글 반환
-     */
-    @PostMapping
-    public ResponseEntity<ResponseArticle> createArticle(
-            HttpSession session, RequestSaveArticle saveArticle) {
-
-        String email = (String) session.getAttribute(EMAIL);
-        ResponseArticle savedArticle = articleService.postArticle(email, saveArticle);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedArticle);
-    }
-
-    /**
      * 글 수정
      *
      * @param session       현재 사용자의 정보
@@ -96,7 +98,7 @@ public class ArticlesApi {
      */
     @PutMapping(value = "/{slug}")
     public ResponseEntity<ResponseArticle> updateArticle(
-            HttpSession session, @PathVariable("slug") String slug, RequestUpdateArticle updateArticle) {
+            HttpSession session, @PathVariable("slug") String slug, @Valid @RequestBody RequestUpdateArticle updateArticle) {
 
         String email = (String) session.getAttribute(EMAIL);
         ResponseArticle updatedArticle = articleService.updateArticle(email, slug, updateArticle);
@@ -131,12 +133,12 @@ public class ArticlesApi {
      */
     @PostMapping(value = "/{slug}/comments")
     public ResponseEntity<ResponseSingleComment> addCommentsToArticle(
-            HttpSession session, @PathVariable("slug") String slug, RequestSaveComment saveComment) {
+            HttpSession session, @PathVariable("slug") String slug, @Valid @RequestBody RequestSaveComment saveComment) {
 
         String email = (String) session.getAttribute(EMAIL);
         ResponseSingleComment savedComment = commentService.postComment(email, slug, saveComment);
 
-        return ResponseEntity.status(HttpStatus.OK).body(savedComment);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedComment);
     }
 
     /**
@@ -146,7 +148,8 @@ public class ArticlesApi {
      * @return 특정 글의 모든 커멘트를 반환
      */
     @GetMapping(value = "/{slug}/comments")
-    public ResponseEntity<ResponseMultiComments> getCommentsFromAnArticle(@PathVariable("slug") String slug) {
+    public ResponseEntity<ResponseMultiComments> getCommentsFromAnArticle(
+            @PathVariable("slug") String slug) {
 
         ResponseMultiComments comments = commentService.getCommentsByArticle(slug);
 

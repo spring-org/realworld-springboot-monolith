@@ -6,7 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +21,8 @@ public class TagDomainService {
      * @return 전체 태그 정보 반환
      */
     @Transactional(readOnly = true)
-    public List<Tag> findTagByAll() {
-        return tagRepository.findAll();
+    public Set<Tag> findTagByAll() {
+        return tagRepository.findAll().stream()
+                .collect(Collectors.toUnmodifiableSet());
     }
 }

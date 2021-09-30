@@ -20,21 +20,16 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @SpringBootTest
 class CommentBusinessServiceTest {
-
     @Autowired
     private CommentBusinessService commentService;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ArticleRepository articleRepository;
-
-    @Autowired
-    private CommentRepository commentRepository;
-
     @Autowired
     private ArticleService articleService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private ArticleRepository articleRepository;
+    @Autowired
+    private CommentRepository commentRepository;
 
     @AfterEach
     void tearDown() {
@@ -83,7 +78,7 @@ class CommentBusinessServiceTest {
         ResponseMultiComments commentsByArticle = commentService.getCommentsByArticle(responseArticle.getSlug());
 
         // then
-        assertThat(commentsByArticle.getCommentsSize()).isEqualTo(2);
+        assertThat(commentsByArticle.getCommentSize()).isEqualTo(2);
     }
 
     @DisplayName("특정 글의 커멘트 삭제 테스트")
@@ -108,7 +103,7 @@ class CommentBusinessServiceTest {
         ResponseMultiComments commentsByArticle = commentService.getCommentsByArticle(responseArticle.getSlug());
 
         // then
-        assertThat(commentsByArticle.getCommentsSize()).isOne();
+        assertThat(commentsByArticle.getCommentSize()).isOne();
     }
 
     @DisplayName("특정 글의 커멘트 삭제 (권한 예외) 테스트")

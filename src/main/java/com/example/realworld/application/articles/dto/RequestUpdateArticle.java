@@ -1,13 +1,16 @@
 package com.example.realworld.application.articles.dto;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RequestUpdateArticle {
 
-    private final String title;
-    private final String description;
-    private final String body;
+    private String title;
+    private String description;
+    private String body;
 
     private RequestUpdateArticle(String title, String description, String body) {
         this.title = title;

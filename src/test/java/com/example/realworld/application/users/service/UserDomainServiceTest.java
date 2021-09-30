@@ -13,7 +13,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @SpringBootTest
 class UserDomainServiceTest {
-
     @Autowired
     private UserRepository userRepository;
 

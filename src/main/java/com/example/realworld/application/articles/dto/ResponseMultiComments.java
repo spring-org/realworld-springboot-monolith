@@ -13,17 +13,17 @@ public class ResponseMultiComments {
 
     private final Set<ResponseSingleComment> comments;
 
-    private final Integer commentsSize;
+    private final Integer commentSize;
 
     private ResponseMultiComments(Set<ResponseSingleComment> comments) {
         this.comments = comments;
-        this.commentsSize = comments.size();
+        this.commentSize = comments.size();
     }
 
     public static ResponseMultiComments from(Set<Comment> comments) {
         Set<ResponseSingleComment> responseSingleComments = comments.stream()
                 .map(ResponseSingleComment::from)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toUnmodifiableSet());
         return new ResponseMultiComments(responseSingleComments);
     }
 }
