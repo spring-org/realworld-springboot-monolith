@@ -3,7 +3,6 @@ package com.example.realworld.application.tags.dto;
 import com.example.realworld.application.tags.persistence.Tag;
 import lombok.Getter;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,7 +15,7 @@ public class ResponseMultiTags {
         this.tags = tags;
     }
 
-    public static ResponseMultiTags from(List<Tag> tags) {
+    public static ResponseMultiTags from(Set<Tag> tags) {
         Set<ResponseSingleTag> responseSingleTags = tags.stream()
                 .map(ResponseSingleTag::from)
                 .collect(Collectors.toSet());

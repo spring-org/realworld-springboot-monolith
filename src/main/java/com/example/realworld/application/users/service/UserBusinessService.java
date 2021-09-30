@@ -27,7 +27,7 @@ public class UserBusinessService implements UserService {
      */
     @Transactional
     @Override
-    public ResponseUser addUser(final RequestSaveUser saveUser) {
+    public ResponseUser postUser(final RequestSaveUser saveUser) {
         boolean existsUser = userDomainService.existsByEmail(saveUser.getEmail());
 
         if (existsUser) {

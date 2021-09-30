@@ -7,7 +7,7 @@ import com.example.realworld.application.users.dto.ResponseUser;
 
 public interface UserService {
     // 사용자 등록
-    ResponseUser addUser(final RequestSaveUser saveUser);
+    ResponseUser postUser(final RequestSaveUser saveUser);
 
     // 사용자 수정
     ResponseUser updateUser(String email, RequestUpdateUser updateUser);

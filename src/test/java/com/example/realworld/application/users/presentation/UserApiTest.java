@@ -1,11 +1,16 @@
 package com.example.realworld.application.users.presentation;
 
-import com.example.realworld.application.ControllerTest;
+import com.example.realworld.application.BaseSpringBootTest;
 import com.example.realworld.application.users.dto.RequestSaveUser;
 import com.example.realworld.application.users.dto.RequestUpdateUser;
+import com.example.realworld.application.users.persistence.repository.UserRepository;
+import com.example.realworld.application.users.service.UserService;
 import com.example.realworld.core.exception.UnauthorizedUserException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MvcResult;
@@ -17,7 +22,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class UserApiTest extends ControllerTest {
+class UserApiTest extends BaseSpringBootTest {
+    @Autowired
+    protected UserService userService;
+    @Autowired
+    protected UserRepository userRepository;
+
+    @BeforeEach
+    void setUp() {
+        session = new MockHttpSession();
+        session.setAttribute("email", "seokrae@gmail.com");
+    }
+
+    @AfterEach
+    void tearDown() {
+        userRepository.deleteAll();
+    }
 
     @DisplayName("현재 사용자의 정보를 조회")
     @Test
@@ -25,7 +45,7 @@ class UserApiTest extends ControllerTest {
         // given
         RequestSaveUser saveUser = RequestSaveUser.of("seokrae@gmail.com", "seok", "1234");
         // when
-        userService.addUser(saveUser);
+        userService.postUser(saveUser);
         // then
         mockMvc.perform(
                         get("/api/user")
@@ -43,7 +63,7 @@ class UserApiTest extends ControllerTest {
         // given
         RequestSaveUser saveUser = RequestSaveUser.of("seokrae@gmail.com", "seok", "1234");
         // when
-        userService.addUser(saveUser);
+        userService.postUser(saveUser);
         // then
         MvcResult mvcResult = mockMvc.perform(
                         get("/api/user")
@@ -63,7 +83,7 @@ class UserApiTest extends ControllerTest {
         RequestUpdateUser updateUser = RequestUpdateUser.of(
                 "seokrae@gmail.com", "updatedUser", "1234", "newImage.png", "newBio");
         // when
-        userService.addUser(saveUser);
+        userService.postUser(saveUser);
         // then
         mockMvc.perform(
                         put("/api/user")
@@ -91,7 +111,7 @@ class UserApiTest extends ControllerTest {
         session.setAttribute("email", "");
 
         // when
-        userService.addUser(saveUser);
+        userService.postUser(saveUser);
         // then
         MvcResult mvcResult = mockMvc.perform(
                         put("/api/user")
@@ -116,7 +136,7 @@ class UserApiTest extends ControllerTest {
         RequestUpdateUser updateUser = RequestUpdateUser.of(
                 "seokrae@gmail.com", "updatedUser", "1234", "newImage.png", "newBio");
         // when
-        userService.addUser(saveUser);
+        userService.postUser(saveUser);
         // then
         MvcResult mvcResult = mockMvc.perform(
                         put("/api/user")

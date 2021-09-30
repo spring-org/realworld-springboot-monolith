@@ -19,10 +19,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @SpringBootTest
 class UserBusinessServiceTest {
-
     @Autowired
     private UserBusinessService userBusinessService;
-
     @Autowired
     private UserRepository userRepository;
 
@@ -37,10 +35,8 @@ class UserBusinessServiceTest {
         // given
         RequestSaveUser saveUser =
                 RequestSaveUser.of("seokrae@gmail.com", "seok", "1234");
-
         // when
-        ResponseUser responseUser = userBusinessService.addUser(saveUser);
-
+        ResponseUser responseUser = userBusinessService.postUser(saveUser);
         // then
         assertThat(saveUser.getEmail()).isEqualTo(responseUser.getEmail());
     }
@@ -57,34 +53,35 @@ class UserBusinessServiceTest {
         userRepository.save(actual);
         // then
         assertThatExceptionOfType(DuplicateUserException.class)
-                .isThrownBy(() -> userBusinessService.addUser(saveUser));
+                .isThrownBy(() -> userBusinessService.postUser(saveUser));
     }
 
     @DisplayName("사용자 프로필 조회 테스트")
     @Test
     void when_getProfile_expect_success_profile_info() {
+        // given
         String email = "seokrae@gmail.com";
         RequestSaveUser saveUser =
                 RequestSaveUser.of(email, "seok", "1234");
-
-        ResponseUser responseUser = userBusinessService.addUser(saveUser);
+        // when
+        ResponseUser responseUser = userBusinessService.postUser(saveUser);
         ResponseProfile profile = userBusinessService.getProfile(email);
-
+        // then
         assertThat(responseUser.getUserName()).isEqualTo(profile.getUserName());
     }
 
     @DisplayName("사용자 프로필 조회 실패 테스트")
     @Test
     void when_getProfile_expect_fail_profile_info() {
+        // given
         String email = "seokrae@gmail.com";
         RequestSaveUser saveUser =
                 RequestSaveUser.of(email, "seok", "1234");
-
-        userBusinessService.addUser(saveUser);
-
+        // when
+        userBusinessService.postUser(saveUser);
+        // then
         assertThatExceptionOfType(NotFoundUserException.class)
                 .isThrownBy(() -> userBusinessService.getProfile("fail@gmail.com"));
-
     }
 
     @DisplayName("현재 사용자 조회 테스트")
@@ -93,25 +90,26 @@ class UserBusinessServiceTest {
         String email = "seokrae@gmail.com";
         RequestSaveUser saveUser =
                 RequestSaveUser.of(email, "seok", "1234");
-
-        userBusinessService.addUser(saveUser);
+        // when
+        ResponseUser savedUser = userBusinessService.postUser(saveUser);
         ResponseUser currentUser = userBusinessService.getUserByEmail(email);
-
-        assertThat(currentUser.getUserName()).isEqualTo(saveUser.getUserName());
+        // then
+        assertThat(savedUser.getUserName()).isEqualTo(currentUser.getUserName());
     }
 
     @DisplayName("사용자 정보 수정 테스트")
     @Test
     void when_updateUser_expect_success_change_username() {
+        // givien
         String email = "seokrae@gmail.com";
         RequestSaveUser saveUser =
                 RequestSaveUser.of(email, "seok", "1234");
         RequestUpdateUser updateUser =
                 RequestUpdateUser.of(email, "seokrae", "12345", "/image.png", "hello bio");
-
-        userBusinessService.addUser(saveUser);
+        // when
+        userBusinessService.postUser(saveUser);
         ResponseUser updatedUser = userBusinessService.updateUser(email, updateUser);
-
+        // then
         assertThat(updatedUser.getUserName()).isEqualTo("seokrae");
     }
 
@@ -123,7 +121,7 @@ class UserBusinessServiceTest {
         RequestUpdateUser updateUser =
                 RequestUpdateUser.of("", "", "", "", "");
 
-        ResponseUser responseUser = userBusinessService.addUser(saveUser);
+        ResponseUser responseUser = userBusinessService.postUser(saveUser);
         ResponseUser updatedUser = userBusinessService.updateUser(responseUser.getEmail(), updateUser);
 
         assertThat(updatedUser.getEmail()).isEqualTo(responseUser.getEmail());
@@ -137,7 +135,7 @@ class UserBusinessServiceTest {
         RequestSaveUser saveUser =
                 RequestSaveUser.of(email, "seok", "1234");
 
-        userBusinessService.addUser(saveUser);
+        userBusinessService.postUser(saveUser);
         ResponseProfile profile = userBusinessService.getProfile(email);
 
         assertThat(profile.getUserName()).isEqualTo("seok");
@@ -151,7 +149,7 @@ class UserBusinessServiceTest {
         RequestSaveUser saveUser =
                 RequestSaveUser.of(email, "seok", "1234");
 
-        userBusinessService.addUser(saveUser);
+        userBusinessService.postUser(saveUser);
         boolean exists = userBusinessService.existsUserByEmail(email);
 
         assertThat(exists).isTrue();

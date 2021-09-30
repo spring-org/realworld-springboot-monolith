@@ -44,8 +44,8 @@ class ArticleBusinessServiceTest {
 
     @AfterEach
     void tearDown() {
-        userRepository.deleteAll();
         articleRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @DisplayName("글 등록 테스트")

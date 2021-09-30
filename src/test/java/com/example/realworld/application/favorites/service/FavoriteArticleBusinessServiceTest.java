@@ -1,9 +1,11 @@
 package com.example.realworld.application.favorites.service;
 
+import com.example.realworld.application.articles.dto.RequestSaveArticle;
 import com.example.realworld.application.articles.dto.ResponseArticle;
 import com.example.realworld.application.articles.exception.DuplicateFavoriteArticleException;
 import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.persistence.repository.ArticleRepository;
+import com.example.realworld.application.articles.service.ArticleService;
 import com.example.realworld.application.favorites.exception.NotYetFavoriteArticleException;
 import com.example.realworld.application.favorites.persistence.repository.FavoriteArticleRepository;
 import com.example.realworld.application.users.persistence.User;
@@ -13,6 +15,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -24,6 +28,8 @@ class FavoriteArticleBusinessServiceTest {
     private FavoriteArticleService favoriteArticleService;
     @Autowired
     private FavoriteArticleRepository favoriteArticleRepository;
+    @Autowired
+    private ArticleService articleService;
     @Autowired
     private ArticleRepository articleRepository;
     @Autowired
@@ -66,16 +72,17 @@ class FavoriteArticleBusinessServiceTest {
         String email = "me@gmail.com";
         User me = User.of(email, "1234", "myName");
         User otherUser = User.of("other@gmail.com", "1234", "otherName");
+
         userRepository.save(me);
-        User savedOtherUser = userRepository.save(otherUser);
+        userRepository.save(otherUser);
+
+        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", List.of("java"));
 
         // when
         // 다른 사람이 작성한 글 등록 및 저장
-        Article otherUserWriteArticle1 = Article.of("title-1", "description", "body", savedOtherUser);
-        Article savedOtherUserWriteArticle1 = articleRepository.save(otherUserWriteArticle1);
-        savedOtherUser.addArticle(savedOtherUserWriteArticle1);
+        ResponseArticle responseArticle = articleService.postArticle(otherUser.getEmail(), requestSaveArticle);
 
-        String slug = savedOtherUserWriteArticle1.getSlug();
+        String slug = responseArticle.getSlug();
         favoriteArticleService.favoriteArticle(email, slug);
 
         assertThatExceptionOfType(DuplicateFavoriteArticleException.class)
@@ -89,16 +96,18 @@ class FavoriteArticleBusinessServiceTest {
         String email = "me@gmail.com";
         User me = User.of(email, "1234", "myName");
         User otherUser = User.of("other@gmail.com", "1234", "otherName");
+
+        // 사용자 둘 등록
         userRepository.save(me);
-        User savedOtherUser = userRepository.save(otherUser);
+        userRepository.save(otherUser);
+
+        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", List.of("java"));
 
         // when
         // 다른 사람이 작성한 글 등록 및 저장
-        Article otherUserWriteArticle1 = Article.of("title-1", "description", "body", savedOtherUser);
-        Article savedOtherUserWriteArticle1 = articleRepository.save(otherUserWriteArticle1);
-        savedOtherUser.addArticle(savedOtherUserWriteArticle1);
+        ResponseArticle responseArticle = articleService.postArticle(otherUser.getEmail(), requestSaveArticle);
 
-        String slug = savedOtherUserWriteArticle1.getSlug();
+        String slug = responseArticle.getSlug();
         favoriteArticleService.favoriteArticle(email, slug);
 
         favoriteArticleService.unFavoriteArticle(email, slug);

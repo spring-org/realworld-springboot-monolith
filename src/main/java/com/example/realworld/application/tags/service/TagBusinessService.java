@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +22,7 @@ public class TagBusinessService implements TagService {
     @Transactional(readOnly = true)
     @Override
     public ResponseMultiTags getTags() {
-        List<Tag> tags = tagDomainService.findTagByAll();
+        Set<Tag> tags = tagDomainService.findTagByAll();
         return ResponseMultiTags.from(tags);
     }
 }
