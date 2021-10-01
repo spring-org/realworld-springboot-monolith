@@ -111,7 +111,7 @@ public class ArticlesApi {
      *
      * @param session 현재 사용자 정보
      * @param slug    특정 글의 slug
-     * @return TODO 삭제 처리 후 어떤 내용을 반환?
+     * @return 204 코드 반환
      */
     @DeleteMapping(value = "/{slug}")
     public ResponseEntity<Void> deleteArticle(
@@ -162,7 +162,7 @@ public class ArticlesApi {
      * @param session   현재 사용자의 정보
      * @param slug      특정 글의 Slug
      * @param commentId 특정 커멘트의 Id 정보
-     * @return TODO 삭제 처리 후 어떤 내용을 반환?
+     * @return 204 코드 반환
      */
     @DeleteMapping(value = "/{slug}/comments/{id}")
     public ResponseEntity<Void> deleteComments(

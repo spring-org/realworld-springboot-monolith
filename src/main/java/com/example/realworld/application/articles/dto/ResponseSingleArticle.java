@@ -1,51 +1,53 @@
 package com.example.realworld.application.articles.dto;
 
 import com.example.realworld.application.articles.persistence.Article;
-import com.example.realworld.application.tags.dto.ResponseMultiTags;
+import com.example.realworld.application.tags.dto.ResponseMultiTag;
 import com.example.realworld.application.users.dto.ResponseProfile;
 import com.example.realworld.application.users.persistence.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AccessLevel;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 @Getter
 @ToString
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@JsonPropertyOrder({"slug", "title", "description", "body", "tagList", "createdAt", "updatedAt", "favorited", "favoritesCount", "author"})
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseSingleArticle {
 
-    private String slug;
-    private String title;
-    private String description;
-    private String body;
-    private ResponseMultiTags tagList;
+    private final String slug;
+    private final String title;
+    private final String description;
+    private final String body;
+    @JsonUnwrapped
+    private final ResponseMultiTag tagList;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime createdAt;
+    private final LocalDateTime createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime updatedAt;
-    private boolean favorited;
-    private int favoritesCount;
-    private ResponseProfile user;
+    private final LocalDateTime updatedAt;
+    private final boolean favorited;
+    private final int favoritesCount;
+    private final ResponseProfile author;
 
-    private ResponseSingleArticle(Article article, ResponseProfile user) {
-        this(article, user, null);
+    private ResponseSingleArticle(Article article, ResponseProfile author) {
+        this(article, author, null);
     }
 
-    private ResponseSingleArticle(Article article, ResponseProfile user, User favoriteUser) {
+    private ResponseSingleArticle(Article article, ResponseProfile author, User favoriteUser) {
         this.slug = article.getSlug();
         this.title = article.getTitle();
         this.description = article.getDescription();
         this.body = article.getBody();
-        this.tagList = ResponseMultiTags.from(new ArrayList<>(article.getTags()));
+        this.tagList = ResponseMultiTag.from(article.getTags());
         this.createdAt = article.getCreatedAt();
         this.updatedAt = article.getUpdatedAt();
         this.favorited = article.containsFavUser(favoriteUser);
         this.favoritesCount = article.getFavUserCount();
-        this.user = user;
+        this.author = author;
     }
 
     public static ResponseSingleArticle from(Article article) {

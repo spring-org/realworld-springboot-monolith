@@ -12,7 +12,6 @@ public class RequestLoginUser {
 
     @NotEmpty
     private final String email;
-
     @NotEmpty
     private final String password;
 

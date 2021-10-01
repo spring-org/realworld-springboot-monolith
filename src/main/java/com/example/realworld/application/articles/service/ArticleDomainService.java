@@ -23,7 +23,7 @@ public class ArticleDomainService {
      */
     @Transactional(readOnly = true)
     public Article getArticleOrElseThrow(String slug) {
-        return articleRepository.findBySlug(slug)
+        return articleRepository.findBySlugOrderByIdDesc(slug)
                 .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
     }
 

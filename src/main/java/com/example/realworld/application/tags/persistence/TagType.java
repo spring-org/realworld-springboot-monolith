@@ -36,8 +36,8 @@ public enum TagType {
         return Optional.ofNullable(tagTypeMap.get(tagName)).orElse(null);
     }
 
-    public static List<TagType> all() {
-        return List.of(JAVA, JAVASCRIPT, PYTHON, PERL, PHP, CPP, KOTLIN, R, RUBY);
+    public static Set<TagType> all() {
+        return Set.of(JAVA, JAVASCRIPT, PYTHON, PERL, PHP, CPP, KOTLIN, R, RUBY);
     }
 
     public String tagName() {

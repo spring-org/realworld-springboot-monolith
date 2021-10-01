@@ -137,7 +137,7 @@ class ArticleBusinessServiceTest {
         ResponseSingleArticle responseSingleArticle = articleService.postArticle(email, saveArticle);
         articleService.deleteArticle(email, responseSingleArticle.getSlug());
 
-        Optional<Article> actualArticle = articleRepository.findBySlug(responseSingleArticle.getSlug());
+        Optional<Article> actualArticle = articleRepository.findBySlugOrderByIdDesc(responseSingleArticle.getSlug());
         // then
         assertThat(actualArticle).isEmpty();
     }

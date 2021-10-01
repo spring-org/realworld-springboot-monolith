@@ -3,9 +3,13 @@ package com.example.realworld.application.users.dto;
 import com.example.realworld.application.users.persistence.Profile;
 import com.example.realworld.application.users.persistence.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
+@JsonPropertyOrder({"email", "userName", "bio", "image", "token"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseUser {
 
@@ -15,7 +19,7 @@ public class ResponseUser {
     private final String image;
     private final String token;
 
-    private ResponseUser(final String email, final String userName, final Profile profile, final String token) {
+    private ResponseUser(String email, String userName, Profile profile, String token) {
         this.email = email;
         this.userName = userName;
         this.bio = profile.getBio();

@@ -3,7 +3,7 @@ package com.example.realworld.application.tags.persistence;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,7 +13,7 @@ class TagTypeTest {
     @Test
     void when_all_expect_success_all_data() {
         // given
-        List<TagType> tagTypes = TagType.all();
+        Set<TagType> tagTypes = TagType.all();
         // when
         int size = tagTypes.size();
         // then
