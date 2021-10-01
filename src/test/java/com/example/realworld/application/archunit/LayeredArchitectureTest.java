@@ -3,6 +3,7 @@ package com.example.realworld.application.archunit;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.junit.AnalyzeClasses;
+import com.tngtech.archunit.library.GeneralCodingRules;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -16,30 +17,48 @@ class LayeredArchitectureTest {
     // 패키지 하위의 모든 클래스를 저장
     private final JavaClasses classes = new ClassFileImporter().importPackages("com.example.realworld.application");
 
-    @DisplayName("Presentation 레이어의 클래스는 Service 레이어의 클래스를 호출하는 지 확인하는 테스트")
+//    @DisplayName("Presentation 레이어의 클래스는 Service 레이어의 클래스를 호출하는 지 확인하는 테스트")
+//    @Test
+//    void article_presentation_called_service_layer() {
+//        classes()
+//                .that().haveSimpleNameEndingWith("Api")
+//                .should().accessClassesThat().haveSimpleNameEndingWith("Service")
+//                .check(classes);
+//    }
+
+
+    @DisplayName("코드 내에 print 코드 있는지 확인 테스트")
     @Test
-    void article_presentation_called_service_layer() {
-        classes()
-                .that().haveSimpleNameEndingWith("Api")
-                .should().accessClassesThat().haveSimpleNameEndingWith("Service")
+    void prevent_calls_to_systems() {
+        noClasses()
+                .should(GeneralCodingRules.ACCESS_STANDARD_STREAMS)
                 .check(classes);
     }
 
-    @DisplayName("Service 레이어의 클래스는 DomainService 또는 Repository 레이어의 클래스를 호출하는 지 확인하는 테스트")
+    @DisplayName("서비스 레이어에서 컨트롤러에 접근하고 있는지 테스트")
     @Test
-    void article_service_dependency_persistence_repository_layer() {
-        classes()
-                .that().haveSimpleNameEndingWith("Service")
-                .should().accessClassesThat().haveSimpleNameEndingWith("DomainService")
-                .orShould().accessClassesThat().haveSimpleNameEndingWith("Repository");
+    void services_should_not_access_controllers() {
+        noClasses()
+                .that().resideInAPackage("..service..")
+                .should().accessClassesThat().resideInAPackage("..presentation..")
+                .check(classes);
     }
 
-    @DisplayName("DomainService 레이어의 클래스는 repository 레이어의 클래스를 호출하고 있는지 확인하는 테스트")
+    @DisplayName("영속성 레이어에서 서비스 레이어에 접근하고 있는지 테스트")
     @Test
-    void article_domainsService_called_persistence_repository_layer() {
+    void persistence_should_not_access_services() {
+        noClasses()
+                .that().resideInAPackage("..persistence..")
+                .should().accessClassesThat().resideInAPackage("..service..")
+                .check(classes);
+    }
+
+    @DisplayName("서비스 레이어를 컨트롤러 또는 서비스에서 접근하고 있는지 테스트")
+    @Test
+    void services_should_only_be_accessed_by_controllers_or_other_services() {
         classes()
-                .that().haveSimpleNameEndingWith("DomainService")
-                .should().accessClassesThat().haveSimpleNameEndingWith("Repository")
+                .that().resideInAPackage("..service..")
+                .should().onlyBeAccessed().byAnyPackage("..presentation..", "..service..")
                 .check(classes);
     }
 

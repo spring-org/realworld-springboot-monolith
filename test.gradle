@@ -13,8 +13,7 @@ def jacocoExclude = [
         '**/*Config.class',
         '**/Response*.class',
         '**/Request*.class',
-        '**/Q*.class',
-        '**/Tag*.class'
+        '**/Q*.class'
 ]
 
 jacocoTestReport {

@@ -2,10 +2,12 @@ package com.example.realworld.application.users.dto;
 
 import com.example.realworld.application.users.persistence.User;
 import lombok.Getter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotEmpty;
 
 @Getter
+@ToString
 public class RequestSaveUser {
 
     @NotEmpty

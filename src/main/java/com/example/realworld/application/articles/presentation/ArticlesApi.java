@@ -31,10 +31,10 @@ public class ArticlesApi {
      * @return 페이징 및 조건 조회 글 리스트
      */
     @GetMapping
-    public ResponseEntity<ResponseMultiArticles> getArticles(
+    public ResponseEntity<ResponseMultiArticle> getArticles(
             @Valid @RequestBody RequestPageCondition condition) {
 
-        ResponseMultiArticles articles = articleService.searchPageArticles(condition);
+        ResponseMultiArticle articles = articleService.searchPageArticles(condition);
 
         return ResponseEntity.status(HttpStatus.OK).body(articles);
     }
@@ -47,11 +47,11 @@ public class ArticlesApi {
      * @return 피드 리스트
      */
     @GetMapping(value = "/feed")
-    public ResponseEntity<ResponseMultiArticles> feedArticle(
+    public ResponseEntity<ResponseMultiArticle> feedArticle(
             HttpSession session, @PageableDefault(value = 20) Pageable pageable) {
 
         String email = (String) session.getAttribute(EMAIL);
-        ResponseMultiArticles feedArticles = articleService.getFeedArticles(email, pageable);
+        ResponseMultiArticle feedArticles = articleService.getFeedArticles(email, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(feedArticles);
     }
@@ -64,11 +64,11 @@ public class ArticlesApi {
      * @return 등록된 글 반환
      */
     @PostMapping
-    public ResponseEntity<ResponseArticle> createArticle(
+    public ResponseEntity<ResponseSingleArticle> createArticle(
             HttpSession session, @Valid @RequestBody RequestSaveArticle saveArticle) {
 
         String email = (String) session.getAttribute(EMAIL);
-        ResponseArticle savedArticle = articleService.postArticle(email, saveArticle);
+        ResponseSingleArticle savedArticle = articleService.postArticle(email, saveArticle);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedArticle);
     }
@@ -80,10 +80,10 @@ public class ArticlesApi {
      * @return 특정 글을 반환
      */
     @GetMapping(value = "/{slug}")
-    public ResponseEntity<ResponseArticle> getArticle(
+    public ResponseEntity<ResponseSingleArticle> getArticle(
             @PathVariable("slug") String slug) {
 
-        ResponseArticle article = articleService.getArticle(slug);
+        ResponseSingleArticle article = articleService.getArticle(slug);
 
         return ResponseEntity.status(HttpStatus.OK).body(article);
     }
@@ -97,11 +97,11 @@ public class ArticlesApi {
      * @return 수정된 글 반환
      */
     @PutMapping(value = "/{slug}")
-    public ResponseEntity<ResponseArticle> updateArticle(
+    public ResponseEntity<ResponseSingleArticle> updateArticle(
             HttpSession session, @PathVariable("slug") String slug, @Valid @RequestBody RequestUpdateArticle updateArticle) {
 
         String email = (String) session.getAttribute(EMAIL);
-        ResponseArticle updatedArticle = articleService.updateArticle(email, slug, updateArticle);
+        ResponseSingleArticle updatedArticle = articleService.updateArticle(email, slug, updateArticle);
 
         return ResponseEntity.status(HttpStatus.OK).body(updatedArticle);
     }
@@ -111,7 +111,7 @@ public class ArticlesApi {
      *
      * @param session 현재 사용자 정보
      * @param slug    특정 글의 slug
-     * @return TODO 삭제 처리 후 어떤 내용을 반환?
+     * @return 204 코드 반환
      */
     @DeleteMapping(value = "/{slug}")
     public ResponseEntity<Void> deleteArticle(
@@ -148,10 +148,10 @@ public class ArticlesApi {
      * @return 특정 글의 모든 커멘트를 반환
      */
     @GetMapping(value = "/{slug}/comments")
-    public ResponseEntity<ResponseMultiComments> getCommentsFromAnArticle(
+    public ResponseEntity<ResponseMultiComment> getCommentsFromAnArticle(
             @PathVariable("slug") String slug) {
 
-        ResponseMultiComments comments = commentService.getCommentsByArticle(slug);
+        ResponseMultiComment comments = commentService.getCommentsByArticle(slug);
 
         return ResponseEntity.status(HttpStatus.OK).body(comments);
     }
@@ -162,7 +162,7 @@ public class ArticlesApi {
      * @param session   현재 사용자의 정보
      * @param slug      특정 글의 Slug
      * @param commentId 특정 커멘트의 Id 정보
-     * @return TODO 삭제 처리 후 어떤 내용을 반환?
+     * @return 204 코드 반환
      */
     @DeleteMapping(value = "/{slug}/comments/{id}")
     public ResponseEntity<Void> deleteComments(
@@ -182,11 +182,11 @@ public class ArticlesApi {
      * @return 관심 글로 처리된 글의 정보를 반환
      */
     @PostMapping(value = "/{slug}/favorite")
-    public ResponseEntity<ResponseArticle> favoriteArticle(
+    public ResponseEntity<ResponseSingleArticle> favoriteArticle(
             HttpSession session, @PathVariable("slug") String slug) {
 
         String email = (String) session.getAttribute(EMAIL);
-        ResponseArticle followArticle = favoriteArticleService.favoriteArticle(email, slug);
+        ResponseSingleArticle followArticle = favoriteArticleService.favoriteArticle(email, slug);
 
         return ResponseEntity.status(HttpStatus.OK).body(followArticle);
     }
@@ -200,12 +200,13 @@ public class ArticlesApi {
      * @return 관심 글 취소 된 글의 정보를 반환
      */
     @DeleteMapping(value = "/{slug}/favorite")
-    public ResponseEntity<ResponseArticle> unFavoriteArticle(
+    public ResponseEntity<ResponseSingleArticle> unFavoriteArticle(
             HttpSession session, @PathVariable("slug") String slug) {
 
         String email = (String) session.getAttribute(EMAIL);
-        ResponseArticle unfollowArticle = favoriteArticleService.unFavoriteArticle(email, slug);
+        ResponseSingleArticle unfollowArticle = favoriteArticleService.unFavoriteArticle(email, slug);
 
         return ResponseEntity.status(HttpStatus.OK).body(unfollowArticle);
     }
+
 }

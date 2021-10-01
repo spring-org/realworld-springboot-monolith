@@ -1,7 +1,7 @@
 package com.example.realworld.application.articles.service;
 
 import com.example.realworld.application.articles.dto.RequestSaveComment;
-import com.example.realworld.application.articles.dto.ResponseMultiComments;
+import com.example.realworld.application.articles.dto.ResponseMultiComment;
 import com.example.realworld.application.articles.dto.ResponseSingleComment;
 import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.persistence.Comment;
@@ -30,11 +30,11 @@ public class CommentBusinessService implements CommentService {
      */
     @Transactional(readOnly = true)
     @Override
-    public ResponseMultiComments getCommentsByArticle(String slug) {
+    public ResponseMultiComment getCommentsByArticle(String slug) {
 
         Article findArticle = articleDomainService.getArticleOrElseThrow(slug);
 
-        return ResponseMultiComments.from(findArticle.getComments());
+        return ResponseMultiComment.from(findArticle.getComments());
     }
 
     /**

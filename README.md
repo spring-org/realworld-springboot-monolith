@@ -2,8 +2,10 @@
 
 ---
 
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=spring-org_realworld-springboot-monolith&metric=bugs)](https://sonarcloud.io/dashboard?id=spring-org_realworld-springboot-monolith)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=spring-org_realworld-springboot-monolith&metric=code_smells)](https://sonarcloud.io/dashboard?id=spring-org_realworld-springboot-monolith)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=spring-org_realworld-springboot-monolith&metric=coverage)](https://sonarcloud.io/dashboard?id=spring-org_realworld-springboot-monolith)
-
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=spring-org_realworld-springboot-monolith&metric=alert_status)](https://sonarcloud.io/dashboard?id=spring-org_realworld-springboot-monolith)
 
 > ### realworld-spring-boot-example-sr
 

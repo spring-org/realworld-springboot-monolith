@@ -2,7 +2,7 @@ package com.example.realworld.application.articles.persistence;
 
 import com.example.realworld.application.articles.exception.NotFoundCommentException;
 import com.example.realworld.application.favorites.persistence.FavoriteArticle;
-import com.example.realworld.application.tags.persistence.Tag;
+import com.example.realworld.application.tags.persistence.TagType;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.core.persistence.BaseTimeEntity;
 import lombok.*;
@@ -59,13 +59,18 @@ public class Article extends BaseTimeEntity {
     @ToString.Exclude
     private final Set<Comment> comments = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @ToString.Exclude
-    private final Set<Tag> tags = new HashSet<>();
+    @ElementCollection(targetClass = TagType.class)
+    @CollectionTable
+    @Enumerated(EnumType.STRING)
+    private final Set<TagType> tags = new HashSet<>();
+
+    private Article(String title, String description, String body, Set<TagType> tags, User author) {
+        this(title, description, body, false, 0, tags, author);
+    }
 
     private Article(
             String title, String description, String body,
-            boolean favorited, Integer favoritesCount, User author) {
+            boolean favorited, Integer favoritesCount, Set<TagType> tags, User author) {
         this.slug = makeSlug(title);
         this.title = title;
         this.description = description;
@@ -73,11 +78,12 @@ public class Article extends BaseTimeEntity {
         this.favorited = favorited;
         this.favoritesCount = favoritesCount;
         this.author = author;
+        this.tags.addAll(tags);
     }
 
     public static Article of(
-            String title, String description, String body, User author) {
-        return new Article(title, description, body, false, 0, author);
+            String title, String description, String body, Set<TagType> tags, User author) {
+        return new Article(title, description, body, tags, author);
     }
 
     private String makeSlug(String title) {
@@ -127,9 +133,6 @@ public class Article extends BaseTimeEntity {
     }
 
     // ========================================== Tag
-    public void hashTag(Tag newTag) {
-        this.tags.add(newTag);
-    }
 
     public boolean isSlugMatches(String slug) {
         return this.slug.equals(slug);

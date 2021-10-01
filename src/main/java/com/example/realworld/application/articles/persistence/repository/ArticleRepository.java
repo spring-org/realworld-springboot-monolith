@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface ArticleRepository extends JpaRepository<Article, Long>, ArticleQuerydslRepository {
 
-    Optional<Article> findBySlug(String slug);
+    Optional<Article> findBySlugOrderByIdDesc(String slug);
 
 }
