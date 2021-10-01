@@ -31,11 +31,11 @@ public class ArticleBusinessService implements ArticleService {
      */
     @Transactional(readOnly = true)
     @Override
-    public ResponseMultiArticles searchPageArticles(RequestPageCondition condition) {
+    public ResponseMultiArticle searchPageArticles(RequestPageCondition condition) {
 
         List<Article> articles = articleRepository.searchPageArticle(condition);
 
-        return ResponseMultiArticles.of(articles);
+        return ResponseMultiArticle.of(articles);
     }
 
     /**
@@ -47,7 +47,7 @@ public class ArticleBusinessService implements ArticleService {
      */
     @Transactional(readOnly = true)
     @Override
-    public ResponseMultiArticles getFeedArticles(String email, Pageable pageable) {
+    public ResponseMultiArticle getFeedArticles(String email, Pageable pageable) {
 
         boolean exists = userDomainService.existsByEmail(email);
         if (!exists) {
@@ -56,7 +56,7 @@ public class ArticleBusinessService implements ArticleService {
         // User(1) -> (N)Follow(1) -> Article(N)
         List<Article> articles = articleRepository.searchPageFeed(email, pageable);
 
-        return ResponseMultiArticles.of(articles);
+        return ResponseMultiArticle.of(articles);
     }
 
     /**
@@ -67,11 +67,11 @@ public class ArticleBusinessService implements ArticleService {
      */
     @Transactional(readOnly = true)
     @Override
-    public ResponseArticle getArticle(String slug) {
+    public ResponseSingleArticle getArticle(String slug) {
 
         final Article findArticle = articleDomainService.getArticleOrElseThrow(slug);
 
-        return ResponseArticle.from(findArticle);
+        return ResponseSingleArticle.from(findArticle);
     }
 
     /**
@@ -83,13 +83,13 @@ public class ArticleBusinessService implements ArticleService {
      */
     @Transactional
     @Override
-    public ResponseArticle postArticle(final String email, final RequestSaveArticle saveArticle) {
+    public ResponseSingleArticle postArticle(final String email, final RequestSaveArticle saveArticle) {
 
         final User findUser = userDomainService.findUserByEmail(email);
         Article savedArticle = articleDomainService.addArticle(saveArticle, findUser);
         findUser.addArticle(savedArticle);
 
-        return ResponseArticle.from(savedArticle);
+        return ResponseSingleArticle.from(savedArticle);
     }
 
     /**
@@ -102,14 +102,14 @@ public class ArticleBusinessService implements ArticleService {
      */
     @Transactional
     @Override
-    public ResponseArticle updateArticle(final String email, final String slug, final RequestUpdateArticle updateArticle) {
+    public ResponseSingleArticle updateArticle(final String email, final String slug, final RequestUpdateArticle updateArticle) {
 
         final User findUser = userDomainService.findUserByEmail(email);
         Article findArticle = findUser.getArticleBySlug(slug)
                 .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
         findArticle.update(updateArticle.getTitle(), updateArticle.getDescription(), updateArticle.getBody());
 
-        return ResponseArticle.from(findArticle);
+        return ResponseSingleArticle.from(findArticle);
     }
 
     /**

@@ -1,8 +1,11 @@
 package com.example.realworld.application.articles.persistence;
 
+import com.example.realworld.application.tags.persistence.TagType;
 import com.example.realworld.application.users.persistence.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,7 +23,7 @@ class ArticleTest {
 
         // when
         Article article = Article.of(
-                "title", "description", "body", author);
+                "title", "description", "body", Set.of(TagType.KOTLIN), author);
 
         // then
         assertThat(article.author()).isEqualTo(author.userName());

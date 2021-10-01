@@ -3,6 +3,7 @@ package com.example.realworld.application.articles.persistence.repository;
 import com.example.realworld.application.articles.exception.NotFoundArticleException;
 import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.persistence.Comment;
+import com.example.realworld.application.tags.persistence.TagType;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,7 +32,7 @@ class CommentRepositoryTest {
         // given
         User author = User.of("seokrae@gmail.com", "1234");
         User savedUser = userRepository.save(author);
-        Article article = Article.of("title", "description", "body", savedUser);
+        Article article = Article.of("title", "description", "body", Set.of(TagType.KOTLIN), savedUser);
         Article savedArticle = articleRepository.save(article);
 
         // when
@@ -47,7 +49,7 @@ class CommentRepositoryTest {
     void when_getComments_expected_success_commentList() {
         User author = User.of("seokrae@gmail.com", "1234");
         User savedUser = userRepository.save(author);
-        Article article = Article.of("title", "description", "body", savedUser);
+        Article article = Article.of("title", "description", "body", Set.of(TagType.KOTLIN), savedUser);
         Article savedArticle = articleRepository.save(article);
 
         // when
@@ -70,7 +72,7 @@ class CommentRepositoryTest {
         User author = User.of("seokrae@gmail.com", "1234");
         User savedUser = userRepository.save(author);
 
-        Article article = Article.of("title", "description", "body", savedUser);
+        Article article = Article.of("title", "description", "body", Set.of(TagType.KOTLIN), savedUser);
         Article savedArticle = articleRepository.save(article);
 
         Comment newComment = Comment.of("comment write", savedUser, savedArticle);
@@ -96,9 +98,10 @@ class CommentRepositoryTest {
         User author = User.of("seokrae@gmail.com", "1234");
         User savedUser = userRepository.save(author);
 
-        Article article = Article.of("title", "description", "body", savedUser);
+        Article article = Article.of("title", "description", "body", Set.of(TagType.KOTLIN), savedUser);
         Article savedArticle = articleRepository.save(article);
 
+        // when
         Comment newComment = Comment.of("comment write", savedUser, savedArticle);
         Comment savedComment = commentRepository.save(newComment);
 
@@ -107,6 +110,7 @@ class CommentRepositoryTest {
 
         savedArticle.removeComment(savedComment);
 
-        assertThat(savedArticle.getTags().size()).isZero();
+        // then
+        assertThat(savedArticle.getComments().size()).isZero();
     }
 }

@@ -1,6 +1,6 @@
 package com.example.realworld.application.favorites.service;
 
-import com.example.realworld.application.articles.dto.ResponseArticle;
+import com.example.realworld.application.articles.dto.ResponseSingleArticle;
 import com.example.realworld.application.articles.exception.DuplicateFavoriteArticleException;
 import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.service.ArticleDomainService;
@@ -29,7 +29,7 @@ public class FavoriteArticleBusinessService implements FavoriteArticleService {
      */
     @Transactional
     @Override
-    public ResponseArticle favoriteArticle(String email, String slug) {
+    public ResponseSingleArticle favoriteArticle(String email, String slug) {
 
         User findUser = userDomainService.findUserByEmail(email);
         boolean existsFavorite = findUser.isMatchesArticleBySlug(slug);
@@ -42,7 +42,7 @@ public class FavoriteArticleBusinessService implements FavoriteArticleService {
         FavoriteArticle savedFavoriteArticle = favoriteDomainService.save(findUser, findArticle);
         Article resultArticle = findUser.favArticle(savedFavoriteArticle);
 
-        return ResponseArticle.of(resultArticle, findUser);
+        return ResponseSingleArticle.of(resultArticle, findUser);
     }
 
     /**
@@ -54,7 +54,7 @@ public class FavoriteArticleBusinessService implements FavoriteArticleService {
      */
     @Transactional
     @Override
-    public ResponseArticle unFavoriteArticle(String email, String slug) {
+    public ResponseSingleArticle unFavoriteArticle(String email, String slug) {
         // 존재하는 사용자와 글이 있으며, 좋아요 관계가 성립되는 경우
         User findUser = userDomainService.findUserByEmail(email);
 
@@ -63,6 +63,6 @@ public class FavoriteArticleBusinessService implements FavoriteArticleService {
 
         favoriteDomainService.delete(favoriteArticle);
 
-        return ResponseArticle.of(resultArticle, findUser);
+        return ResponseSingleArticle.of(resultArticle, findUser);
     }
 }

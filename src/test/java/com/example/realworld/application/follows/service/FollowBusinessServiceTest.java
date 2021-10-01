@@ -1,13 +1,14 @@
 package com.example.realworld.application.follows.service;
 
 import com.example.realworld.application.articles.dto.RequestSaveArticle;
-import com.example.realworld.application.articles.dto.ResponseMultiArticles;
+import com.example.realworld.application.articles.dto.ResponseMultiArticle;
 import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.persistence.repository.ArticleRepository;
 import com.example.realworld.application.articles.service.ArticleService;
 import com.example.realworld.application.follows.exception.DuplicateFollowException;
 import com.example.realworld.application.follows.exception.NotFoundFollowException;
 import com.example.realworld.application.follows.persistence.repository.FollowRepository;
+import com.example.realworld.application.tags.persistence.TagType;
 import com.example.realworld.application.users.dto.ResponseProfile;
 import com.example.realworld.application.users.exception.NotFoundUserException;
 import com.example.realworld.application.users.persistence.User;
@@ -20,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -136,7 +138,7 @@ class FollowBusinessServiceTest {
         followBusinessService.follow(email, otherUserEmail);
 
         Pageable page = Pageable.ofSize(10);
-        ResponseMultiArticles feedArticles = articleService.getFeedArticles(email, page);
+        ResponseMultiArticle feedArticles = articleService.getFeedArticles(email, page);
 
         // then
         assertThat(feedArticles.getArticleCount()).isNotZero();
@@ -165,14 +167,14 @@ class FollowBusinessServiceTest {
         User otherUser = userRepository.save(User.of(otherUserEmail, "1234", "seok"));
 
         List<RequestSaveArticle> srArticles = List.of(
-                RequestSaveArticle.of("타이틀-1", "설명", "바디", List.of("Java")),
-                RequestSaveArticle.of("타이틀-2", "설명", "바디", List.of("javascript")),
-                RequestSaveArticle.of("타이틀-3", "설명", "바디", List.of("node.js"))
+                RequestSaveArticle.of("타이틀-1", "설명", "바디", Set.of(TagType.JAVA)),
+                RequestSaveArticle.of("타이틀-2", "설명", "바디", Set.of(TagType.JAVASCRIPT)),
+                RequestSaveArticle.of("타이틀-3", "설명", "바디", Set.of(TagType.PYTHON))
         );
 
         List<RequestSaveArticle> seokArticles = List.of(
-                RequestSaveArticle.of("타이틀-4", "설명", "바디", List.of("Java")),
-                RequestSaveArticle.of("타이틀-5", "설명", "바디", List.of("javascript"))
+                RequestSaveArticle.of("타이틀-4", "설명", "바디", Set.of(TagType.JAVA)),
+                RequestSaveArticle.of("타이틀-5", "설명", "바디", Set.of(TagType.JAVASCRIPT))
         );
 
         List<Article> dummySrArticles = srArticles.stream()

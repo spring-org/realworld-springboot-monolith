@@ -4,6 +4,7 @@ import com.example.realworld.application.articles.dto.*;
 import com.example.realworld.application.articles.exception.NotFoundCommentException;
 import com.example.realworld.application.articles.persistence.repository.ArticleRepository;
 import com.example.realworld.application.articles.persistence.repository.CommentRepository;
+import com.example.realworld.application.tags.persistence.TagType;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
 import com.example.realworld.core.exception.UnauthorizedUserException;
@@ -13,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -48,11 +49,11 @@ class CommentBusinessServiceTest {
 
         User otherUser = User.of("other@gmail.com", "1234", "otherName");
         User savedOtherUser = userRepository.save(otherUser);
-        ResponseArticle responseArticle = articleService.postArticle(authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", List.of("Text")));
+        ResponseSingleArticle responseSingleArticle = articleService.postArticle(authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", Set.of(TagType.KOTLIN)));
 
         // when
         ResponseSingleComment responseComment = commentService.postComment(
-                savedOtherUser.getEmail(), responseArticle.getSlug(), RequestSaveComment.from("내용"));
+                savedOtherUser.getEmail(), responseSingleArticle.getSlug(), RequestSaveComment.from("내용"));
 
         // then
         assertThat(responseComment.getAuthor().getUserName()).isEqualTo(savedOtherUser.getProfile().getUserName());
@@ -69,13 +70,14 @@ class CommentBusinessServiceTest {
         String otherUserEmail = "other@gmail.com";
         User otherUser = User.of(otherUserEmail, "1234", "otherName");
         userRepository.save(otherUser);
-        ResponseArticle responseArticle = articleService.postArticle(authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", List.of("Text")));
+        ResponseSingleArticle responseArticle = articleService.postArticle(
+                authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", Set.of(TagType.PHP)));
 
         // when
         commentService.postComment(otherUserEmail, responseArticle.getSlug(), RequestSaveComment.from("커멘트 내용1"));
         commentService.postComment(otherUserEmail, responseArticle.getSlug(), RequestSaveComment.from("커멘트 내용2"));
 
-        ResponseMultiComments commentsByArticle = commentService.getCommentsByArticle(responseArticle.getSlug());
+        ResponseMultiComment commentsByArticle = commentService.getCommentsByArticle(responseArticle.getSlug());
 
         // then
         assertThat(commentsByArticle.getCommentSize()).isEqualTo(2);
@@ -92,15 +94,15 @@ class CommentBusinessServiceTest {
         String otherUserEmail = "other@gmail.com";
         User otherUser = User.of(otherUserEmail, "1234", "otherName");
         userRepository.save(otherUser);
-        ResponseArticle responseArticle = articleService.postArticle(authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", List.of("Text")));
+        ResponseSingleArticle responseSingleArticle = articleService.postArticle(authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", Set.of(TagType.RUBY)));
 
         // when
-        ResponseSingleComment singleComment = commentService.postComment(otherUserEmail, responseArticle.getSlug(), RequestSaveComment.from("커멘트 내용1"));
-        commentService.postComment(otherUserEmail, responseArticle.getSlug(), RequestSaveComment.from("커멘트 내용2"));
+        ResponseSingleComment singleComment = commentService.postComment(otherUserEmail, responseSingleArticle.getSlug(), RequestSaveComment.from("커멘트 내용1"));
+        commentService.postComment(otherUserEmail, responseSingleArticle.getSlug(), RequestSaveComment.from("커멘트 내용2"));
 
-        commentService.deleteComment(otherUserEmail, responseArticle.getSlug(), singleComment.getId());
+        commentService.deleteComment(otherUserEmail, responseSingleArticle.getSlug(), singleComment.getId());
 
-        ResponseMultiComments commentsByArticle = commentService.getCommentsByArticle(responseArticle.getSlug());
+        ResponseMultiComment commentsByArticle = commentService.getCommentsByArticle(responseSingleArticle.getSlug());
 
         // then
         assertThat(commentsByArticle.getCommentSize()).isOne();
@@ -117,10 +119,10 @@ class CommentBusinessServiceTest {
         String otherUserEmail = "other@gmail.com";
         User otherUser = User.of(otherUserEmail, "1234", "otherName");
         userRepository.save(otherUser);
-        ResponseArticle responseArticle = articleService.postArticle(authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", List.of("Text")));
+        ResponseSingleArticle responseSingleArticle = articleService.postArticle(authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", Set.of(TagType.R)));
 
         // when
-        String slug = responseArticle.getSlug();
+        String slug = responseSingleArticle.getSlug();
         Long id = commentService.postComment(otherUserEmail, slug, RequestSaveComment.from("커멘트 내용1")).getId();
         commentService.postComment(otherUserEmail, slug, RequestSaveComment.from("커멘트 내용2"));
 
@@ -140,10 +142,10 @@ class CommentBusinessServiceTest {
         String otherUserEmail = "other@gmail.com";
         User otherUser = User.of(otherUserEmail, "1234", "otherName");
         userRepository.save(otherUser);
-        ResponseArticle responseArticle = articleService.postArticle(authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", List.of("Text")));
+        ResponseSingleArticle responseSingleArticle = articleService.postArticle(authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", Set.of(TagType.CPP)));
 
         // when
-        String slug = responseArticle.getSlug();
+        String slug = responseSingleArticle.getSlug();
         commentService.postComment(otherUserEmail, slug, RequestSaveComment.from("커멘트 내용1")).getId();
         commentService.postComment(otherUserEmail, slug, RequestSaveComment.from("커멘트 내용2"));
         long notExistsCommentId = 2L;

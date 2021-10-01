@@ -2,14 +2,15 @@ package com.example.realworld.application.articles.persistence.repository;
 
 import com.example.realworld.application.articles.dto.RequestPageCondition;
 import com.example.realworld.application.articles.persistence.Article;
-import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Pageable;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 import static com.example.realworld.application.articles.persistence.QArticle.article;
 import static com.example.realworld.application.follows.persistence.QFollow.follow;
@@ -25,21 +26,14 @@ public class ArticleRepositoryImpl implements ArticleQuerydslRepository {
 
     @Override
     public List<Article> searchPageArticle(RequestPageCondition condition) { // string
-        BooleanBuilder builder = new BooleanBuilder();
-        // TODO 확인 필요..
-//        if (StringUtils.hasText(condition.getTag())) {
-//            builder.and(article.tags.contains(Tag.of(condition.getTag())));
-//        }
-        if (StringUtils.hasText(condition.getAuthor())) {
-            //
-            builder.and(article.author.email.eq(condition.getAuthor()));
-        }
-        if (StringUtils.hasText(condition.getFavorited())) {
-            builder.and(article.author.profile.userName.eq(condition.getFavorited()));
-        }
+
         return Collections.unmodifiableList(queryFactory
                 .selectFrom(article)
-                .where(builder)
+                .where(
+                        condition(condition.getTag(), article.tags::contains),
+                        condition(condition.getAuthor(), article.author.email::eq)
+//                        condition(condition.getFavorited(), user.followers.any().toUser.email::eq)
+                )
                 .offset(condition.getOffset())
                 .limit(condition.getLimit())
                 .fetch());
@@ -61,4 +55,9 @@ public class ArticleRepositoryImpl implements ArticleQuerydslRepository {
                 .limit(pageable.getPageSize())
                 .fetch());
     }
+
+    private <T> BooleanExpression condition(T value, Function<T, BooleanExpression> function) {
+        return Optional.ofNullable(value).map(function).orElse(null);
+    }
+
 }

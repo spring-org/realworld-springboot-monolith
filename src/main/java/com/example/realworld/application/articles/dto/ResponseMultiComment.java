@@ -9,21 +9,21 @@ import java.util.stream.Collectors;
 
 @Getter
 @ToString
-public class ResponseMultiComments {
+public class ResponseMultiComment {
 
     private final Set<ResponseSingleComment> comments;
 
     private final Integer commentSize;
 
-    private ResponseMultiComments(Set<ResponseSingleComment> comments) {
+    private ResponseMultiComment(Set<ResponseSingleComment> comments) {
         this.comments = comments;
         this.commentSize = comments.size();
     }
 
-    public static ResponseMultiComments from(Set<Comment> comments) {
+    public static ResponseMultiComment from(Set<Comment> comments) {
         Set<ResponseSingleComment> responseSingleComments = comments.stream()
                 .map(ResponseSingleComment::from)
                 .collect(Collectors.toUnmodifiableSet());
-        return new ResponseMultiComments(responseSingleComments);
+        return new ResponseMultiComment(responseSingleComments);
     }
 }

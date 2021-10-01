@@ -1,6 +1,6 @@
 package com.example.realworld.application.tags.dto;
 
-import com.example.realworld.application.tags.persistence.Tag;
+import com.example.realworld.application.tags.persistence.TagType;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Getter;
 
@@ -14,7 +14,7 @@ public class ResponseSingleTag {
         this.tagName = tagName;
     }
 
-    public static ResponseSingleTag from(Tag tag) {
-        return new ResponseSingleTag(tag.getTagName());
+    public static ResponseSingleTag from(TagType tag) {
+        return new ResponseSingleTag(tag.tagName());
     }
 }

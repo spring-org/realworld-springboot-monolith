@@ -11,11 +11,12 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ResponseArticle {
+public class ResponseSingleArticle {
 
     private String slug;
     private String title;
@@ -30,16 +31,16 @@ public class ResponseArticle {
     private int favoritesCount;
     private ResponseProfile user;
 
-    private ResponseArticle(Article article, ResponseProfile user) {
+    private ResponseSingleArticle(Article article, ResponseProfile user) {
         this(article, user, null);
     }
 
-    private ResponseArticle(Article article, ResponseProfile user, User favoriteUser) {
+    private ResponseSingleArticle(Article article, ResponseProfile user, User favoriteUser) {
         this.slug = article.getSlug();
         this.title = article.getTitle();
         this.description = article.getDescription();
         this.body = article.getBody();
-        this.tagList = ResponseMultiTags.from(article.getTags());
+        this.tagList = ResponseMultiTags.from(new ArrayList<>(article.getTags()));
         this.createdAt = article.getCreatedAt();
         this.updatedAt = article.getUpdatedAt();
         this.favorited = article.containsFavUser(favoriteUser);
@@ -47,11 +48,11 @@ public class ResponseArticle {
         this.user = user;
     }
 
-    public static ResponseArticle from(Article article) {
-        return new ResponseArticle(article, ResponseProfile.of(article.getAuthor()));
+    public static ResponseSingleArticle from(Article article) {
+        return new ResponseSingleArticle(article, ResponseProfile.of(article.getAuthor()));
     }
 
-    public static ResponseArticle of(Article article, User favoriteUser) {
-        return new ResponseArticle(article, ResponseProfile.of(article.getAuthor()), favoriteUser);
+    public static ResponseSingleArticle of(Article article, User favoriteUser) {
+        return new ResponseSingleArticle(article, ResponseProfile.of(article.getAuthor()), favoriteUser);
     }
 }

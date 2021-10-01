@@ -1,20 +1,18 @@
 package com.example.realworld.application.tags.presentation;
 
 import com.example.realworld.application.tags.dto.ResponseMultiTags;
-import com.example.realworld.application.tags.service.TagService;
-import lombok.RequiredArgsConstructor;
+import com.example.realworld.application.tags.persistence.TagType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@RequestMapping(name = "/api/tags")
-@RequiredArgsConstructor
-public class TagApi {
+import java.util.List;
 
-    private final TagService tagService;
+@RestController
+@RequestMapping(value = "/api/tags")
+public class TagApi {
 
     /**
      * 전체 태그 리스트를 조회
@@ -24,7 +22,8 @@ public class TagApi {
     @GetMapping
     public ResponseEntity<ResponseMultiTags> getTags() {
 
-        ResponseMultiTags responseMultiTag = tagService.getTags();
+        List<TagType> tagTypes = TagType.all();
+        ResponseMultiTags responseMultiTag = ResponseMultiTags.from(tagTypes);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseMultiTag);
     }
