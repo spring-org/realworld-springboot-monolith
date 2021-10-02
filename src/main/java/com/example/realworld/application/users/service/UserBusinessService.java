@@ -82,15 +82,4 @@ public class UserBusinessService implements UserService {
 
         return ResponseProfile.of(findUserProfile);
     }
-
-    /**
-     * 사용자의 등록 유무 확인
-     *
-     * @param email 특정 사용자의 이메일 정보
-     * @return 등록된 사용자의 유무
-     */
-    @Override
-    public boolean existsUserByEmail(String email) {
-        return userDomainService.existsByEmail(email);
-    }
 }

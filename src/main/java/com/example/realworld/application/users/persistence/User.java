@@ -79,15 +79,19 @@ public class User extends BaseTimeEntity implements Serializable {
         return new User(email, password, Profile.from(userName), null);
     }
 
-    public String userName() {
-        return this.profile.getUserName();
-    }
-
     public boolean isSameUser(User toUser) {
         return this.getEmail().equals(toUser.getEmail());
     }
-
     // ========================================== profile
+
+    public Profile profile() {
+        return profile;
+    }
+
+    public String userName() {
+        return this.profile.userName();
+    }
+
     // 프로필 업데이트
     public void update(RequestUpdateUser updateUser) {
         if (StringUtils.hasText(updateUser.getEmail())) {

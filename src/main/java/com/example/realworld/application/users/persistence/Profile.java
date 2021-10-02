@@ -1,7 +1,6 @@
 package com.example.realworld.application.users.persistence;
 
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -9,7 +8,6 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 
-@Getter
 @ToString
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -41,6 +39,18 @@ public class Profile implements Serializable {
 
     public static Profile of(String userName, String bio, String image, boolean following) {
         return new Profile(userName, bio, image, following);
+    }
+
+    public String userName() {
+        return userName;
+    }
+
+    public String bio() {
+        return bio;
+    }
+
+    public String image() {
+        return image;
     }
 
     public void changeUserName(String userName) {

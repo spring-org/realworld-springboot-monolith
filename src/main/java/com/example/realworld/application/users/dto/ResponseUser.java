@@ -22,8 +22,8 @@ public class ResponseUser {
     private ResponseUser(String email, String userName, Profile profile, String token) {
         this.email = email;
         this.userName = userName;
-        this.bio = profile.getBio();
-        this.image = profile.getImage();
+        this.bio = profile.bio();
+        this.image = profile.image();
         this.token = token;
     }
 
