@@ -103,15 +103,15 @@ class ArticleRepositoryTest {
         savedUser.addArticles(savedArticles);
 
         Article article = savedUser.getArticleByTitle("title-1")
-                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
+                .orElseThrow(NotFoundArticleException::new);
 
         article.update("updateTitle-1", "description", "body");
 
         User findUser = userRepository.findByEmail(savedUser.getEmail())
-                .orElseThrow(() -> new NotFoundUserException("사용자가 존재하지 않습니다."));
+                .orElseThrow(NotFoundUserException::new);
 
         Article updatedArticle = findUser.getArticleByTitle("updateTitle-1")
-                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
+                .orElseThrow(NotFoundArticleException::new);
 
         assertThat(updatedArticle.getTitle()).isEqualTo("updateTitle-1");
     }
@@ -131,15 +131,15 @@ class ArticleRepositoryTest {
         savedUser.addArticles(savedArticles);
 
         Article article = savedUser.getArticleByTitle("title-1")
-                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
+                .orElseThrow(NotFoundArticleException::new);
 
         article.update(null, null, null);
 
         User findUser = userRepository.findByEmail(savedUser.getEmail())
-                .orElseThrow(() -> new NotFoundUserException("사용자가 존재하지 않습니다."));
+                .orElseThrow(NotFoundUserException::new);
 
         Article updatedArticle = findUser.getArticleByTitle("title-1")
-                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
+                .orElseThrow(NotFoundArticleException::new);
 
         assertThat(updatedArticle.getTitle()).isEqualTo("title-1");
     }

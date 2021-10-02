@@ -8,7 +8,7 @@ import com.example.realworld.application.articles.persistence.Comment;
 import com.example.realworld.application.articles.persistence.repository.CommentRepository;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.service.UserDomainService;
-import com.example.realworld.core.exception.UnauthorizedUserException;
+import com.example.realworld.application.users.exception.UnauthorizedUserException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,7 +79,7 @@ public class CommentBusinessService implements CommentService {
             commentRepository.delete(findComment);
             findArticle.removeComment(findComment);
         } else {
-            throw new UnauthorizedUserException("권한이 없습니다.");
+            throw new UnauthorizedUserException();
         }
     }
 }

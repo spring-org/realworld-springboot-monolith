@@ -5,7 +5,7 @@ import com.example.realworld.application.users.dto.RequestSaveUser;
 import com.example.realworld.application.users.dto.RequestUpdateUser;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
 import com.example.realworld.application.users.service.UserService;
-import com.example.realworld.core.exception.UnauthorizedUserException;
+import com.example.realworld.application.users.exception.UnauthorizedUserException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

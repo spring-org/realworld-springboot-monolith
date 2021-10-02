@@ -121,7 +121,7 @@ public class Article extends BaseTimeEntity {
         return this.comments.stream()
                 .filter(comment -> comment.isMatches(commentId))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundCommentException("존재하지 않는 커멘트입니다."));
+                .orElseThrow(NotFoundCommentException::new);
     }
 
     public boolean isMatches(String title) {

@@ -1,7 +1,7 @@
 package com.example.realworld.application.follows.service;
 
 import com.example.realworld.application.follows.exception.CannotSelfFollowException;
-import com.example.realworld.application.follows.exception.DuplicateFollowException;
+import com.example.realworld.application.follows.exception.DuplicatedFollowException;
 import com.example.realworld.application.follows.exception.NotFoundFollowException;
 import com.example.realworld.application.follows.persistence.Follow;
 import com.example.realworld.application.users.dto.ResponseProfile;
@@ -31,14 +31,14 @@ public class FollowBusinessService implements FollowService {
     public ResponseProfile follow(final String toEmail, final String fromEmail) {
 
         if (fromEmail.equals(toEmail)) {
-            throw new CannotSelfFollowException("자기 자신을 팔로우 할 수 없습니다.");
+            throw new CannotSelfFollowException();
         }
 
         User toUser = userDomainService.findUserByEmail(toEmail);
         User fromUser = userDomainService.findUserByEmail(fromEmail);
 
         if (toUser.isFollowing(fromUser)) {
-            throw new DuplicateFollowException("이미 팔로잉 중입니다.");
+            throw new DuplicatedFollowException();
         }
 
         Follow savedFollow = followDomainService.save(toUser, fromUser);
@@ -59,14 +59,14 @@ public class FollowBusinessService implements FollowService {
     public ResponseProfile unFollow(final String toEmail, final String fromEmail) {
 
         if (toEmail.equals(fromEmail)) {
-            throw new CannotSelfFollowException("자기 자신을 언 팔로우 할 수 없습니다.");
+            throw new CannotSelfFollowException();
         }
 
         User toUser = userDomainService.findUserByEmail(toEmail);
         User fromUser = userDomainService.findUserByEmail(fromEmail);
 
         if (!toUser.isFollowing(fromUser)) {
-            throw new NotFoundFollowException("존재하지 않는 팔로우 관계입니다.");
+            throw new NotFoundFollowException();
         }
 
         Follow findFollow = toUser.findFollowing(fromUser);

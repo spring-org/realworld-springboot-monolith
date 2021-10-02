@@ -10,6 +10,7 @@ test {
 def jacocoExclude = [
         '**/RealWorldApplication.class',
         '**/*Exception.class',
+        '**/*Handler.class',
         '**/*Config.class',
         '**/Response*.class',
         '**/Request*.class',

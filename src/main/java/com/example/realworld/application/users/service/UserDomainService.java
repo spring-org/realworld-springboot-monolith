@@ -21,7 +21,7 @@ public class UserDomainService {
     @Transactional(readOnly = true)
     public User findUserByEmail(String userEmail) {
         return userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new NotFoundUserException("존재하지 않는 사용자입니다."));
+                .orElseThrow(NotFoundUserException::new);
     }
 
     /**

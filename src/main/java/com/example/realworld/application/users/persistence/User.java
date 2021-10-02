@@ -1,7 +1,7 @@
 package com.example.realworld.application.users.persistence;
 
 import com.example.realworld.application.articles.persistence.Article;
-import com.example.realworld.application.favorites.exception.NotYetFavoriteArticleException;
+import com.example.realworld.application.favorites.exception.NotFoundFavoriteArticleException;
 import com.example.realworld.application.favorites.persistence.FavoriteArticle;
 import com.example.realworld.application.follows.exception.NotFoundFollowException;
 import com.example.realworld.application.follows.persistence.Follow;
@@ -153,7 +153,7 @@ public class User extends BaseTimeEntity implements Serializable {
         return this.following.stream()
                 .filter(follow -> follow.isSameToUser(toUser))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundFollowException("사용자 간의 팔로우 관계가 존재하지 않습니다."));
+                .orElseThrow(NotFoundFollowException::new);
     }
 
     // ========================================== Article
@@ -212,7 +212,7 @@ public class User extends BaseTimeEntity implements Serializable {
         return this.favoriteArticles.stream()
                 .filter(favArticle -> favArticle.isMatchesArticleBySlug(slug))
                 .findFirst()
-                .orElseThrow(() -> new NotYetFavoriteArticleException("좋아요 누른 글이 아닙니다."));
+                .orElseThrow(NotFoundFavoriteArticleException::new);
     }
 
     // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션

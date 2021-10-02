@@ -31,7 +31,7 @@ public class UserBusinessService implements UserService {
         boolean existsUser = userDomainService.existsByEmail(saveUser.getEmail());
 
         if (existsUser) {
-            throw new DuplicateUserException("이미 존재하는 사용자입니다.");
+            throw new DuplicateUserException();
         }
 
         User savedUser = userDomainService.save(RequestSaveUser.toEntity(saveUser));

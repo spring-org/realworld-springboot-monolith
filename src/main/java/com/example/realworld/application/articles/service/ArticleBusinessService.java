@@ -51,7 +51,7 @@ public class ArticleBusinessService implements ArticleService {
 
         boolean exists = userDomainService.existsByEmail(email);
         if (!exists) {
-            throw new NotFoundUserException("존재하지 않는 사용자입니다.");
+            throw new NotFoundUserException();
         }
         // User(1) -> (N)Follow(1) -> Article(N)
         List<Article> articles = articleRepository.searchPageFeed(email, pageable);
@@ -106,7 +106,7 @@ public class ArticleBusinessService implements ArticleService {
 
         final User findUser = userDomainService.findUserByEmail(email);
         Article findArticle = findUser.getArticleBySlug(slug)
-                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
+                .orElseThrow(NotFoundArticleException::new);
         findArticle.update(updateArticle.getTitle(), updateArticle.getDescription(), updateArticle.getBody());
 
         return ResponseSingleArticle.from(findArticle);
@@ -124,7 +124,7 @@ public class ArticleBusinessService implements ArticleService {
 
         final User findUser = userDomainService.findUserByEmail(email);
         Article findArticle = findUser.getArticleBySlug(slug)
-                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
+                .orElseThrow(NotFoundArticleException::new);
 
         findUser.removeArticle(findArticle);
         articleRepository.delete(findArticle);

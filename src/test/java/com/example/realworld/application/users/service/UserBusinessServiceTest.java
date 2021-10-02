@@ -6,7 +6,6 @@ import com.example.realworld.application.users.dto.ResponseProfile;
 import com.example.realworld.application.users.dto.ResponseUser;
 import com.example.realworld.application.users.exception.DuplicateUserException;
 import com.example.realworld.application.users.exception.NotFoundUserException;
-import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;

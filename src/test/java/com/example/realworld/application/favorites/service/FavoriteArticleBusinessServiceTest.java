@@ -2,11 +2,11 @@ package com.example.realworld.application.favorites.service;
 
 import com.example.realworld.application.articles.dto.RequestSaveArticle;
 import com.example.realworld.application.articles.dto.ResponseSingleArticle;
-import com.example.realworld.application.articles.exception.DuplicateFavoriteArticleException;
+import com.example.realworld.application.articles.exception.DuplicatedFavoriteArticleException;
 import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.persistence.repository.ArticleRepository;
 import com.example.realworld.application.articles.service.ArticleService;
-import com.example.realworld.application.favorites.exception.NotYetFavoriteArticleException;
+import com.example.realworld.application.favorites.exception.NotFoundFavoriteArticleException;
 import com.example.realworld.application.favorites.persistence.repository.FavoriteArticleRepository;
 import com.example.realworld.application.tags.persistence.TagType;
 import com.example.realworld.application.users.persistence.User;
@@ -86,7 +86,7 @@ class FavoriteArticleBusinessServiceTest {
         String slug = responseSingleArticle.getSlug();
         favoriteArticleService.favoriteArticle(email, slug);
 
-        assertThatExceptionOfType(DuplicateFavoriteArticleException.class)
+        assertThatExceptionOfType(DuplicatedFavoriteArticleException.class)
                 .isThrownBy(() -> favoriteArticleService.favoriteArticle(email, slug));
     }
 
@@ -136,7 +136,7 @@ class FavoriteArticleBusinessServiceTest {
 
         String slug = savedOtherUserWriteArticle1.getSlug();
 
-        assertThatExceptionOfType(NotYetFavoriteArticleException.class)
+        assertThatExceptionOfType(NotFoundFavoriteArticleException.class)
                 .isThrownBy(() -> favoriteArticleService.unFavoriteArticle(email, slug));
     }
 }

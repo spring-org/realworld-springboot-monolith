@@ -3,7 +3,7 @@ package com.example.realworld.application.users.presentation;
 import com.example.realworld.application.users.dto.RequestUpdateUser;
 import com.example.realworld.application.users.dto.ResponseUser;
 import com.example.realworld.application.users.service.UserService;
-import com.example.realworld.core.exception.UnauthorizedUserException;
+import com.example.realworld.application.users.exception.UnauthorizedUserException;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.http.HttpStatus;
@@ -32,7 +32,7 @@ public class UserApi {
 
         String email = (String) session.getAttribute(EMAIL);
         if (Strings.isEmpty(email)) {
-            throw new UnauthorizedUserException("접근 권한이 부족합니다.");
+            throw new UnauthorizedUserException();
         }
         ResponseUser responseUser = userService.getUserByEmail(email);
 
@@ -52,7 +52,7 @@ public class UserApi {
 
         String email = (String) session.getAttribute(EMAIL);
         if (Strings.isEmpty(email) || !email.equals(updateUser.getEmail())) {
-            throw new UnauthorizedUserException("접근 권한이 부족합니다.");
+            throw new UnauthorizedUserException();
         }
 
         ResponseUser responseUser = userService.updateUser(email, updateUser);
