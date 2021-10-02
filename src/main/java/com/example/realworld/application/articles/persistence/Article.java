@@ -92,7 +92,7 @@ public class Article extends BaseTimeEntity {
 
     // ========================================== Article
     public String author() {
-        return author.getProfile().getUserName();
+        return author.getProfile().userName();
     }
 
     public void update(String title, String description, String body) {

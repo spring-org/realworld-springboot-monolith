@@ -16,6 +16,6 @@ class ProfileTest {
     void when_createProfile_expected_equals_username() {
         Profile profile = createProfile();
 
-        assertThat(profile.getUserName()).isEqualTo("seokrae");
+        assertThat(profile.userName()).isEqualTo("seokrae");
     }
 }

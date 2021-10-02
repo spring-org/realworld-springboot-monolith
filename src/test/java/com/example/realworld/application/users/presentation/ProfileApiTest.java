@@ -1,7 +1,6 @@
 package com.example.realworld.application.users.presentation;
 
 import com.example.realworld.application.BaseSpringBootTest;
-import com.example.realworld.application.follows.exception.CannotFollowException;
 import com.example.realworld.application.follows.service.FollowService;
 import com.example.realworld.application.users.dto.RequestSaveUser;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
@@ -110,28 +109,6 @@ class ProfileApiTest extends BaseSpringBootTest {
                 .andReturn();
 
         assertThat(mvcResult.getResolvedException()).isInstanceOf(UnauthorizedUserException.class);
-    }
-
-    @DisplayName("팔로우 성공 시 프로필 조회 (자기 자신을 팔로우 하려는 경우) 실패 테스트")
-    @Test
-    void when_postFollowUser_expect_fail_already_follow() throws Exception {
-        // given
-        String fromUserEmail = "seokrae@gmail.com";
-        RequestSaveUser fromUser = RequestSaveUser.of(fromUserEmail, "seokrae", "1234");
-
-        // when
-        userService.postUser(fromUser);
-
-        // then
-        MvcResult mvcResult = mockMvc.perform(
-                        post("/api/profiles/{toEmail}/follow", fromUserEmail)
-                                .session(session)
-                )
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andReturn();
-
-        assertThat(mvcResult.getResolvedException()).isInstanceOf(CannotFollowException.class);
     }
 
     @DisplayName("언팔로우 시 프로필 조회 테스트")

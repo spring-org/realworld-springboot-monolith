@@ -1,9 +1,8 @@
 package com.example.realworld.application.users.presentation;
 
-import com.example.realworld.application.follows.exception.CannotFollowException;
 import com.example.realworld.application.follows.service.FollowService;
 import com.example.realworld.application.users.dto.ResponseProfile;
-import com.example.realworld.application.users.service.UserBusinessService;
+import com.example.realworld.application.users.service.UserService;
 import com.example.realworld.core.exception.UnauthorizedUserException;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
@@ -19,7 +18,7 @@ import javax.servlet.http.HttpSession;
 public class ProfileApi {
 
     public static final String EMAIL = "email";
-    private final UserBusinessService userService;
+    private final UserService userService;
     private final FollowService followService;
 
     /**
@@ -53,9 +52,6 @@ public class ProfileApi {
             throw new UnauthorizedUserException("접근 권한이 부족합니다.");
         }
 
-        if (fromEmail.equals(toEmail)) {
-            throw new CannotFollowException("자기 자신을 팔로우 할 수 없습니다.");
-        }
         ResponseProfile responseProfile = followService.follow(toEmail, fromEmail);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseProfile);

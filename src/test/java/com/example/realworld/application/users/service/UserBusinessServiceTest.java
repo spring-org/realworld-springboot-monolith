@@ -29,7 +29,7 @@ class UserBusinessServiceTest {
         userRepository.deleteAll();
     }
 
-    @DisplayName("사용자 등록 테스트")
+    @DisplayName("신규 사용자 등록 테스트")
     @Test
     void when_addUser_expected_success_createUser() {
         // given
@@ -48,9 +48,8 @@ class UserBusinessServiceTest {
         String email = "seokrae@gmail.com";
         RequestSaveUser saveUser =
                 RequestSaveUser.of(email, "seok", "1234");
-        User actual = RequestSaveUser.toEntity(saveUser);
         // when
-        userRepository.save(actual);
+        userBusinessService.postUser(saveUser);
         // then
         assertThatExceptionOfType(DuplicateUserException.class)
                 .isThrownBy(() -> userBusinessService.postUser(saveUser));
@@ -139,19 +138,5 @@ class UserBusinessServiceTest {
         ResponseProfile profile = userBusinessService.getProfile(email);
 
         assertThat(profile.getUserName()).isEqualTo("seok");
-    }
-
-    @DisplayName("사용자가 존재하는지 확인하는 테스트")
-    @Test
-    void when_existsUserByEmail_expect_success_true() {
-        String email = "seokrae@gmail.com";
-
-        RequestSaveUser saveUser =
-                RequestSaveUser.of(email, "seok", "1234");
-
-        userBusinessService.postUser(saveUser);
-        boolean exists = userBusinessService.existsUserByEmail(email);
-
-        assertThat(exists).isTrue();
     }
 }

@@ -1,6 +1,6 @@
 package com.example.realworld.application.users.service;
 
-import com.example.realworld.application.follows.exception.NotFoundFollowException;
+import com.example.realworld.application.users.exception.NotFoundUserException;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -9,10 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @SpringBootTest
 class UserDomainServiceTest {
+    @Autowired
+    private UserDomainService userDomainService;
+
     @Autowired
     private UserRepository userRepository;
 
@@ -21,16 +25,40 @@ class UserDomainServiceTest {
         userRepository.deleteAll();
     }
 
-    @DisplayName("사용자 간의 팔로우 조회 실패 테스트")
+    @DisplayName("사용자 조회 테스트")
     @Test
-    void when_getUser_expect_fail_not_found_follow_exception() {
+    void when_findUserByEmail_expect_success_find_user() {
+        // given
         String email = "seokrae@gmail.com";
-        String otherUserEmail = "other@gmail.com";
+        User actual = userDomainService.save(User.of(email, "1234", "SR"));
+        // when
+        User expect = userDomainService.findUserByEmail(email);
+        // then
+        assertThat(actual).isEqualTo(expect);
+    }
 
-        User author = userRepository.save(User.of(email, "1234", "SR"));
-        User otherUser = userRepository.save(User.of(otherUserEmail, "1234", "seok"));
+    @DisplayName("사용자 조회 예외 테스트")
+    @Test
+    void when_findUserByEmail_expect_fail_not_found_exception() {
+        // given
+        String email = "seokrae@gmail.com";
+        userDomainService.save(User.of(email, "1234", "SR"));
+        // when
+        String notExistsUserEmail = "not_found@gmail.com";
+        // then
+        assertThatExceptionOfType(NotFoundUserException.class)
+                .isThrownBy(() -> userDomainService.findUserByEmail(notExistsUserEmail));
+    }
 
-        assertThatExceptionOfType(NotFoundFollowException.class)
-                .isThrownBy(() -> author.findFollowing(otherUser));
+    @DisplayName("사용자 존재여부 확인 테스트")
+    @Test
+    void when_existsByEmail_expect_success_true() {
+        // given
+        String email = "seokrae@gmail.com";
+        userDomainService.save(User.of(email, "1234", "SR"));
+        // when
+        boolean expect = userDomainService.existsByEmail(email);
+        // then
+        assertThat(expect).isTrue();
     }
 }

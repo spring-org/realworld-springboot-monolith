@@ -56,7 +56,7 @@ class CommentBusinessServiceTest {
                 savedOtherUser.getEmail(), responseSingleArticle.getSlug(), RequestSaveComment.from("내용"));
 
         // then
-        assertThat(responseComment.getAuthor().getUserName()).isEqualTo(savedOtherUser.getProfile().getUserName());
+        assertThat(responseComment.getAuthor().getUserName()).isEqualTo(savedOtherUser.getProfile().userName());
     }
 
     @DisplayName("특정 글에 등록된 커멘트를 조회하는 테스트")
@@ -146,7 +146,7 @@ class CommentBusinessServiceTest {
 
         // when
         String slug = responseSingleArticle.getSlug();
-        commentService.postComment(otherUserEmail, slug, RequestSaveComment.from("커멘트 내용1")).getId();
+        commentService.postComment(otherUserEmail, slug, RequestSaveComment.from("커멘트 내용1"));
         commentService.postComment(otherUserEmail, slug, RequestSaveComment.from("커멘트 내용2"));
         long notExistsCommentId = 2L;
         // then

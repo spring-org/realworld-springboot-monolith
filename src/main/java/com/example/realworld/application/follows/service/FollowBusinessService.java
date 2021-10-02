@@ -1,5 +1,6 @@
 package com.example.realworld.application.follows.service;
 
+import com.example.realworld.application.follows.exception.CannotSelfFollowException;
 import com.example.realworld.application.follows.exception.DuplicateFollowException;
 import com.example.realworld.application.follows.exception.NotFoundFollowException;
 import com.example.realworld.application.follows.persistence.Follow;
@@ -29,6 +30,10 @@ public class FollowBusinessService implements FollowService {
     @Override
     public ResponseProfile follow(final String toEmail, final String fromEmail) {
 
+        if (fromEmail.equals(toEmail)) {
+            throw new CannotSelfFollowException("자기 자신을 팔로우 할 수 없습니다.");
+        }
+
         User toUser = userDomainService.findUserByEmail(toEmail);
         User fromUser = userDomainService.findUserByEmail(fromEmail);
 
@@ -52,6 +57,11 @@ public class FollowBusinessService implements FollowService {
     @Transactional
     @Override
     public ResponseProfile unFollow(final String toEmail, final String fromEmail) {
+
+        if (toEmail.equals(fromEmail)) {
+            throw new CannotSelfFollowException("자기 자신을 언 팔로우 할 수 없습니다.");
+        }
+
         User toUser = userDomainService.findUserByEmail(toEmail);
         User fromUser = userDomainService.findUserByEmail(fromEmail);
 

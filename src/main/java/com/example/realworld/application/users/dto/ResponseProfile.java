@@ -20,9 +20,9 @@ public class ResponseProfile {
 
     private ResponseProfile(final User author, final boolean following) {
         this.email = author.getEmail();
-        this.userName = author.getProfile().getUserName();
-        this.bio = author.getProfile().getBio();
-        this.image = author.getProfile().getImage();
+        this.userName = author.profile().userName();
+        this.bio = author.profile().bio();
+        this.image = author.profile().image();
         this.following = following;
     }
 

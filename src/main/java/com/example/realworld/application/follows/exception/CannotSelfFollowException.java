@@ -4,11 +4,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-public class CannotFollowException extends RuntimeException {
-    public CannotFollowException() {
+public class CannotSelfFollowException extends RuntimeException {
+    public CannotSelfFollowException() {
     }
 
-    public CannotFollowException(String message) {
+    public CannotSelfFollowException(String message) {
         super(message);
     }
 }

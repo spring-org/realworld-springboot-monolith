@@ -17,7 +17,4 @@ public interface UserService {
 
     // 사용자 조회(프로필)
     ResponseProfile getProfile(String email);
-
-    // 사용자 존재유무
-    boolean existsUserByEmail(String email);
 }

@@ -5,6 +5,7 @@ import com.example.realworld.application.articles.dto.ResponseMultiArticle;
 import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.persistence.repository.ArticleRepository;
 import com.example.realworld.application.articles.service.ArticleService;
+import com.example.realworld.application.follows.exception.CannotSelfFollowException;
 import com.example.realworld.application.follows.exception.DuplicateFollowException;
 import com.example.realworld.application.follows.exception.NotFoundFollowException;
 import com.example.realworld.application.follows.persistence.repository.FollowRepository;
@@ -13,6 +14,7 @@ import com.example.realworld.application.users.dto.ResponseProfile;
 import com.example.realworld.application.users.exception.NotFoundUserException;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
+import com.example.realworld.application.users.service.UserDomainService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,6 +40,9 @@ class FollowBusinessServiceTest {
     private ArticleService articleService;
 
     @Autowired
+    private UserDomainService userDomainService;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -59,14 +64,27 @@ class FollowBusinessServiceTest {
         User fromUser = User.of("seok1@gmail.com", "1234", "seok1");
         User toUser = User.of("seok2@gmail.com", "1234", "seok2");
 
-        userRepository.save(fromUser);
-        userRepository.save(toUser);
+        userDomainService.save(fromUser);
+        userDomainService.save(toUser);
 
         // when
         ResponseProfile responseProfile = followBusinessService.follow(fromUser.getEmail(), toUser.getEmail());
 
         // then
         assertThat(responseProfile.isFollowing()).isTrue();
+    }
+
+    @DisplayName("사용자 간의 팔로우 조회 실패 테스트")
+    @Test
+    void when_getUser_expect_fail_not_found_follow_exception() {
+        String email = "seokrae@gmail.com";
+        String otherUserEmail = "other@gmail.com";
+
+        User author = userDomainService.save(User.of(email, "1234", "SR"));
+        User otherUser = userDomainService.save(User.of(otherUserEmail, "1234", "seok"));
+
+        assertThatExceptionOfType(NotFoundFollowException.class)
+                .isThrownBy(() -> author.findFollowing(otherUser));
     }
 
     @DisplayName("사용자 간의 팔로우 예외 테스트")
@@ -76,8 +94,8 @@ class FollowBusinessServiceTest {
         User fromUser = User.of("seok1@gmail.com", "1234", "seok1");
         User toUser = User.of("seok2@gmail.com", "1234", "seok2");
 
-        userRepository.save(fromUser);
-        userRepository.save(toUser);
+        userDomainService.save(fromUser);
+        userDomainService.save(toUser);
 
         // when
         String fromEmail = fromUser.getEmail();
@@ -89,6 +107,21 @@ class FollowBusinessServiceTest {
                 .isThrownBy(() -> followBusinessService.follow(fromEmail, toEmail));
     }
 
+    @DisplayName("사용자 간의 팔로우 예외(Self Follow) 테스트")
+    @Test
+    void when_follow_expect_fail_self_follow_exception() {
+        // given
+        User fromUser = User.of("seok1@gmail.com", "1234", "seok1");
+        User toUser = User.of("seok2@gmail.com", "1234", "seok2");
+        userDomainService.save(fromUser);
+        userDomainService.save(toUser);
+        // when
+        String fromEmail = fromUser.getEmail();
+        // then
+        assertThatExceptionOfType(CannotSelfFollowException.class)
+                .isThrownBy(() -> followBusinessService.follow(fromEmail, fromEmail));
+    }
+
     @DisplayName("사용자 간의 언팔로우 테스트")
     @Test
     void when_unFollow_expect_success_single() {
@@ -96,8 +129,8 @@ class FollowBusinessServiceTest {
         User fromUser = User.of("seok1@gmail.com", "1234", "seok1");
         User toUser = User.of("seok2@gmail.com", "1234", "seok2");
 
-        User savedFromUser = userRepository.save(fromUser);
-        userRepository.save(toUser);
+        User savedFromUser = userDomainService.save(fromUser);
+        userDomainService.save(toUser);
 
         // when
         followBusinessService.follow(fromUser.getEmail(), toUser.getEmail());
@@ -107,6 +140,22 @@ class FollowBusinessServiceTest {
         assertThat(savedFromUser.isFollowing(toUser)).isFalse();
     }
 
+    @DisplayName("사용자 간의 팔로우 예외(Self Follow) 테스트")
+    @Test
+    void when_unFollow_expect_fail_self_follow_exception() {
+        // given
+        User fromUser = User.of("seok1@gmail.com", "1234", "seok1");
+        User toUser = User.of("seok2@gmail.com", "1234", "seok2");
+        userDomainService.save(fromUser);
+        userDomainService.save(toUser);
+        // when
+        String fromEmail = fromUser.getEmail();
+        followBusinessService.follow(fromEmail, toUser.getEmail());
+        // then
+        assertThatExceptionOfType(CannotSelfFollowException.class)
+                .isThrownBy(() -> followBusinessService.unFollow(fromEmail, fromEmail));
+    }
+
     @DisplayName("사용자 간의 언팔로우 예외 테스트")
     @Test
     void when_unFollow_expect_fail_not_found_follow_exception() {
@@ -114,8 +163,8 @@ class FollowBusinessServiceTest {
         User fromUser = User.of("seok1@gmail.com", "1234", "seok1");
         User toUser = User.of("seok2@gmail.com", "1234", "seok2");
 
-        User savedFromUser = userRepository.save(fromUser);
-        User savedToUser = userRepository.save(toUser);
+        User savedFromUser = userDomainService.save(fromUser);
+        User savedToUser = userDomainService.save(toUser);
 
         // when
         String fromEmail = savedFromUser.getEmail();
@@ -163,8 +212,8 @@ class FollowBusinessServiceTest {
     }
 
     private void dummyArticle(String email, String otherUserEmail) {
-        User author = userRepository.save(User.of(email, "1234", "SR"));
-        User otherUser = userRepository.save(User.of(otherUserEmail, "1234", "seok"));
+        User author = userDomainService.save(User.of(email, "1234", "SR"));
+        User otherUser = userDomainService.save(User.of(otherUserEmail, "1234", "seok"));
 
         List<RequestSaveArticle> srArticles = List.of(
                 RequestSaveArticle.of("타이틀-1", "설명", "바디", Set.of(TagType.JAVA)),
