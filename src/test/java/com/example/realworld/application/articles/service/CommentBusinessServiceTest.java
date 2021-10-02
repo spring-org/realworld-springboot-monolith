@@ -7,7 +7,7 @@ import com.example.realworld.application.articles.persistence.repository.Comment
 import com.example.realworld.application.tags.persistence.TagType;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
-import com.example.realworld.core.exception.UnauthorizedUserException;
+import com.example.realworld.application.users.exception.UnauthorizedUserException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

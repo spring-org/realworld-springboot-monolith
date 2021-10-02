@@ -84,7 +84,7 @@ class CommentRepositoryTest {
         savedComment.update("updateBody");
 
         Article findArticle = savedUser.getArticleByTitle("title")
-                .orElseThrow(() -> new NotFoundArticleException("존재하지 않는 글입니다."));
+                .orElseThrow(NotFoundArticleException::new);
         String body = findArticle.getComments(savedComment.getId()).getBody();
 
         // then

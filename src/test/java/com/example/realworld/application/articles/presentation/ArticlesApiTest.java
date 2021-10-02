@@ -30,14 +30,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 class ArticlesApiTest extends BaseSpringBootTest {
+
     @Autowired
-    protected UserService userService;
+    private UserService userService;
     @Autowired
     private ArticleService articleService;
     @Autowired
     private CommentService commentService;
     @Autowired
-    protected UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
     private ArticleRepository articleRepository;
     @Autowired

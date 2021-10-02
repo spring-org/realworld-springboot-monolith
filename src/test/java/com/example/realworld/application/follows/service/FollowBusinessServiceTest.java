@@ -6,7 +6,7 @@ import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.persistence.repository.ArticleRepository;
 import com.example.realworld.application.articles.service.ArticleService;
 import com.example.realworld.application.follows.exception.CannotSelfFollowException;
-import com.example.realworld.application.follows.exception.DuplicateFollowException;
+import com.example.realworld.application.follows.exception.DuplicatedFollowException;
 import com.example.realworld.application.follows.exception.NotFoundFollowException;
 import com.example.realworld.application.follows.persistence.repository.FollowRepository;
 import com.example.realworld.application.tags.persistence.TagType;
@@ -103,7 +103,7 @@ class FollowBusinessServiceTest {
         followBusinessService.follow(fromEmail, toEmail);
 
         // then
-        assertThatExceptionOfType(DuplicateFollowException.class)
+        assertThatExceptionOfType(DuplicatedFollowException.class)
                 .isThrownBy(() -> followBusinessService.follow(fromEmail, toEmail));
     }
 

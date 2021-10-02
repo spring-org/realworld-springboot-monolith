@@ -3,7 +3,7 @@ package com.example.realworld.application.users.presentation;
 import com.example.realworld.application.follows.service.FollowService;
 import com.example.realworld.application.users.dto.ResponseProfile;
 import com.example.realworld.application.users.service.UserService;
-import com.example.realworld.core.exception.UnauthorizedUserException;
+import com.example.realworld.application.users.exception.UnauthorizedUserException;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.http.HttpStatus;
@@ -49,7 +49,7 @@ public class ProfileApi {
 
         String fromEmail = (String) session.getAttribute(EMAIL);
         if (Strings.isEmpty(fromEmail)) {
-            throw new UnauthorizedUserException("접근 권한이 부족합니다.");
+            throw new UnauthorizedUserException();
         }
 
         ResponseProfile responseProfile = followService.follow(toEmail, fromEmail);
@@ -70,7 +70,7 @@ public class ProfileApi {
 
         String fromEmail = (String) session.getAttribute(EMAIL);
         if (Strings.isEmpty(fromEmail)) {
-            throw new UnauthorizedUserException("접근 권한이 부족합니다.");
+            throw new UnauthorizedUserException();
         }
 
         ResponseProfile responseProfile = followService.unFollow(toEmail, fromEmail);

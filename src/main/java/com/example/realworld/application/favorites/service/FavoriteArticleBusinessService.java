@@ -1,7 +1,7 @@
 package com.example.realworld.application.favorites.service;
 
 import com.example.realworld.application.articles.dto.ResponseSingleArticle;
-import com.example.realworld.application.articles.exception.DuplicateFavoriteArticleException;
+import com.example.realworld.application.articles.exception.DuplicatedFavoriteArticleException;
 import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.service.ArticleDomainService;
 import com.example.realworld.application.favorites.persistence.FavoriteArticle;
@@ -35,7 +35,7 @@ public class FavoriteArticleBusinessService implements FavoriteArticleService {
         boolean existsFavorite = findUser.isMatchesArticleBySlug(slug);
 
         if (existsFavorite) {
-            throw new DuplicateFavoriteArticleException("이미 좋아요 누른 글입니다.");
+            throw new DuplicatedFavoriteArticleException();
         }
 
         Article findArticle = articleDomainService.getArticleOrElseThrow(slug);
