@@ -10,11 +10,11 @@ import javax.validation.constraints.NotEmpty;
 @ToString
 public class RequestSaveUser {
 
-    @NotEmpty
+    @NotEmpty(message = "email is not empty")
     private final String email;
-    @NotEmpty
+    @NotEmpty(message = "userName is not empty")
     private final String userName;
-    @NotEmpty
+    @NotEmpty(message = "password is not empty")
     private final String password;
 
     private RequestSaveUser(String email, String userName, String password) {

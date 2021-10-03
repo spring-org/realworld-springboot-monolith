@@ -1,6 +1,6 @@
 package com.example.realworld.application.articles.persistence.repository;
 
-import com.example.realworld.application.articles.dto.RequestPageCondition;
+import com.example.realworld.application.articles.dto.RequestArticleCondition;
 import com.example.realworld.application.articles.dto.RequestSaveArticle;
 import com.example.realworld.application.articles.exception.NotFoundArticleException;
 import com.example.realworld.application.articles.persistence.Article;
@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -166,8 +167,9 @@ class ArticleRepositoryTest {
         List<Article> articles = articleRepository.saveAll(dummyArticles);
 
         // when
-        RequestPageCondition condition = RequestPageCondition.of("Java", email, null, 20, 0);
-        List<Article> searchArticles = articleRepository.searchPageArticle(condition);
+        RequestArticleCondition condition = RequestArticleCondition.of("Java", email, null);
+        PageRequest pageRequest = PageRequest.of(0, 20);
+        List<Article> searchArticles = articleRepository.searchPageArticle(condition, pageRequest);
 
         // then
         assertThat(searchArticles.size()).isEqualTo(3);
@@ -191,8 +193,9 @@ class ArticleRepositoryTest {
         List<Article> articles = getDummyArticles();
 
         // when
-        RequestPageCondition condition = RequestPageCondition.of(null, null, null, 20, 0);
-        List<Article> searchArticles = articleRepository.searchPageArticle(condition);
+        RequestArticleCondition condition = RequestArticleCondition.of(null, null, null);
+        PageRequest pageRequest = PageRequest.of(0, 20);
+        List<Article> searchArticles = articleRepository.searchPageArticle(condition, pageRequest);
 
         // then
         assertThat(searchArticles.size()).isEqualTo(5);

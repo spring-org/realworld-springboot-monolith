@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -161,10 +162,10 @@ class ArticleBusinessServiceTest {
     void when_searchPage_expect_success_condition() {
         // given
         getDummyArticles();
-        RequestPageCondition requestCondition = RequestPageCondition.of(null, "other@gmail.com", null, 20, 0);
-
+        RequestArticleCondition requestCondition = RequestArticleCondition.of(null, "other@gmail.com", null);
+        PageRequest pageRequest = PageRequest.of(0, 20);
         // when
-        ResponseMultiArticle responseMultiArticle = articleService.searchPageArticles(requestCondition);
+        ResponseMultiArticle responseMultiArticle = articleService.searchPageArticles(requestCondition, pageRequest);
         int articleCount = responseMultiArticle.getArticleCount();
 
         // then

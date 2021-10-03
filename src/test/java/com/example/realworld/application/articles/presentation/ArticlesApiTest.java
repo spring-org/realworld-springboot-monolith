@@ -65,7 +65,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
         // given
         String email = "seokrae@gmail.com";
         RequestSaveUser saveUser = RequestSaveUser.of(email, "seok", "1234");
-        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java");
+        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java", "JavaScript");
 
         // when
         userService.postUser(saveUser);
@@ -83,7 +83,8 @@ class ArticlesApiTest extends BaseSpringBootTest {
                 .andExpect(jsonPath("$.title").value("타이틀"))
                 .andExpect(jsonPath("$.description").value("설명"))
                 .andExpect(jsonPath("$.body").value("내용"))
-                .andExpect(jsonPath("$.tagList", 0).value("Java"))
+                .andExpect(jsonPath("$.tagList.[0]").value("Java"))
+                .andExpect(jsonPath("$.tagList.[1]").value("JavaScript"))
                 .andExpect(jsonPath("$.favorited").value(false))
                 .andExpect(jsonPath("$.favoritesCount").value(0))
                 .andExpect(jsonPath("$.author.email").value("seokrae@gmail.com"))
@@ -352,8 +353,8 @@ class ArticlesApiTest extends BaseSpringBootTest {
         RequestSaveArticle requestSaveArticle3 = RequestSaveArticle.of("타이틀3", "설명", "내용", "JavaScript");
         RequestSaveArticle requestSaveArticle4 = RequestSaveArticle.of("타이틀4", "설명", "내용", "Python");
         RequestSaveArticle requestSaveArticle5 = RequestSaveArticle.of("타이틀5", "설명", "내용", "JavaScript");
-        RequestPageCondition pageCondition =
-                RequestPageCondition.of("JavaScript", "other@gmail.com", null, 20, 0);
+        RequestArticleCondition pageCondition =
+                RequestArticleCondition.of("JavaScript", "other@gmail.com", null);
         // when
         userService.postUser(requestSaveUser);
         userService.postUser(requestSaveOtherUser);
@@ -373,10 +374,10 @@ class ArticlesApiTest extends BaseSpringBootTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.articles.[0].slug").value(responseSingleArticle3.getSlug()))
-                .andExpect(jsonPath("$.articles.[0].title").value(responseSingleArticle3.getTitle()))
-                .andExpect(jsonPath("$.articles.[0].description").value(responseSingleArticle3.getDescription()))
-                .andExpect(jsonPath("$.articles.[0].body").value(responseSingleArticle3.getBody()))
+                .andExpect(jsonPath("$.articles.[0].slug").value(responseSingleArticle5.getSlug()))
+                .andExpect(jsonPath("$.articles.[0].title").value(responseSingleArticle5.getTitle()))
+                .andExpect(jsonPath("$.articles.[0].description").value(responseSingleArticle5.getDescription()))
+                .andExpect(jsonPath("$.articles.[0].body").value(responseSingleArticle5.getBody()))
                 .andExpect(jsonPath("$.articles.[0].tagList.[0]").value("JavaScript"))
                 .andExpect(jsonPath("$.articles.[0].createdAt").exists())
                 .andExpect(jsonPath("$.articles.[0].updatedAt").exists())
@@ -385,10 +386,10 @@ class ArticlesApiTest extends BaseSpringBootTest {
                 .andExpect(jsonPath("$.articles.[0].author.email").value("other@gmail.com"))
                 .andExpect(jsonPath("$.articles.[0].author.userName").value("otherSeok"))
                 .andExpect(jsonPath("$.articles.[0].author.following").value(false))
-                .andExpect(jsonPath("$.articles.[1].slug").value(responseSingleArticle5.getSlug()))
-                .andExpect(jsonPath("$.articles.[1].title").value(responseSingleArticle5.getTitle()))
-                .andExpect(jsonPath("$.articles.[1].description").value(responseSingleArticle5.getDescription()))
-                .andExpect(jsonPath("$.articles.[1].body").value(responseSingleArticle5.getBody()))
+                .andExpect(jsonPath("$.articles.[1].slug").value(responseSingleArticle3.getSlug()))
+                .andExpect(jsonPath("$.articles.[1].title").value(responseSingleArticle3.getTitle()))
+                .andExpect(jsonPath("$.articles.[1].description").value(responseSingleArticle3.getDescription()))
+                .andExpect(jsonPath("$.articles.[1].body").value(responseSingleArticle3.getBody()))
                 .andExpect(jsonPath("$.articleCount").value(2));
     }
 

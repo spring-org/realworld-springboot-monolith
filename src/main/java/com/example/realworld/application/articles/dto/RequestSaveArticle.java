@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.Arrays;
 
 @Getter
@@ -15,8 +16,11 @@ import java.util.Arrays;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RequestSaveArticle {
 
+    @NotEmpty(message = "title is not empty")
     private String title;
+    @NotEmpty(message = "description is not empty")
     private String description;
+    @NotEmpty(message = "body is not empty")
     private String body;
     private String[] tagList;
 

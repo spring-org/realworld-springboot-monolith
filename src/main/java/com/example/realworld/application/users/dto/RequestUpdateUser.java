@@ -9,7 +9,7 @@ import javax.validation.constraints.NotEmpty;
 @ToString
 public class RequestUpdateUser {
 
-    @NotEmpty
+    @NotEmpty(message = "email is not empty")
     private final String email;
     private final String userName;
     private final String password;

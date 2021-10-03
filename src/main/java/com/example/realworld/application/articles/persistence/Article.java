@@ -11,10 +11,9 @@ import org.springframework.util.StringUtils;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static javax.persistence.CascadeType.PERSIST;
 
@@ -52,7 +51,7 @@ public class Article extends BaseTimeEntity {
     private ArticleComments comments;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = {PERSIST})
-    private final Set<Tag> tags = new HashSet<>();
+    private final Set<Tag> tags = new LinkedHashSet<>();
 
     private Article(
             String title, String description, String body, User author, Set<Tag> tags) {
@@ -107,8 +106,7 @@ public class Article extends BaseTimeEntity {
     // ========================================== Tag
 
     public Set<Tag> tags() {
-        return tags.stream()
-                .collect(Collectors.toUnmodifiableSet());
+        return tags;
     }
 
     // ========================================== Favorite
