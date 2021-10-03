@@ -1,7 +1,6 @@
 package com.example.realworld.application.articles.persistence;
 
 import com.example.realworld.application.favorites.persistence.FavoriteArticle;
-import com.example.realworld.application.favorites.persistence.FavoriteArticles;
 import com.example.realworld.application.tags.persistence.Tag;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.core.persistence.BaseTimeEntity;

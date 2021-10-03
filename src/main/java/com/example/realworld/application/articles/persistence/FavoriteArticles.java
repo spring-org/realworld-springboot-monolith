@@ -1,5 +1,6 @@
-package com.example.realworld.application.favorites.persistence;
+package com.example.realworld.application.articles.persistence;
 
+import com.example.realworld.application.favorites.persistence.FavoriteArticle;
 import com.example.realworld.application.users.persistence.User;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
