@@ -35,7 +35,6 @@ public class ArticleRepositoryImpl implements ArticleQuerydslRepository {
                         .where(
                                 condition(condition.getTag(), article.tags.any().name::eq),
                                 condition(condition.getAuthor(), article.author.email::eq),
-                                // user(1) -> (N)follow(1) -> (N)article
                                 condition(condition.getFavorited(), user.followers.any().toUser.email::eq)
                         )
                         .offset(condition.getOffset())

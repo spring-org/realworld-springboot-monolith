@@ -2,6 +2,7 @@ package com.example.realworld.application.articles.persistence;
 
 import com.example.realworld.application.articles.exception.NotFoundCommentException;
 import com.example.realworld.application.favorites.persistence.FavoriteArticle;
+import com.example.realworld.application.favorites.persistence.FavoriteArticles;
 import com.example.realworld.application.tags.persistence.Tag;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.core.persistence.BaseTimeEntity;
@@ -44,22 +45,16 @@ public class Article extends BaseTimeEntity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    private boolean favorited;
-
-    private Integer favoritesCount;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "USER_ID", nullable = false)
     private User author;
 
-    @OneToMany(mappedBy = "favoritedArticle", fetch = FetchType.LAZY, orphanRemoval = true, cascade = {PERSIST, REMOVE})
-    @ToString.Exclude
-    private final Set<FavoriteArticle> favoriteUser = new HashSet<>();
+    @Embedded
+    private FavoriteArticles favoriteArticles;
 
     @OneToMany(mappedBy = "article", fetch = FetchType.LAZY, orphanRemoval = true, cascade = {PERSIST, REMOVE})
     @ToString.Exclude
     private final Set<Comment> comments = new HashSet<>();
-
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = {PERSIST})
     private final Set<Tag> tags = new HashSet<>();
@@ -72,7 +67,7 @@ public class Article extends BaseTimeEntity {
         this.body = body;
         this.author = author;
         this.tags.addAll(tags);
-//        this.favoriteArticles = FavoriteArticles.init();
+        this.favoriteArticles = FavoriteArticles.init();
     }
 
     public static Article of(
@@ -138,29 +133,14 @@ public class Article extends BaseTimeEntity {
     }
 
     // ========================================== Favorite
-    public Integer getFavUserCount() {
-        return favoriteUser.size();
-    }
-
     public Article addFavArticle(FavoriteArticle favArticle) {
-        this.favoriteUser.add(favArticle);
-        return updateFavFlag(favArticle.user());
-    }
-
-    public Article removeFavArticle(FavoriteArticle favArticle) {
-        this.favoriteUser.remove(favArticle);
-        return updateFavFlag(favArticle.user());
-    }
-
-    private Article updateFavFlag(User favoriteUser) {
-        favorited = this.favoriteUser.stream()
-                .anyMatch(favoriteArticle -> favoriteArticle.isMatchesUser(favoriteUser));
+        this.favoriteArticles.add(favArticle);
         return this;
     }
 
-    public boolean containsFavUser(User favoriteUser) {
-        return this.favoriteUser.stream()
-                .anyMatch(favoriteArticle -> favoriteArticle.isMatchesUser(favoriteUser));
+    public Article removeFavArticle(FavoriteArticle favArticle) {
+        this.favoriteArticles.remove(favArticle);
+        return this;
     }
 
     // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션

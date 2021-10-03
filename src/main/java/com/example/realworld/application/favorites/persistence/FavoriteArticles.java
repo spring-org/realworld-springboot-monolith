@@ -42,7 +42,7 @@ public class FavoriteArticles {
     }
 
     public void remove(FavoriteArticle favArticle) {
-        this.favArticles.add(favArticle);
+        this.favArticles.remove(favArticle);
         updateFavFlag(favArticle.user());
     }
 
