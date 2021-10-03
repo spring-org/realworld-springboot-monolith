@@ -1,6 +1,5 @@
 package com.example.realworld.application.articles.persistence;
 
-import com.example.realworld.application.articles.exception.NotFoundCommentException;
 import com.example.realworld.application.favorites.persistence.FavoriteArticle;
 import com.example.realworld.application.favorites.persistence.FavoriteArticles;
 import com.example.realworld.application.tags.persistence.Tag;
@@ -14,13 +13,11 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static javax.persistence.CascadeType.PERSIST;
-import static javax.persistence.CascadeType.REMOVE;
 
 @Getter
 @ToString
@@ -52,9 +49,8 @@ public class Article extends BaseTimeEntity {
     @Embedded
     private FavoriteArticles favoriteArticles;
 
-    @OneToMany(mappedBy = "article", fetch = FetchType.LAZY, orphanRemoval = true, cascade = {PERSIST, REMOVE})
-    @ToString.Exclude
-    private final Set<Comment> comments = new HashSet<>();
+    @Embedded
+    private ArticleComments comments;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = {PERSIST})
     private final Set<Tag> tags = new HashSet<>();
@@ -68,6 +64,7 @@ public class Article extends BaseTimeEntity {
         this.author = author;
         this.tags.addAll(tags);
         this.favoriteArticles = FavoriteArticles.init();
+        this.comments = ArticleComments.init();
     }
 
     public static Article of(
@@ -84,6 +81,18 @@ public class Article extends BaseTimeEntity {
         return author.getProfile().userName();
     }
 
+    public ArticleComments comments() {
+        return comments;
+    }
+
+    public boolean isMatches(String title) {
+        return this.title.equals(title);
+    }
+
+    public boolean isSlugMatches(String slug) {
+        return this.slug.equals(slug);
+    }
+
     public void update(String title, String description, String body) {
         if (StringUtils.hasText(title)) {
             this.title = title;
@@ -96,40 +105,11 @@ public class Article extends BaseTimeEntity {
             this.body = body;
         }
     }
-
-    // ========================================== Comment
-    public void addComment(Comment comment) {
-        this.comments.add(comment);
-    }
-
-    public void addComments(List<Comment> comments) {
-        this.comments.addAll(comments);
-    }
-
-    public Comment getComments(Long commentId) {
-        return this.comments.stream()
-                .filter(comment -> comment.isMatches(commentId))
-                .findFirst()
-                .orElseThrow(NotFoundCommentException::new);
-    }
-
-    public boolean isMatches(String title) {
-        return this.title.equals(title);
-    }
-
-    public void removeComment(Comment savedComment) {
-        this.comments.remove(savedComment);
-    }
-
     // ========================================== Tag
 
     public Set<Tag> tags() {
         return tags.stream()
                 .collect(Collectors.toUnmodifiableSet());
-    }
-
-    public boolean isSlugMatches(String slug) {
-        return this.slug.equals(slug);
     }
 
     // ========================================== Favorite

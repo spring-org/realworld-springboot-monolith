@@ -36,7 +36,7 @@ class CommentRepositoryTest {
 
         // when
         Comment newComment = Comment.of("comment write", savedUser, savedArticle);
-        savedArticle.addComment(newComment);
+        savedArticle.comments().add(newComment);
         Comment savedComment = commentRepository.save(newComment);
 
         // then
@@ -58,7 +58,7 @@ class CommentRepositoryTest {
 
         List<Comment> savedComments = commentRepository.saveAll(List.of(newComment1, newComment2, newComment3));
 
-        savedArticle.addComments(savedComments);
+        savedArticle.comments().addAll(savedComments);
         int tagSize = savedArticle.getComments().size();
 
         assertThat(tagSize).isEqualTo(3);
@@ -76,7 +76,7 @@ class CommentRepositoryTest {
 
         Comment newComment = Comment.of("comment write", savedUser, savedArticle);
         Comment savedComment = commentRepository.save(newComment);
-        savedArticle.addComment(savedComment);
+        savedArticle.comments().add(savedComment);
         savedUser.addArticle(savedArticle);
 
         // when
@@ -84,7 +84,7 @@ class CommentRepositoryTest {
 
         Article findArticle = savedUser.getArticleByTitle("title")
                 .orElseThrow(NotFoundArticleException::new);
-        String body = findArticle.getComments(savedComment.getId()).getBody();
+        String body = findArticle.comments().get(savedComment.getId()).getBody();
 
         // then
         assertThat(body).isEqualTo(savedComment.getBody());
@@ -104,10 +104,10 @@ class CommentRepositoryTest {
         Comment newComment = Comment.of("comment write", savedUser, savedArticle);
         Comment savedComment = commentRepository.save(newComment);
 
-        savedArticle.addComment(savedComment);
+        savedArticle.getComments().add(savedComment);
         savedUser.addArticle(savedArticle);
 
-        savedArticle.removeComment(savedComment);
+        savedArticle.getComments().remove(savedComment);
 
         // then
         assertThat(savedArticle.getComments().size()).isZero();

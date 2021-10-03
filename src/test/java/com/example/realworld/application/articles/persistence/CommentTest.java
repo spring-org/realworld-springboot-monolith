@@ -20,8 +20,8 @@ class CommentTest {
         Comment actualComment = Comment.of("comment write", author, article);
 
         // when
-        article.addComment(actualComment);
-        Set<Comment> comments = article.getComments();
+        article.comments().add(actualComment);
+        Set<Comment> comments = article.comments().all();
         int actualCommentSize = comments.size();
 
         // then
