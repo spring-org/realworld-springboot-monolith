@@ -42,7 +42,7 @@ public class ResponseSingleArticle {
         this.title = article.getTitle();
         this.description = article.getDescription();
         this.body = article.getBody();
-        this.tagList = ResponseMultiTag.from(article.getTags());
+        this.tagList = ResponseMultiTag.from(article.tags());
         this.createdAt = article.getCreatedAt();
         this.updatedAt = article.getUpdatedAt();
         this.favorited = article.containsFavUser(favoriteUser);

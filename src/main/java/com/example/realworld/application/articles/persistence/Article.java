@@ -2,7 +2,7 @@ package com.example.realworld.application.articles.persistence;
 
 import com.example.realworld.application.articles.exception.NotFoundCommentException;
 import com.example.realworld.application.favorites.persistence.FavoriteArticle;
-import com.example.realworld.application.tags.persistence.TagType;
+import com.example.realworld.application.tags.persistence.Tag;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.core.persistence.BaseTimeEntity;
 import lombok.*;
@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.CascadeType.REMOVE;
@@ -59,31 +60,24 @@ public class Article extends BaseTimeEntity {
     @ToString.Exclude
     private final Set<Comment> comments = new HashSet<>();
 
-    @ElementCollection(targetClass = TagType.class)
-    @CollectionTable
-    @Enumerated(EnumType.STRING)
-    private final Set<TagType> tags = new HashSet<>();
 
-    private Article(String title, String description, String body, Set<TagType> tags, User author) {
-        this(title, description, body, false, 0, tags, author);
-    }
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {PERSIST})
+    private final Set<Tag> tags = new HashSet<>();
 
     private Article(
-            String title, String description, String body,
-            boolean favorited, Integer favoritesCount, Set<TagType> tags, User author) {
+            String title, String description, String body, User author, Set<Tag> tags) {
         this.slug = makeSlug(title);
         this.title = title;
         this.description = description;
         this.body = body;
-        this.favorited = favorited;
-        this.favoritesCount = favoritesCount;
         this.author = author;
         this.tags.addAll(tags);
+//        this.favoriteArticles = FavoriteArticles.init();
     }
 
     public static Article of(
-            String title, String description, String body, Set<TagType> tags, User author) {
-        return new Article(title, description, body, tags, author);
+            String title, String description, String body, User author, Tag... tags) {
+        return new Article(title, description, body, author, Set.of(tags));
     }
 
     private String makeSlug(String title) {
@@ -133,6 +127,11 @@ public class Article extends BaseTimeEntity {
     }
 
     // ========================================== Tag
+
+    public Set<Tag> tags() {
+        return tags.stream()
+                .collect(Collectors.toUnmodifiableSet());
+    }
 
     public boolean isSlugMatches(String slug) {
         return this.slug.equals(slug);

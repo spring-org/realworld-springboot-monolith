@@ -1,6 +1,6 @@
 package com.example.realworld.application.tags.dto;
 
-import com.example.realworld.application.tags.persistence.TagType;
+import com.example.realworld.application.tags.persistence.Tag;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Getter;
 
@@ -17,10 +17,10 @@ public class ResponseMultiTag {
         this.tagList = tagList;
     }
 
-    public static ResponseMultiTag from(Set<TagType> tags) {
+    public static ResponseMultiTag from(Set<Tag> tags) {
         Set<String> responseSingleTags = tags.stream()
-                .map(tagType -> String.valueOf(tagType.tagName()))
-                .collect(Collectors.toSet());
+                .map(tag -> String.valueOf(tag.name()))
+                .collect(Collectors.toUnmodifiableSet());
         return new ResponseMultiTag(responseSingleTags);
     }
 }

@@ -1,6 +1,6 @@
 package com.example.realworld.application.articles.persistence;
 
-import com.example.realworld.application.tags.persistence.TagType;
+import com.example.realworld.application.tags.persistence.Tag;
 import com.example.realworld.application.users.persistence.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ class CommentTest {
     void when_postComment_expected_success_entity() {
         // given
         User author = User.of("seokrae@gmail.com", "1234");
-        Article article = Article.of("title", "description", "body", Set.of(TagType.KOTLIN), author);
+        Article article = Article.of("title", "description", "body", author, Tag.of("Kotlin"));
         Comment actualComment = Comment.of("comment write", author, article);
 
         // when

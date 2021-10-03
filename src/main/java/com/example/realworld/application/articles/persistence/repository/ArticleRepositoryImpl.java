@@ -27,16 +27,21 @@ public class ArticleRepositoryImpl implements ArticleQuerydslRepository {
     @Override
     public List<Article> searchPageArticle(RequestPageCondition condition) { // string
 
-        return Collections.unmodifiableList(queryFactory
-                .selectFrom(article)
-                .where(
-                        condition(condition.getTag(), article.tags::contains),
-                        condition(condition.getAuthor(), article.author.email::eq)
-//                        condition(condition.getFavorited(), user.followers.any().toUser.email::eq)
-                )
-                .offset(condition.getOffset())
-                .limit(condition.getLimit())
-                .fetch());
+        return Collections.unmodifiableList(
+                queryFactory
+                        .select(article)
+                        .from(article)
+                        .innerJoin(article.author, user)
+                        .where(
+                                condition(condition.getTag(), article.tags.any().name::eq),
+                                condition(condition.getAuthor(), article.author.email::eq),
+                                // user(1) -> (N)follow(1) -> (N)article
+                                condition(condition.getFavorited(), user.followers.any().toUser.email::eq)
+                        )
+                        .offset(condition.getOffset())
+                        .limit(condition.getLimit())
+                        .fetch()
+        );
     }
 
     @Override

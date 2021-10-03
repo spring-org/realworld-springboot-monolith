@@ -4,17 +4,14 @@ import com.example.realworld.application.articles.dto.*;
 import com.example.realworld.application.articles.exception.NotFoundCommentException;
 import com.example.realworld.application.articles.persistence.repository.ArticleRepository;
 import com.example.realworld.application.articles.persistence.repository.CommentRepository;
-import com.example.realworld.application.tags.persistence.TagType;
+import com.example.realworld.application.users.exception.UnauthorizedUserException;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
-import com.example.realworld.application.users.exception.UnauthorizedUserException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -49,7 +46,7 @@ class CommentBusinessServiceTest {
 
         User otherUser = User.of("other@gmail.com", "1234", "otherName");
         User savedOtherUser = userRepository.save(otherUser);
-        ResponseSingleArticle responseSingleArticle = articleService.postArticle(authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", Set.of(TagType.KOTLIN)));
+        ResponseSingleArticle responseSingleArticle = articleService.postArticle(authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", "Kotlin"));
 
         // when
         ResponseSingleComment responseComment = commentService.postComment(
@@ -71,7 +68,7 @@ class CommentBusinessServiceTest {
         User otherUser = User.of(otherUserEmail, "1234", "otherName");
         userRepository.save(otherUser);
         ResponseSingleArticle responseArticle = articleService.postArticle(
-                authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", Set.of(TagType.PHP)));
+                authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", "PHP"));
 
         // when
         commentService.postComment(otherUserEmail, responseArticle.getSlug(), RequestSaveComment.from("커멘트 내용1"));
@@ -94,7 +91,7 @@ class CommentBusinessServiceTest {
         String otherUserEmail = "other@gmail.com";
         User otherUser = User.of(otherUserEmail, "1234", "otherName");
         userRepository.save(otherUser);
-        ResponseSingleArticle responseSingleArticle = articleService.postArticle(authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", Set.of(TagType.RUBY)));
+        ResponseSingleArticle responseSingleArticle = articleService.postArticle(authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", "Ruby"));
 
         // when
         ResponseSingleComment singleComment = commentService.postComment(otherUserEmail, responseSingleArticle.getSlug(), RequestSaveComment.from("커멘트 내용1"));
@@ -119,7 +116,7 @@ class CommentBusinessServiceTest {
         String otherUserEmail = "other@gmail.com";
         User otherUser = User.of(otherUserEmail, "1234", "otherName");
         userRepository.save(otherUser);
-        ResponseSingleArticle responseSingleArticle = articleService.postArticle(authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", Set.of(TagType.R)));
+        ResponseSingleArticle responseSingleArticle = articleService.postArticle(authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", "R"));
 
         // when
         String slug = responseSingleArticle.getSlug();
@@ -142,7 +139,7 @@ class CommentBusinessServiceTest {
         String otherUserEmail = "other@gmail.com";
         User otherUser = User.of(otherUserEmail, "1234", "otherName");
         userRepository.save(otherUser);
-        ResponseSingleArticle responseSingleArticle = articleService.postArticle(authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", Set.of(TagType.CPP)));
+        ResponseSingleArticle responseSingleArticle = articleService.postArticle(authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", "C++"));
 
         // when
         String slug = responseSingleArticle.getSlug();

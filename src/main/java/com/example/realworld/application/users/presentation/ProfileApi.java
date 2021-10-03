@@ -2,8 +2,8 @@ package com.example.realworld.application.users.presentation;
 
 import com.example.realworld.application.follows.service.FollowService;
 import com.example.realworld.application.users.dto.ResponseProfile;
-import com.example.realworld.application.users.service.UserService;
 import com.example.realworld.application.users.exception.UnauthorizedUserException;
+import com.example.realworld.application.users.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.http.HttpStatus;

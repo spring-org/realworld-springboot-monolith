@@ -8,7 +8,7 @@ import com.example.realworld.application.articles.persistence.repository.Article
 import com.example.realworld.application.articles.service.ArticleService;
 import com.example.realworld.application.favorites.exception.NotFoundFavoriteArticleException;
 import com.example.realworld.application.favorites.persistence.repository.FavoriteArticleRepository;
-import com.example.realworld.application.tags.persistence.TagType;
+import com.example.realworld.application.tags.persistence.Tag;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -16,8 +16,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -55,7 +53,7 @@ class FavoriteArticleBusinessServiceTest {
 
         // when
         // 다른 사람이 작성한 글 등록 및 저장
-        Article otherUserWriteArticle = Article.of("title-1", "description", "body", Set.of(TagType.KOTLIN), savedOtherUser);
+        Article otherUserWriteArticle = Article.of("title-1", "description", "body", savedOtherUser, Tag.of("Kotlin"));
         Article savedOtherUserWriteArticle = articleRepository.save(otherUserWriteArticle);
         savedOtherUser.addArticle(savedOtherUserWriteArticle);
 
@@ -77,7 +75,7 @@ class FavoriteArticleBusinessServiceTest {
         userRepository.save(me);
         userRepository.save(otherUser);
 
-        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", Set.of(TagType.JAVA));
+        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java");
 
         // when
         // 다른 사람이 작성한 글 등록 및 저장
@@ -102,7 +100,7 @@ class FavoriteArticleBusinessServiceTest {
         userRepository.save(me);
         userRepository.save(otherUser);
 
-        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", Set.of(TagType.JAVA));
+        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java");
 
         // when
         // 다른 사람이 작성한 글 등록 및 저장
@@ -130,7 +128,7 @@ class FavoriteArticleBusinessServiceTest {
 
         // when
         // 다른 사람이 작성한 글 등록 및 저장
-        Article otherUserWriteArticle1 = Article.of("title-1", "description", "body", Set.of(TagType.JAVASCRIPT), savedOtherUser);
+        Article otherUserWriteArticle1 = Article.of("title-1", "description", "body", savedOtherUser, Tag.of("JavaScript"));
         Article savedOtherUserWriteArticle1 = articleRepository.save(otherUserWriteArticle1);
         savedOtherUser.addArticle(savedOtherUserWriteArticle1);
 

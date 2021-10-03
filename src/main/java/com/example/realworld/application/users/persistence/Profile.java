@@ -22,7 +22,7 @@ public class Profile implements Serializable {
 
     private boolean following;
 
-    public Profile(String userName) {
+    private Profile(String userName) {
         this(userName, null, null, false);
     }
 
