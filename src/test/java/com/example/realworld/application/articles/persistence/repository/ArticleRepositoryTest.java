@@ -1,10 +1,10 @@
 package com.example.realworld.application.articles.persistence.repository;
 
-import com.example.realworld.application.articles.dto.RequestPageCondition;
+import com.example.realworld.application.articles.dto.RequestArticleCondition;
 import com.example.realworld.application.articles.dto.RequestSaveArticle;
 import com.example.realworld.application.articles.exception.NotFoundArticleException;
 import com.example.realworld.application.articles.persistence.Article;
-import com.example.realworld.application.tags.persistence.TagType;
+import com.example.realworld.application.tags.persistence.Tag;
 import com.example.realworld.application.users.exception.NotFoundUserException;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
@@ -12,12 +12,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,7 +35,7 @@ class ArticleRepositoryTest {
     private ArticleRepository articleRepository;
 
     private Article createArticle(Integer idx, User author) {
-        return Article.of("title-" + idx, "description", "body", Set.of(TagType.JAVASCRIPT), author);
+        return Article.of("title-" + idx, "description", "body", author, Tag.of("Java"));
     }
 
     private User createUser() {
@@ -153,11 +153,11 @@ class ArticleRepositoryTest {
         User savedUser = userRepository.save(author);
 
         List<RequestSaveArticle> requestSaveArticles = List.of(
-                RequestSaveArticle.of("타이틀-1", "설명", "바디", Set.of(TagType.JAVA)),
-                RequestSaveArticle.of("타이틀-2", "설명", "바디", Set.of(TagType.JAVA)),
-                RequestSaveArticle.of("타이틀-3", "설명", "바디", Set.of(TagType.JAVA)),
-                RequestSaveArticle.of("타이틀-4", "설명", "바디", Set.of(TagType.JAVASCRIPT)),
-                RequestSaveArticle.of("타이틀-5", "설명", "바디", Set.of(TagType.PYTHON))
+                RequestSaveArticle.of("타이틀-1", "설명", "바디", "Java"),
+                RequestSaveArticle.of("타이틀-2", "설명", "바디", "Java"),
+                RequestSaveArticle.of("타이틀-3", "설명", "바디", "Java"),
+                RequestSaveArticle.of("타이틀-4", "설명", "바디", "Python"),
+                RequestSaveArticle.of("타이틀-5", "설명", "바디", "JavaScript")
         );
 
         List<Article> dummyArticles = requestSaveArticles.stream()
@@ -167,20 +167,22 @@ class ArticleRepositoryTest {
         List<Article> articles = articleRepository.saveAll(dummyArticles);
 
         // when
-        RequestPageCondition condition = RequestPageCondition.of("", email, "", 20, 0);
-        List<Article> searchArticles = articleRepository.searchPageArticle(condition);
+        RequestArticleCondition condition = RequestArticleCondition.of("Java", email, null);
+        PageRequest pageRequest = PageRequest.of(0, 20);
+        List<Article> searchArticles = articleRepository.searchPageArticle(condition, pageRequest);
 
         // then
-        assertThat(searchArticles.size()).isEqualTo(5);
+        assertThat(searchArticles.size()).isEqualTo(3);
 
         Article actual = searchArticles.get(0);
         Article expected = articles.get(0);
 
-        assertAll("slug",
-                () -> assertThat(actual.getSlug()).isEqualTo(makeSlug(expected.getTitle()))
-        );
-        assertAll("author",
-                () -> assertThat(actual.getAuthor()).isEqualTo(expected.getAuthor())
+        assertAll("first Article Assertion",
+                () -> {
+                    assertThat(actual.getSlug()).isEqualTo(makeSlug(expected.getTitle()));
+                    assertThat(actual.getAuthor()).isEqualTo(expected.getAuthor());
+                    assertThat(actual.getTags()).contains(Tag.of("Java"));
+                }
         );
     }
 
@@ -191,20 +193,22 @@ class ArticleRepositoryTest {
         List<Article> articles = getDummyArticles();
 
         // when
-        RequestPageCondition condition = RequestPageCondition.of("", "seokrae@gmail.com", "", 20, 0);
-        List<Article> searchArticles = articleRepository.searchPageArticle(condition);
+        RequestArticleCondition condition = RequestArticleCondition.of(null, null, null);
+        PageRequest pageRequest = PageRequest.of(0, 20);
+        List<Article> searchArticles = articleRepository.searchPageArticle(condition, pageRequest);
 
         // then
-        assertThat(searchArticles.size()).isEqualTo(3);
+        assertThat(searchArticles.size()).isEqualTo(5);
 
         Article actual = searchArticles.get(0);
         Article expected = articles.get(0);
 
-        assertAll("slug",
-                () -> assertThat(actual.getSlug()).isEqualTo(makeSlug(expected.getTitle()))
-        );
-        assertAll("author",
-                () -> assertThat(actual.getAuthor()).isEqualTo(expected.getAuthor())
+        assertAll("Article Assertion",
+                () -> {
+                    assertThat(actual.getSlug()).isEqualTo(makeSlug(expected.getTitle()));
+                    assertThat(actual.getAuthor()).isEqualTo(expected.getAuthor());
+                    assertThat(actual.getTags()).contains(Tag.of("Java"));
+                }
         );
     }
 
@@ -213,14 +217,14 @@ class ArticleRepositoryTest {
         User seok = userRepository.save(User.of("other@gmail.com", "1234", "seok"));
 
         List<RequestSaveArticle> srArticles = List.of(
-                RequestSaveArticle.of("타이틀-1", "설명", "바디", Set.of(TagType.JAVA)),
-                RequestSaveArticle.of("타이틀-2", "설명", "바디", Set.of(TagType.JAVA)),
-                RequestSaveArticle.of("타이틀-3", "설명", "바디", Set.of(TagType.JAVA))
+                RequestSaveArticle.of("타이틀-1", "설명", "바디", "Java"),
+                RequestSaveArticle.of("타이틀-2", "설명", "바디", "JavaScript"),
+                RequestSaveArticle.of("타이틀-3", "설명", "바디", "Java")
         );
 
         List<RequestSaveArticle> seokArticles = List.of(
-                RequestSaveArticle.of("타이틀-4", "설명", "바디", Set.of(TagType.JAVA)),
-                RequestSaveArticle.of("타이틀-5", "설명", "바디", Set.of(TagType.JAVA))
+                RequestSaveArticle.of("타이틀-4", "설명", "바디", "R"),
+                RequestSaveArticle.of("타이틀-5", "설명", "바디", "PHP")
         );
 
         List<Article> dummySrArticles = srArticles.stream()

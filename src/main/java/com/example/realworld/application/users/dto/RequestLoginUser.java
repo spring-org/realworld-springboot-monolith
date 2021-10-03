@@ -10,9 +10,9 @@ import javax.validation.constraints.NotEmpty;
 @ToString
 public class RequestLoginUser {
 
-    @NotEmpty
+    @NotEmpty(message = "email is not empty")
     private final String email;
-    @NotEmpty
+    @NotEmpty(message = "password is not empty")
     private final String password;
 
     private RequestLoginUser(String email, String password) {

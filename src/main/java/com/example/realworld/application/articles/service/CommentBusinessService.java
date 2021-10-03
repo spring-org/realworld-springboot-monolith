@@ -6,9 +6,9 @@ import com.example.realworld.application.articles.dto.ResponseSingleComment;
 import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.persistence.Comment;
 import com.example.realworld.application.articles.persistence.repository.CommentRepository;
+import com.example.realworld.application.users.exception.UnauthorizedUserException;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.service.UserDomainService;
-import com.example.realworld.application.users.exception.UnauthorizedUserException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +34,7 @@ public class CommentBusinessService implements CommentService {
 
         Article findArticle = articleDomainService.getArticleOrElseThrow(slug);
 
-        return ResponseMultiComment.from(findArticle.getComments());
+        return ResponseMultiComment.from(findArticle.comments().all());
     }
 
     /**
@@ -54,7 +54,7 @@ public class CommentBusinessService implements CommentService {
         Article article = articleDomainService.getArticleOrElseThrow(slug);
 
         Comment savedComment = commentRepository.save(RequestSaveComment.of(saveComment, findUser, article));
-        article.addComment(savedComment);
+        article.comments().add(savedComment);
 
         return ResponseSingleComment.from(savedComment);
     }
@@ -72,12 +72,12 @@ public class CommentBusinessService implements CommentService {
         User findUser = userDomainService.findUserByEmail(email);
         Article findArticle = articleDomainService.getArticleOrElseThrow(slug);
 
-        Comment findComment = findArticle.getComments(commentId);
+        Comment findComment = findArticle.getComments().get(commentId);
 
         boolean isAuth = findComment.isAuthor(findUser);
         if (isAuth) {
             commentRepository.delete(findComment);
-            findArticle.removeComment(findComment);
+            findArticle.getComments().remove(findComment);
         } else {
             throw new UnauthorizedUserException();
         }

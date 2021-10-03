@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +28,7 @@ public class ResponseMultiArticle {
 
     public static ResponseMultiArticle of(final List<Article> articles) {
         final List<ResponseSingleArticle> responseArticles = articles.stream()
+                .sorted(Comparator.comparing(Article::getId).reversed())
                 .map(ResponseSingleArticle::from)
                 .collect(Collectors.toList());
         return new ResponseMultiArticle(responseArticles, articles.size());

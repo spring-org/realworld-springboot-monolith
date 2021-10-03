@@ -1,8 +1,7 @@
 package com.example.realworld.application.articles.persistence;
 
-import com.example.realworld.application.articles.exception.NotFoundCommentException;
 import com.example.realworld.application.favorites.persistence.FavoriteArticle;
-import com.example.realworld.application.tags.persistence.TagType;
+import com.example.realworld.application.tags.persistence.Tag;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.core.persistence.BaseTimeEntity;
 import lombok.*;
@@ -12,13 +11,11 @@ import org.springframework.util.StringUtils;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
 import static javax.persistence.CascadeType.PERSIST;
-import static javax.persistence.CascadeType.REMOVE;
 
 @Getter
 @ToString
@@ -43,47 +40,34 @@ public class Article extends BaseTimeEntity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    private boolean favorited;
-
-    private Integer favoritesCount;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "USER_ID", nullable = false)
     private User author;
 
-    @OneToMany(mappedBy = "favoritedArticle", fetch = FetchType.LAZY, orphanRemoval = true, cascade = {PERSIST, REMOVE})
-    @ToString.Exclude
-    private final Set<FavoriteArticle> favoriteUser = new HashSet<>();
+    @Embedded
+    private FavoriteArticles favoriteArticles;
 
-    @OneToMany(mappedBy = "article", fetch = FetchType.LAZY, orphanRemoval = true, cascade = {PERSIST, REMOVE})
-    @ToString.Exclude
-    private final Set<Comment> comments = new HashSet<>();
+    @Embedded
+    private ArticleComments comments;
 
-    @ElementCollection(targetClass = TagType.class)
-    @CollectionTable
-    @Enumerated(EnumType.STRING)
-    private final Set<TagType> tags = new HashSet<>();
-
-    private Article(String title, String description, String body, Set<TagType> tags, User author) {
-        this(title, description, body, false, 0, tags, author);
-    }
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {PERSIST})
+    private final Set<Tag> tags = new LinkedHashSet<>();
 
     private Article(
-            String title, String description, String body,
-            boolean favorited, Integer favoritesCount, Set<TagType> tags, User author) {
+            String title, String description, String body, User author, Set<Tag> tags) {
         this.slug = makeSlug(title);
         this.title = title;
         this.description = description;
         this.body = body;
-        this.favorited = favorited;
-        this.favoritesCount = favoritesCount;
         this.author = author;
         this.tags.addAll(tags);
+        this.favoriteArticles = FavoriteArticles.init();
+        this.comments = ArticleComments.init();
     }
 
     public static Article of(
-            String title, String description, String body, Set<TagType> tags, User author) {
-        return new Article(title, description, body, tags, author);
+            String title, String description, String body, User author, Tag... tags) {
+        return new Article(title, description, body, author, Set.of(tags));
     }
 
     private String makeSlug(String title) {
@@ -93,6 +77,18 @@ public class Article extends BaseTimeEntity {
     // ========================================== Article
     public String author() {
         return author.getProfile().userName();
+    }
+
+    public ArticleComments comments() {
+        return comments;
+    }
+
+    public boolean isMatches(String title) {
+        return this.title.equals(title);
+    }
+
+    public boolean isSlugMatches(String slug) {
+        return this.slug.equals(slug);
     }
 
     public void update(String title, String description, String body) {
@@ -107,61 +103,21 @@ public class Article extends BaseTimeEntity {
             this.body = body;
         }
     }
-
-    // ========================================== Comment
-    public void addComment(Comment comment) {
-        this.comments.add(comment);
-    }
-
-    public void addComments(List<Comment> comments) {
-        this.comments.addAll(comments);
-    }
-
-    public Comment getComments(Long commentId) {
-        return this.comments.stream()
-                .filter(comment -> comment.isMatches(commentId))
-                .findFirst()
-                .orElseThrow(NotFoundCommentException::new);
-    }
-
-    public boolean isMatches(String title) {
-        return this.title.equals(title);
-    }
-
-    public void removeComment(Comment savedComment) {
-        this.comments.remove(savedComment);
-    }
-
     // ========================================== Tag
 
-    public boolean isSlugMatches(String slug) {
-        return this.slug.equals(slug);
+    public Set<Tag> tags() {
+        return tags;
     }
 
     // ========================================== Favorite
-    public Integer getFavUserCount() {
-        return favoriteUser.size();
-    }
-
     public Article addFavArticle(FavoriteArticle favArticle) {
-        this.favoriteUser.add(favArticle);
-        return updateFavFlag(favArticle.user());
-    }
-
-    public Article removeFavArticle(FavoriteArticle favArticle) {
-        this.favoriteUser.remove(favArticle);
-        return updateFavFlag(favArticle.user());
-    }
-
-    private Article updateFavFlag(User favoriteUser) {
-        favorited = this.favoriteUser.stream()
-                .anyMatch(favoriteArticle -> favoriteArticle.isMatchesUser(favoriteUser));
+        this.favoriteArticles.add(favArticle);
         return this;
     }
 
-    public boolean containsFavUser(User favoriteUser) {
-        return this.favoriteUser.stream()
-                .anyMatch(favoriteArticle -> favoriteArticle.isMatchesUser(favoriteUser));
+    public Article removeFavArticle(FavoriteArticle favArticle) {
+        this.favoriteArticles.remove(favArticle);
+        return this;
     }
 
     // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션

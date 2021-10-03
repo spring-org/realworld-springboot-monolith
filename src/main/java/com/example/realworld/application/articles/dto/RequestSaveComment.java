@@ -8,10 +8,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.validation.constraints.NotEmpty;
+
 @Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RequestSaveComment {
+    @NotEmpty(message = "body is not empty")
     private String body;
 
     private RequestSaveComment(String body) {

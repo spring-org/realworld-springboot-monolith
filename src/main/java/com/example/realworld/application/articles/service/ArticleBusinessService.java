@@ -31,9 +31,9 @@ public class ArticleBusinessService implements ArticleService {
      */
     @Transactional(readOnly = true)
     @Override
-    public ResponseMultiArticle searchPageArticles(RequestPageCondition condition) {
+    public ResponseMultiArticle searchPageArticles(RequestArticleCondition condition, Pageable pageable) {
 
-        List<Article> articles = articleRepository.searchPageArticle(condition);
+        List<Article> articles = articleRepository.searchPageArticle(condition, pageable);
 
         return ResponseMultiArticle.of(articles);
     }

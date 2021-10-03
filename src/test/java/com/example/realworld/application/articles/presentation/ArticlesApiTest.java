@@ -8,7 +8,6 @@ import com.example.realworld.application.articles.service.ArticleService;
 import com.example.realworld.application.articles.service.CommentService;
 import com.example.realworld.application.favorites.persistence.repository.FavoriteArticleRepository;
 import com.example.realworld.application.favorites.service.FavoriteArticleService;
-import com.example.realworld.application.tags.persistence.TagType;
 import com.example.realworld.application.users.dto.RequestSaveUser;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
 import com.example.realworld.application.users.service.UserService;
@@ -20,8 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
-
-import java.util.Set;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -68,7 +65,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
         // given
         String email = "seokrae@gmail.com";
         RequestSaveUser saveUser = RequestSaveUser.of(email, "seok", "1234");
-        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", Set.of(TagType.JAVA));
+        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java", "JavaScript");
 
         // when
         userService.postUser(saveUser);
@@ -86,7 +83,8 @@ class ArticlesApiTest extends BaseSpringBootTest {
                 .andExpect(jsonPath("$.title").value("타이틀"))
                 .andExpect(jsonPath("$.description").value("설명"))
                 .andExpect(jsonPath("$.body").value("내용"))
-                .andExpect(jsonPath("$.tagList", 0).value("Java"))
+                .andExpect(jsonPath("$.tagList.[0]").value("Java"))
+                .andExpect(jsonPath("$.tagList.[1]").value("JavaScript"))
                 .andExpect(jsonPath("$.favorited").value(false))
                 .andExpect(jsonPath("$.favoritesCount").value(0))
                 .andExpect(jsonPath("$.author.email").value("seokrae@gmail.com"))
@@ -100,7 +98,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
         // given
         String email = "seokrae@gmail.com";
         RequestSaveUser saveUser = RequestSaveUser.of(email, "seok", "1234");
-        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", Set.of(TagType.JAVA));
+        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java");
 
         // when
         userService.postUser(saveUser);
@@ -133,7 +131,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
         // given
         String email = "seokrae@gmail.com";
         RequestSaveUser saveUser = RequestSaveUser.of(email, "seok", "1234");
-        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", Set.of(TagType.JAVA));
+        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java");
         RequestUpdateArticle updateArticle = RequestUpdateArticle.of("수정된 타이틀", "설명 추가", "내용");
         // when
         userService.postUser(saveUser);
@@ -167,7 +165,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
         // given
         String email = "seokrae@gmail.com";
         RequestSaveUser saveUser = RequestSaveUser.of(email, "seok", "1234");
-        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", Set.of(TagType.JAVA));
+        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java");
 
         // when
         userService.postUser(saveUser);
@@ -188,7 +186,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
         // given
         String email = "seokrae@gmail.com";
         RequestSaveUser requestSaveUser = RequestSaveUser.of(email, "seok", "1234");
-        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", Set.of(TagType.JAVA));
+        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java");
         RequestSaveComment requestSaveComment = RequestSaveComment.from("글 좋아요 ~");
 
         // when
@@ -217,7 +215,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
         // given
         String email = "seokrae@gmail.com";
         RequestSaveUser requestSaveUser = RequestSaveUser.of(email, "seok", "1234");
-        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", Set.of(TagType.JAVA));
+        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java");
         RequestSaveComment requestSaveComment1 = RequestSaveComment.from("퍼가요 ~ ");
         RequestSaveComment requestSaveComment2 = RequestSaveComment.from("퍼가요 ~ ");
         RequestSaveComment requestSaveComment3 = RequestSaveComment.from("퍼가요 ~ ");
@@ -246,7 +244,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
         // given
         String email = "seokrae@gmail.com";
         RequestSaveUser requestSaveUser = RequestSaveUser.of(email, "seok", "1234");
-        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", Set.of(TagType.JAVA));
+        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java");
         RequestSaveComment requestSaveComment1 = RequestSaveComment.from("1. 퍼가요 ~ ");
         RequestSaveComment requestSaveComment2 = RequestSaveComment.from("2. 퍼가요 ~ ");
         RequestSaveComment requestSaveComment3 = RequestSaveComment.from("3. 퍼가요 ~ ");
@@ -277,7 +275,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
         String otherUserEmail = "other@gmail.com";
         RequestSaveUser requestSaveOtherUser = RequestSaveUser.of(otherUserEmail, "otherSeok", "1234");
         // article given
-        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", Set.of(TagType.JAVA));
+        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java");
 
         // when
         userService.postUser(requestSaveUser);
@@ -313,7 +311,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
         String otherUserEmail = "other@gmail.com";
         RequestSaveUser requestSaveOtherUser = RequestSaveUser.of(otherUserEmail, "otherSeok", "1234");
         // article given
-        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", Set.of(TagType.JAVA));
+        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java");
 
         // when
         userService.postUser(requestSaveUser);
@@ -350,13 +348,13 @@ class ArticlesApiTest extends BaseSpringBootTest {
         String otherUserEmail = "other@gmail.com";
         RequestSaveUser requestSaveOtherUser = RequestSaveUser.of(otherUserEmail, "otherSeok", "1234");
         // article given
-        RequestSaveArticle requestSaveArticle1 = RequestSaveArticle.of("타이틀1", "설명", "내용", Set.of(TagType.JAVA));
-        RequestSaveArticle requestSaveArticle2 = RequestSaveArticle.of("타이틀2", "설명", "내용", Set.of(TagType.JAVASCRIPT));
-        RequestSaveArticle requestSaveArticle3 = RequestSaveArticle.of("타이틀3", "설명", "내용", Set.of(TagType.JAVASCRIPT));
-        RequestSaveArticle requestSaveArticle4 = RequestSaveArticle.of("타이틀4", "설명", "내용", Set.of(TagType.PYTHON));
-        RequestSaveArticle requestSaveArticle5 = RequestSaveArticle.of("타이틀5", "설명", "내용", Set.of(TagType.JAVASCRIPT));
-        RequestPageCondition pageCondition =
-                RequestPageCondition.of(TagType.JAVASCRIPT.tagName(), "other@gmail.com", "", 20, 0);
+        RequestSaveArticle requestSaveArticle1 = RequestSaveArticle.of("타이틀1", "설명", "내용", "Java");
+        RequestSaveArticle requestSaveArticle2 = RequestSaveArticle.of("타이틀2", "설명", "내용", "JavaScript");
+        RequestSaveArticle requestSaveArticle3 = RequestSaveArticle.of("타이틀3", "설명", "내용", "JavaScript");
+        RequestSaveArticle requestSaveArticle4 = RequestSaveArticle.of("타이틀4", "설명", "내용", "Python");
+        RequestSaveArticle requestSaveArticle5 = RequestSaveArticle.of("타이틀5", "설명", "내용", "JavaScript");
+        RequestArticleCondition pageCondition =
+                RequestArticleCondition.of("JavaScript", "other@gmail.com", null);
         // when
         userService.postUser(requestSaveUser);
         userService.postUser(requestSaveOtherUser);
@@ -376,10 +374,10 @@ class ArticlesApiTest extends BaseSpringBootTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.articles.[0].slug").value(responseSingleArticle3.getSlug()))
-                .andExpect(jsonPath("$.articles.[0].title").value(responseSingleArticle3.getTitle()))
-                .andExpect(jsonPath("$.articles.[0].description").value(responseSingleArticle3.getDescription()))
-                .andExpect(jsonPath("$.articles.[0].body").value(responseSingleArticle3.getBody()))
+                .andExpect(jsonPath("$.articles.[0].slug").value(responseSingleArticle5.getSlug()))
+                .andExpect(jsonPath("$.articles.[0].title").value(responseSingleArticle5.getTitle()))
+                .andExpect(jsonPath("$.articles.[0].description").value(responseSingleArticle5.getDescription()))
+                .andExpect(jsonPath("$.articles.[0].body").value(responseSingleArticle5.getBody()))
                 .andExpect(jsonPath("$.articles.[0].tagList.[0]").value("JavaScript"))
                 .andExpect(jsonPath("$.articles.[0].createdAt").exists())
                 .andExpect(jsonPath("$.articles.[0].updatedAt").exists())
@@ -388,10 +386,10 @@ class ArticlesApiTest extends BaseSpringBootTest {
                 .andExpect(jsonPath("$.articles.[0].author.email").value("other@gmail.com"))
                 .andExpect(jsonPath("$.articles.[0].author.userName").value("otherSeok"))
                 .andExpect(jsonPath("$.articles.[0].author.following").value(false))
-                .andExpect(jsonPath("$.articles.[1].slug").value(responseSingleArticle5.getSlug()))
-                .andExpect(jsonPath("$.articles.[1].title").value(responseSingleArticle5.getTitle()))
-                .andExpect(jsonPath("$.articles.[1].description").value(responseSingleArticle5.getDescription()))
-                .andExpect(jsonPath("$.articles.[1].body").value(responseSingleArticle5.getBody()))
+                .andExpect(jsonPath("$.articles.[1].slug").value(responseSingleArticle3.getSlug()))
+                .andExpect(jsonPath("$.articles.[1].title").value(responseSingleArticle3.getTitle()))
+                .andExpect(jsonPath("$.articles.[1].description").value(responseSingleArticle3.getDescription()))
+                .andExpect(jsonPath("$.articles.[1].body").value(responseSingleArticle3.getBody()))
                 .andExpect(jsonPath("$.articleCount").value(2));
     }
 
@@ -406,11 +404,11 @@ class ArticlesApiTest extends BaseSpringBootTest {
         String anotherUserEmail = "another@gmail.com";
         RequestSaveUser requestSaveAnotherUser = RequestSaveUser.of(anotherUserEmail, "anotherSeok", "1234");
         // article given
-        RequestSaveArticle requestSaveArticle1 = RequestSaveArticle.of("타이틀1", "설명", "내용", Set.of(TagType.JAVA));
-        RequestSaveArticle requestSaveArticle2 = RequestSaveArticle.of("타이틀2", "설명", "내용", Set.of(TagType.JAVA));
-        RequestSaveArticle requestSaveArticle3 = RequestSaveArticle.of("타이틀3", "설명", "내용", Set.of(TagType.PYTHON));
-        RequestSaveArticle requestSaveArticle4 = RequestSaveArticle.of("타이틀4", "설명", "내용", Set.of(TagType.R));
-        RequestSaveArticle requestSaveArticle5 = RequestSaveArticle.of("타이틀5", "설명", "내용", Set.of(TagType.JAVASCRIPT));
+        RequestSaveArticle requestSaveArticle1 = RequestSaveArticle.of("타이틀1", "설명", "내용", "Java");
+        RequestSaveArticle requestSaveArticle2 = RequestSaveArticle.of("타이틀2", "설명", "내용", "Java");
+        RequestSaveArticle requestSaveArticle3 = RequestSaveArticle.of("타이틀3", "설명", "내용", "Python");
+        RequestSaveArticle requestSaveArticle4 = RequestSaveArticle.of("타이틀4", "설명", "내용", "R");
+        RequestSaveArticle requestSaveArticle5 = RequestSaveArticle.of("타이틀5", "설명", "내용", "JavaScript");
 
         PageRequest pageRequest = PageRequest.of(0, 20);
 

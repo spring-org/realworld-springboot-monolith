@@ -32,9 +32,9 @@ public class ArticlesApi {
      */
     @GetMapping
     public ResponseEntity<ResponseMultiArticle> getArticles(
-            @Valid @RequestBody RequestPageCondition condition) {
+            @Valid @RequestBody RequestArticleCondition condition, @PageableDefault(value = 20) Pageable pageable) {
 
-        ResponseMultiArticle articles = articleService.searchPageArticles(condition);
+        ResponseMultiArticle articles = articleService.searchPageArticles(condition, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(articles);
     }

@@ -1,9 +1,11 @@
 package com.example.realworld.application.tags.dto;
 
-import com.example.realworld.application.tags.persistence.TagType;
+import com.example.realworld.application.tags.persistence.Tag;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Getter;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -11,16 +13,17 @@ import java.util.stream.Collectors;
 public class ResponseMultiTag {
 
     @JsonUnwrapped
-    private final Set<String> tagList;
+    private final List<String> tagList;
 
-    private ResponseMultiTag(Set<String> tagList) {
+    private ResponseMultiTag(List<String> tagList) {
         this.tagList = tagList;
     }
 
-    public static ResponseMultiTag from(Set<TagType> tags) {
-        Set<String> responseSingleTags = tags.stream()
-                .map(tagType -> String.valueOf(tagType.tagName()))
-                .collect(Collectors.toSet());
+    public static ResponseMultiTag from(Set<Tag> tags) {
+        List<String> responseSingleTags = tags.stream()
+                .sorted(Comparator.comparing(Tag::name))
+                .map(tag -> String.valueOf(tag.name()))
+                .collect(Collectors.toUnmodifiableList());
         return new ResponseMultiTag(responseSingleTags);
     }
 }

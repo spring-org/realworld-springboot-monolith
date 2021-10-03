@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,18 +17,19 @@ import java.util.stream.Collectors;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseMultiComment {
 
-    private final Set<ResponseSingleComment> comments;
+    private final List<ResponseSingleComment> comments;
     private final Integer commentSize;
 
-    private ResponseMultiComment(Set<ResponseSingleComment> comments) {
+    private ResponseMultiComment(List<ResponseSingleComment> comments) {
         this.comments = comments;
         this.commentSize = comments.size();
     }
 
     public static ResponseMultiComment from(Set<Comment> comments) {
-        final Set<ResponseSingleComment> responseSingleComments = comments.stream()
+        final List<ResponseSingleComment> responseSingleComments = comments.stream()
+                .sorted(Comparator.comparing(Comment::getId).reversed())
                 .map(ResponseSingleComment::from)
-                .collect(Collectors.toUnmodifiableSet());
+                .collect(Collectors.toList());
         return new ResponseMultiComment(responseSingleComments);
     }
 }

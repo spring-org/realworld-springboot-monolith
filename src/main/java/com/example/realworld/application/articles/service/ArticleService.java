@@ -4,7 +4,7 @@ import com.example.realworld.application.articles.dto.*;
 import org.springframework.data.domain.Pageable;
 
 public interface ArticleService {
-    ResponseMultiArticle searchPageArticles(RequestPageCondition condition);
+    ResponseMultiArticle searchPageArticles(RequestArticleCondition condition, Pageable pageable);
 
     ResponseMultiArticle getFeedArticles(String email, Pageable pageable);
 

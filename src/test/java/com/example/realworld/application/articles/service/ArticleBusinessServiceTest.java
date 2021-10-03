@@ -4,7 +4,6 @@ import com.example.realworld.application.articles.dto.*;
 import com.example.realworld.application.articles.exception.NotFoundArticleException;
 import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.persistence.repository.ArticleRepository;
-import com.example.realworld.application.tags.persistence.TagType;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -12,13 +11,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -55,9 +54,8 @@ class ArticleBusinessServiceTest {
     void when_createArticle_expect_success_confirm_slug() {
         // given
         String email = "seokrae@gmail.com";
-        RequestSaveArticle saveArticle = RequestSaveArticle.of("타이틀", "설명", "바디", Set.of(TagType.JAVA));
+        RequestSaveArticle saveArticle = RequestSaveArticle.of("타이틀", "설명", "바디", "Java");
         User author = User.of(email, "1234", "seokrae");
-        Article article = RequestSaveArticle.toEntity(saveArticle, author);
 
         // when
         userRepository.save(author);
@@ -74,7 +72,7 @@ class ArticleBusinessServiceTest {
         // given
         String email = "seokrae@gmail.com";
         User user = User.of(email, "1234", "seokrae");
-        RequestSaveArticle saveArticle = RequestSaveArticle.of("타이틀", "설명", "바디", Set.of(TagType.JAVA));
+        RequestSaveArticle saveArticle = RequestSaveArticle.of("타이틀", "설명", "바디", "Java");
 
         // when
         userRepository.save(user);
@@ -91,7 +89,7 @@ class ArticleBusinessServiceTest {
         // given
         String email = "seokrae@gmail.com";
         User user = User.of(email, "1234", "seokrae");
-        RequestSaveArticle saveArticle = RequestSaveArticle.of("타이틀", "설명", "바디", Set.of(TagType.JAVA));
+        RequestSaveArticle saveArticle = RequestSaveArticle.of("타이틀", "설명", "바디", "Java");
         RequestUpdateArticle updateArticle = RequestUpdateArticle.of("수정된_타이틀", "설명", "바디");
 
         // when
@@ -110,7 +108,7 @@ class ArticleBusinessServiceTest {
         // given
         String email = "seokrae@gmail.com";
         User user = User.of(email, "1234", "seokrae");
-        RequestSaveArticle saveArticle = RequestSaveArticle.of("타이틀", "설명", "바디", Set.of(TagType.JAVA));
+        RequestSaveArticle saveArticle = RequestSaveArticle.of("타이틀", "설명", "바디", "Java");
         RequestUpdateArticle updateArticle = RequestUpdateArticle.of("수정된_타이틀", "설명", "바디");
 
         // when
@@ -130,7 +128,7 @@ class ArticleBusinessServiceTest {
         // given
         String email = "seokrae@gmail.com";
         User user = User.of(email, "1234", "seokrae");
-        RequestSaveArticle saveArticle = RequestSaveArticle.of("삭제 타이틀", "설명", "바디", Set.of(TagType.JAVA));
+        RequestSaveArticle saveArticle = RequestSaveArticle.of("삭제 타이틀", "설명", "바디", "Java");
 
         // when
         userRepository.save(user);
@@ -148,7 +146,7 @@ class ArticleBusinessServiceTest {
         // given
         String email = "seokrae@gmail.com";
         User user = User.of(email, "1234", "seokrae");
-        RequestSaveArticle saveArticle = RequestSaveArticle.of("타이틀", "설명", "바디", Set.of(TagType.JAVA));
+        RequestSaveArticle saveArticle = RequestSaveArticle.of("타이틀", "설명", "바디", "Java");
 
         // when
         userRepository.save(user);
@@ -164,29 +162,29 @@ class ArticleBusinessServiceTest {
     void when_searchPage_expect_success_condition() {
         // given
         getDummyArticles();
-        RequestPageCondition requestCondition = RequestPageCondition.of("", "other@gmail.com", "", 20, 0);
-
+        RequestArticleCondition requestCondition = RequestArticleCondition.of(null, "other@gmail.com", null);
+        PageRequest pageRequest = PageRequest.of(0, 20);
         // when
-        ResponseMultiArticle responseMultiArticle = articleService.searchPageArticles(requestCondition);
+        ResponseMultiArticle responseMultiArticle = articleService.searchPageArticles(requestCondition, pageRequest);
         int articleCount = responseMultiArticle.getArticleCount();
 
         // then
         assertThat(articleCount).isEqualTo(2);
     }
 
-    private List<Article> getDummyArticles() {
+    private void getDummyArticles() {
         User sr = userRepository.save(User.of("seokrae@gmail.com", "1234", "SR"));
         User seok = userRepository.save(User.of("other@gmail.com", "1234", "seok"));
 
         List<RequestSaveArticle> srArticles = List.of(
-                RequestSaveArticle.of("타이틀-1", "설명", "바디", Set.of(TagType.JAVA)),
-                RequestSaveArticle.of("타이틀-2", "설명", "바디", Set.of(TagType.JAVASCRIPT)),
-                RequestSaveArticle.of("타이틀-3", "설명", "바디", Set.of(TagType.JAVASCRIPT))
+                RequestSaveArticle.of("타이틀-1", "설명", "바디", "Java"),
+                RequestSaveArticle.of("타이틀-2", "설명", "바디", "JavaScript"),
+                RequestSaveArticle.of("타이틀-3", "설명", "바디", "JavaScript")
         );
 
         List<RequestSaveArticle> seokArticles = List.of(
-                RequestSaveArticle.of("타이틀-4", "설명", "바디", Set.of(TagType.JAVA)),
-                RequestSaveArticle.of("타이틀-5", "설명", "바디", Set.of(TagType.JAVASCRIPT))
+                RequestSaveArticle.of("타이틀-4", "설명", "바디", "Java"),
+                RequestSaveArticle.of("타이틀-5", "설명", "바디", "JavaScript")
         );
 
         List<Article> dummySrArticles = srArticles.stream()
@@ -199,6 +197,6 @@ class ArticleBusinessServiceTest {
 
         List<Article> dummyArticles = Stream.concat(dummySrArticles.stream(), dummySeokArticles.stream())
                 .collect(Collectors.toList());
-        return articleRepository.saveAll(dummyArticles);
+        articleRepository.saveAll(dummyArticles);
     }
 }
