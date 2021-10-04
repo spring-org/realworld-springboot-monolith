@@ -14,7 +14,6 @@ def jacocoExclude = [
         '**/*Config.class',
         '**/Response*.class',
         '**/Request*.class',
-        '**/FavoriteArticles.class',
         '**/Q*.class'
 ]
 

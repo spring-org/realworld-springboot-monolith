@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -23,11 +24,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class ProfileApiTest extends BaseSpringBootTest {
     @Autowired
-    private FollowService followService;
-    @Autowired
     protected UserService userService;
     @Autowired
     protected UserRepository userRepository;
+    @Autowired
+    private FollowService followService;
 
     @BeforeEach
     void setUp() {
@@ -60,16 +61,41 @@ class ProfileApiTest extends BaseSpringBootTest {
                 .andExpect(jsonPath("userName").value("seok"));
     }
 
+    @DisplayName("프로필 조회 (현재 사용자 존재 시) 테스트")
+    @Test
+    void when_getProfile_expect_success_auth() throws Exception {
+        // given
+        String currentUserEmail = "seokrae@gmail.com";
+        RequestSaveUser currentUser = RequestSaveUser.of(currentUserEmail, "seok", "1234");
+        String otherUserEmail = "other@gmail.com";
+        RequestSaveUser otherUser = RequestSaveUser.of(otherUserEmail, "other", "1234");
+
+        // when
+        userService.postUser(currentUser);
+        userService.postUser(otherUser);
+
+        // then
+        mockMvc.perform(
+                        get("/api/profiles/{toEmail}", otherUserEmail)
+                                .session(session)
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("email").value("other@gmail.com"))
+                .andExpect(jsonPath("userName").value("other"))
+                .andExpect(jsonPath("following").value(false));
+    }
+
     @DisplayName("팔로우 성공 시 프로필 조회 테스트")
     @Test
     void when_postFollowUser_expect_success() throws Exception {
         // given
-        RequestSaveUser fromUser = RequestSaveUser.of("seokrae@gmail.com", "seokrae", "1234");
+        RequestSaveUser currentUser = RequestSaveUser.of("seokrae@gmail.com", "seokrae", "1234");
         String toUserEmail = "seok@gmail.com";
         RequestSaveUser toUser = RequestSaveUser.of(toUserEmail, "seok", "1234");
 
         // when
-        userService.postUser(fromUser);
+        userService.postUser(currentUser);
         userService.postUser(toUser);
 
         // then
@@ -88,20 +114,20 @@ class ProfileApiTest extends BaseSpringBootTest {
     @Test
     void when_postFollowUser_expect_fail_unAuthorize_exception() throws Exception {
         // given
-        String fromUserEmail = "seokrae@gmail.com";
-        RequestSaveUser fromUser = RequestSaveUser.of(fromUserEmail, "seokrae", "1234");
+        String currentUserEmail = "seokrae@gmail.com";
+        RequestSaveUser currentUser = RequestSaveUser.of(currentUserEmail, "seokrae", "1234");
         String toUserEmail = "seok@gmail.com";
         RequestSaveUser toUser = RequestSaveUser.of(toUserEmail, "seok", "1234");
         session = new MockHttpSession();
         session.setAttribute("email", "");
 
         // when
-        userService.postUser(fromUser);
+        userService.postUser(currentUser);
         userService.postUser(toUser);
 
         // then
         MvcResult mvcResult = mockMvc.perform(
-                        post("/api/profiles/{toEmail}/follow", fromUserEmail)
+                        post("/api/profiles/{toEmail}/follow", currentUserEmail)
                                 .session(session)
                 )
                 .andDo(print())
@@ -115,19 +141,20 @@ class ProfileApiTest extends BaseSpringBootTest {
     @Test
     void when_deleteUnFollowUser_expect_success() throws Exception {
         // given
-        RequestSaveUser fromUser = RequestSaveUser.of("seokrae@gmail.com", "seokrae", "1234");
+        RequestSaveUser currentUser = RequestSaveUser.of("seokrae@gmail.com", "seokrae", "1234");
         String toUserEmail = "seok@gmail.com";
         RequestSaveUser toUser = RequestSaveUser.of(toUserEmail, "seok", "1234");
         // when
-        userService.postUser(fromUser);
+        userService.postUser(currentUser);
         userService.postUser(toUser);
 
-        followService.follow(toUserEmail, fromUser.getEmail());
+        followService.follow(currentUser.getEmail(), toUserEmail);
 
         // then
         mockMvc.perform(
                         delete("/api/profiles/{toEmail}/follow", toUserEmail)
                                 .session(session)
+                                .accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -140,7 +167,7 @@ class ProfileApiTest extends BaseSpringBootTest {
     @Test
     void when_deleteUnFollowUser_expect_fail_unAuthorize_exception() throws Exception {
         // given
-        RequestSaveUser fromUser = RequestSaveUser.of("seokrae@gmail.com", "seokrae", "1234");
+        RequestSaveUser currentUser = RequestSaveUser.of("seokrae@gmail.com", "seokrae", "1234");
         String toUserEmail = "seok@gmail.com";
         RequestSaveUser toUser = RequestSaveUser.of(toUserEmail, "seok", "1234");
 
@@ -148,7 +175,7 @@ class ProfileApiTest extends BaseSpringBootTest {
         session.setAttribute("email", "");
 
         // when
-        userService.postUser(fromUser);
+        userService.postUser(currentUser);
         userService.postUser(toUser);
 
         // then

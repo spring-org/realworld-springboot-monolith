@@ -16,5 +16,7 @@ public interface UserService {
     ResponseUser getUserByEmail(String email);
 
     // 사용자 조회(프로필)
-    ResponseProfile getProfile(String email);
+    ResponseProfile getProfile(String toEmail);
+
+    ResponseProfile getProfile(String currentUserEmail, String toEmail);
 }
