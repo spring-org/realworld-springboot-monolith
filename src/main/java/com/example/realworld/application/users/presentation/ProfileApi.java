@@ -29,10 +29,16 @@ public class ProfileApi {
      */
     @GetMapping(value = "/{toEmail}")
     public ResponseEntity<ResponseProfile> getProfile(
-            @PathVariable("toEmail") String toEmail) {
+            HttpSession session, @PathVariable("toEmail") String toEmail) {
 
-        ResponseProfile responseProfile = userService.getProfile(toEmail);
+        ResponseProfile responseProfile;
 
+        String currentUserEmail = (String) session.getAttribute(EMAIL);
+        if (!Strings.isEmpty(currentUserEmail)) {
+            responseProfile = userService.getProfile(currentUserEmail, toEmail);
+            return ResponseEntity.status(HttpStatus.OK).body(responseProfile);
+        }
+        responseProfile = userService.getProfile(toEmail);
         return ResponseEntity.status(HttpStatus.OK).body(responseProfile);
     }
 
@@ -47,12 +53,12 @@ public class ProfileApi {
     public ResponseEntity<ResponseProfile> postFollowUser(
             HttpSession session, @PathVariable("toEmail") String toEmail) {
 
-        String fromEmail = (String) session.getAttribute(EMAIL);
-        if (Strings.isEmpty(fromEmail)) {
+        String currentUserEmail = (String) session.getAttribute(EMAIL);
+        if (Strings.isEmpty(currentUserEmail)) {
             throw new UnauthorizedUserException();
         }
 
-        ResponseProfile responseProfile = followService.follow(toEmail, fromEmail);
+        ResponseProfile responseProfile = followService.follow(currentUserEmail, toEmail);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseProfile);
     }
@@ -68,12 +74,12 @@ public class ProfileApi {
     public ResponseEntity<ResponseProfile> deleteUnFollowUser(
             HttpSession session, @PathVariable("toEmail") String toEmail) {
 
-        String fromEmail = (String) session.getAttribute(EMAIL);
-        if (Strings.isEmpty(fromEmail)) {
+        String currentUserEmail = (String) session.getAttribute(EMAIL);
+        if (Strings.isEmpty(currentUserEmail)) {
             throw new UnauthorizedUserException();
         }
 
-        ResponseProfile responseProfile = followService.unFollow(toEmail, fromEmail);
+        ResponseProfile responseProfile = followService.unFollow(currentUserEmail, toEmail);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseProfile);
     }

@@ -22,20 +22,20 @@ public class FollowBusinessService implements FollowService {
     /**
      * 현재 사용자와 특정 사용자 간의 관계를 형성
      *
-     * @param toEmail   특정 사용자의 이메일 정보
-     * @param fromEmail 현재 사용자의 이메일 정보
+     * @param toEmail          특정 사용자의 이메일 정보
+     * @param currentUserEmail 현재 사용자의 이메일 정보
      * @return 현재 사용자와 특정 사용자 간의 관계 정보 및 프로필 정보를 반환
      */
     @Transactional
     @Override
-    public ResponseProfile follow(final String toEmail, final String fromEmail) {
+    public ResponseProfile follow(final String currentUserEmail, final String toEmail) {
 
-        if (fromEmail.equals(toEmail)) {
+        if (currentUserEmail.equals(toEmail)) {
             throw new CannotSelfFollowException();
         }
 
+        User fromUser = userDomainService.findUserByEmail(currentUserEmail);
         User toUser = userDomainService.findUserByEmail(toEmail);
-        User fromUser = userDomainService.findUserByEmail(fromEmail);
 
         if (toUser.isFollowing(fromUser)) {
             throw new DuplicatedFollowException();
@@ -44,26 +44,26 @@ public class FollowBusinessService implements FollowService {
         Follow savedFollow = followDomainService.save(toUser, fromUser);
         toUser.follow(savedFollow);
 
-        return ResponseProfile.followProfile(toUser, fromUser);
+        return ResponseProfile.ofProfile(fromUser, toUser);
     }
 
     /**
      * 현재 사용자와 특정 사용자 간의 연관 관계를 취소
      *
-     * @param toEmail   특정 사용자의 이메일 정보
-     * @param fromEmail 현재 사용자의 이메일 정보
+     * @param currentUserEmail 현재 사용자의 이메일 정보
+     * @param toEmail          특정 사용자의 이메일 정보
      * @return 현재 사용자와 특정 사용자의 언팔로우 정보를 포함한 프로파일 정보를 반환
      */
     @Transactional
     @Override
-    public ResponseProfile unFollow(final String toEmail, final String fromEmail) {
+    public ResponseProfile unFollow(final String currentUserEmail, final String toEmail) {
 
-        if (toEmail.equals(fromEmail)) {
+        if (currentUserEmail.equals(toEmail)) {
             throw new CannotSelfFollowException();
         }
 
+        User fromUser = userDomainService.findUserByEmail(currentUserEmail);
         User toUser = userDomainService.findUserByEmail(toEmail);
-        User fromUser = userDomainService.findUserByEmail(fromEmail);
 
         if (!toUser.isFollowing(fromUser)) {
             throw new NotFoundFollowException();
@@ -73,6 +73,6 @@ public class FollowBusinessService implements FollowService {
         toUser.unFollow(findFollow);
         followDomainService.delete(findFollow);
 
-        return ResponseProfile.followProfile(toUser, fromUser);
+        return ResponseProfile.ofProfile(fromUser, toUser);
     }
 }

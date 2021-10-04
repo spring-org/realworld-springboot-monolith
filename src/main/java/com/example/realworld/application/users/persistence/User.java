@@ -25,39 +25,30 @@ import static javax.persistence.CascadeType.REMOVE;
 @Entity(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity implements Serializable {
+    @OneToMany(mappedBy = "fromUser", fetch = FetchType.LAZY, orphanRemoval = true, cascade = {PERSIST, REMOVE})
+    @ToString.Exclude
+    private final Set<Follow> following = new HashSet<>();
+    @OneToMany(mappedBy = "toUser", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private final Set<Follow> followers = new HashSet<>();
+    @OneToMany(mappedBy = "author", orphanRemoval = true, cascade = {PERSIST, REMOVE})
+    @ToString.Exclude
+    private final Set<Article> articles = new HashSet<>();
+    @OneToMany(mappedBy = "favoriteUser", orphanRemoval = true, cascade = {PERSIST, REMOVE})
+    @ToString.Exclude
+    private final Set<FavoriteArticle> favoriteArticles = new HashSet<>();
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "USER_ID", nullable = false)
     private Long id;
-
     @Column(nullable = false, unique = true)
     private String email;
-
     private String password;
-
     @Embedded
     private Profile profile;
-
     @LastModifiedDate
     private LocalDateTime updatedAt;
-
     private String token;
-
-    @OneToMany(mappedBy = "fromUser", fetch = FetchType.LAZY, orphanRemoval = true, cascade = {PERSIST, REMOVE})
-    @ToString.Exclude
-    private final Set<Follow> following = new HashSet<>();
-
-    @OneToMany(mappedBy = "toUser", fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private final Set<Follow> followers = new HashSet<>();
-
-    @OneToMany(mappedBy = "author", orphanRemoval = true, cascade = {PERSIST, REMOVE})
-    @ToString.Exclude
-    private final Set<Article> articles = new HashSet<>();
-
-    @OneToMany(mappedBy = "favoriteUser", orphanRemoval = true, cascade = {PERSIST, REMOVE})
-    @ToString.Exclude
-    private final Set<FavoriteArticle> favoriteArticles = new HashSet<>();
 
     private User(String email, String password) {
         this(email, password, new Profile(), null);

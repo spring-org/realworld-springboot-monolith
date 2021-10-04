@@ -76,10 +76,19 @@ public class UserBusinessService implements UserService {
      * @return 현재 사용자의 프로필 정보 반환
      */
     @Override
-    public ResponseProfile getProfile(String email) {
+    public ResponseProfile getProfile(String toEmail) {
 
-        User findUserProfile = userDomainService.findUserByEmail(email);
+        User findUserProfile = userDomainService.findUserByEmail(toEmail);
 
         return ResponseProfile.of(findUserProfile);
+    }
+
+    @Override
+    public ResponseProfile getProfile(String currentUserEmail, String toEmail) {
+
+        User currentUser = userDomainService.findUserByEmail(currentUserEmail);
+        User toUser = userDomainService.findUserByEmail(toEmail);
+
+        return ResponseProfile.ofProfile(currentUser, toUser);
     }
 }

@@ -28,28 +28,19 @@ public class Article extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ARTICLE_ID", nullable = false)
     private Long id;
-
     private String slug;
-
     private String title;
-
     private String description;
-
     private String body;
-
     @LastModifiedDate
     private LocalDateTime updatedAt;
-
+    @Embedded
+    private FavoriteArticles favoriteArticles;
+    @Embedded
+    private ArticleComments comments;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "USER_ID", nullable = false)
     private User author;
-
-    @Embedded
-    private FavoriteArticles favoriteArticles;
-
-    @Embedded
-    private ArticleComments comments;
-
     @ManyToMany(fetch = FetchType.EAGER, cascade = {PERSIST})
     private final Set<Tag> tags = new LinkedHashSet<>();
 
