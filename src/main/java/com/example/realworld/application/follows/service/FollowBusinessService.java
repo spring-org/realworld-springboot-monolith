@@ -37,12 +37,15 @@ public class FollowBusinessService implements FollowService {
         User fromUser = userDomainService.findUserByEmail(currentUserEmail);
         User toUser = userDomainService.findUserByEmail(toEmail);
 
-        if (toUser.isFollowing(fromUser)) {
+        if (fromUser.isFollowing(toUser)) {
             throw new DuplicatedFollowException();
         }
 
-        Follow savedFollow = followDomainService.save(toUser, fromUser);
-        toUser.follow(savedFollow);
+        Follow savedFollow = followDomainService.save(fromUser, toUser);
+        Follow savedFollowers = followDomainService.save(toUser, fromUser);
+
+        fromUser.following(savedFollow);
+        toUser.followers(savedFollowers);
 
         return ResponseProfile.ofProfile(fromUser, toUser);
     }
@@ -65,13 +68,18 @@ public class FollowBusinessService implements FollowService {
         User fromUser = userDomainService.findUserByEmail(currentUserEmail);
         User toUser = userDomainService.findUserByEmail(toEmail);
 
-        if (!toUser.isFollowing(fromUser)) {
+        if (!fromUser.isFollowing(toUser)) {
             throw new NotFoundFollowException();
         }
 
-        Follow findFollow = toUser.findFollowing(fromUser);
-        toUser.unFollow(findFollow);
-        followDomainService.delete(findFollow);
+        Follow findFollowing = fromUser.findFollowing(toUser);
+        fromUser.unFollowing(findFollowing);
+
+        Follow findFollower = toUser.findFollowing(fromUser);
+        toUser.unFollowers(findFollower);
+
+        followDomainService.delete(findFollowing);
+        followDomainService.delete(findFollower);
 
         return ResponseProfile.ofProfile(fromUser, toUser);
     }

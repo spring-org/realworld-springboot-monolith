@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MvcResult;
 
+import static com.example.realworld.application.users.UserFixture.getRequestSaveUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -45,35 +46,30 @@ class ProfileApiTest extends BaseSpringBootTest {
     @Test
     void when_getProfile_expect() throws Exception {
         // given
-        String email = "seokrae@gmail.com";
-        RequestSaveUser saveUser = RequestSaveUser.of(email, "seok", "1234");
-
+        String currentUserEmail = "seokrae@gmail.com";
+        RequestSaveUser saveUser = getRequestSaveUser(currentUserEmail);
         // when
         userService.postUser(saveUser);
-
         // then
         mockMvc.perform(
-                        get("/api/profiles/{toEmail}", email)
+                        get("/api/profiles/{toEmail}", currentUserEmail)
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("email").value("seokrae@gmail.com"))
-                .andExpect(jsonPath("userName").value("seok"));
+                .andExpect(jsonPath("userName").value("seokrae"));
     }
 
     @DisplayName("프로필 조회 (현재 사용자 존재 시) 테스트")
     @Test
     void when_getProfile_expect_success_auth() throws Exception {
         // given
-        String currentUserEmail = "seokrae@gmail.com";
-        RequestSaveUser currentUser = RequestSaveUser.of(currentUserEmail, "seok", "1234");
+        RequestSaveUser currentUser = getRequestSaveUser("seokrae@gmail.com");
         String otherUserEmail = "other@gmail.com";
-        RequestSaveUser otherUser = RequestSaveUser.of(otherUserEmail, "other", "1234");
-
+        RequestSaveUser otherUser = getRequestSaveUser(otherUserEmail, "other");
         // when
         userService.postUser(currentUser);
         userService.postUser(otherUser);
-
         // then
         mockMvc.perform(
                         get("/api/profiles/{toEmail}", otherUserEmail)
@@ -90,14 +86,12 @@ class ProfileApiTest extends BaseSpringBootTest {
     @Test
     void when_postFollowUser_expect_success() throws Exception {
         // given
-        RequestSaveUser currentUser = RequestSaveUser.of("seokrae@gmail.com", "seokrae", "1234");
+        RequestSaveUser currentUser = getRequestSaveUser("seokrae@gmail.com");
         String toUserEmail = "seok@gmail.com";
-        RequestSaveUser toUser = RequestSaveUser.of(toUserEmail, "seok", "1234");
-
+        RequestSaveUser toUser = getRequestSaveUser(toUserEmail, "seok");
         // when
         userService.postUser(currentUser);
         userService.postUser(toUser);
-
         // then
         mockMvc.perform(
                         post("/api/profiles/{toEmail}/follow", toUserEmail)
@@ -115,16 +109,13 @@ class ProfileApiTest extends BaseSpringBootTest {
     void when_postFollowUser_expect_fail_unAuthorize_exception() throws Exception {
         // given
         String currentUserEmail = "seokrae@gmail.com";
-        RequestSaveUser currentUser = RequestSaveUser.of(currentUserEmail, "seokrae", "1234");
-        String toUserEmail = "seok@gmail.com";
-        RequestSaveUser toUser = RequestSaveUser.of(toUserEmail, "seok", "1234");
+        RequestSaveUser currentUser = getRequestSaveUser(currentUserEmail);
+        RequestSaveUser toUser = getRequestSaveUser("seok@gmail.com", "seok");
         session = new MockHttpSession();
         session.setAttribute("email", "");
-
         // when
         userService.postUser(currentUser);
         userService.postUser(toUser);
-
         // then
         MvcResult mvcResult = mockMvc.perform(
                         post("/api/profiles/{toEmail}/follow", currentUserEmail)
@@ -133,7 +124,6 @@ class ProfileApiTest extends BaseSpringBootTest {
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andReturn();
-
         assertThat(mvcResult.getResolvedException()).isInstanceOf(UnauthorizedUserException.class);
     }
 
@@ -141,15 +131,14 @@ class ProfileApiTest extends BaseSpringBootTest {
     @Test
     void when_deleteUnFollowUser_expect_success() throws Exception {
         // given
-        RequestSaveUser currentUser = RequestSaveUser.of("seokrae@gmail.com", "seokrae", "1234");
+        RequestSaveUser currentUser = getRequestSaveUser("seokrae@gmail.com");
         String toUserEmail = "seok@gmail.com";
-        RequestSaveUser toUser = RequestSaveUser.of(toUserEmail, "seok", "1234");
+        RequestSaveUser toUser = getRequestSaveUser(toUserEmail, "seok");
         // when
         userService.postUser(currentUser);
         userService.postUser(toUser);
 
         followService.follow(currentUser.getEmail(), toUserEmail);
-
         // then
         mockMvc.perform(
                         delete("/api/profiles/{toEmail}/follow", toUserEmail)
@@ -167,26 +156,22 @@ class ProfileApiTest extends BaseSpringBootTest {
     @Test
     void when_deleteUnFollowUser_expect_fail_unAuthorize_exception() throws Exception {
         // given
-        RequestSaveUser currentUser = RequestSaveUser.of("seokrae@gmail.com", "seokrae", "1234");
+        RequestSaveUser currentUser = getRequestSaveUser("seokrae@gmail.com");
         String toUserEmail = "seok@gmail.com";
-        RequestSaveUser toUser = RequestSaveUser.of(toUserEmail, "seok", "1234");
-
+        RequestSaveUser toUser = getRequestSaveUser(toUserEmail, "seok");
         session = new MockHttpSession();
         session.setAttribute("email", "");
-
         // when
         userService.postUser(currentUser);
         userService.postUser(toUser);
-
         // then
-        final MvcResult mvcResult = mockMvc.perform(
+        MvcResult mvcResult = mockMvc.perform(
                         delete("/api/profiles/{toEmail}/follow", toUserEmail)
                                 .session(session)
                 )
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andReturn();
-
         assertThat(mvcResult.getResolvedException()).isInstanceOf(UnauthorizedUserException.class);
     }
 }

@@ -62,7 +62,7 @@ class FollowRepositoryTest {
 
         final Follow newFollow = Follow.following(fromUser, toUser);
         followRepository.save(newFollow);
-        fromUser.follow(newFollow);
+        fromUser.following(newFollow);
 
         // when
         boolean contains = fromUser.isFollowing(otherUser);

@@ -25,18 +25,6 @@ import static javax.persistence.CascadeType.REMOVE;
 @Entity(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity implements Serializable {
-    @OneToMany(mappedBy = "fromUser", fetch = FetchType.LAZY, orphanRemoval = true, cascade = {PERSIST, REMOVE})
-    @ToString.Exclude
-    private final Set<Follow> following = new HashSet<>();
-    @OneToMany(mappedBy = "toUser", fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private final Set<Follow> followers = new HashSet<>();
-    @OneToMany(mappedBy = "author", orphanRemoval = true, cascade = {PERSIST, REMOVE})
-    @ToString.Exclude
-    private final Set<Article> articles = new HashSet<>();
-    @OneToMany(mappedBy = "favoriteUser", orphanRemoval = true, cascade = {PERSIST, REMOVE})
-    @ToString.Exclude
-    private final Set<FavoriteArticle> favoriteArticles = new HashSet<>();
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "USER_ID", nullable = false)
@@ -49,6 +37,19 @@ public class User extends BaseTimeEntity implements Serializable {
     @LastModifiedDate
     private LocalDateTime updatedAt;
     private String token;
+
+    @OneToMany(mappedBy = "fromUser", fetch = FetchType.LAZY, orphanRemoval = true, cascade = {PERSIST, REMOVE})
+    @ToString.Exclude
+    private final Set<Follow> following = new HashSet<>();
+    @OneToMany(mappedBy = "toUser", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private final Set<Follow> followers = new HashSet<>();
+    @OneToMany(mappedBy = "author", orphanRemoval = true, cascade = {PERSIST, REMOVE})
+    @ToString.Exclude
+    private final Set<Article> articles = new HashSet<>();
+    @OneToMany(mappedBy = "favoriteUser", orphanRemoval = true, cascade = {PERSIST, REMOVE})
+    @ToString.Exclude
+    private final Set<FavoriteArticle> favoriteArticles = new HashSet<>();
 
     private User(String email, String password) {
         this(email, password, new Profile(), null);
@@ -104,27 +105,23 @@ public class User extends BaseTimeEntity implements Serializable {
 
     // ========================================== Follow
     // 팔로우 추가
-    public void follow(Follow newFollow) {
+    public void following(Follow newFollow) {
         this.following.add(newFollow);
-        newFollow.toUser()
-                .addFollow(newFollow);
+    }
+
+    public void followers(Follow newFollow) {
+        this.followers.add(newFollow);
+        updateFollowFlag(newFollow.toUser());
     }
 
     // 언팔
-    public void unFollow(Follow newFollow) {
+    public void unFollowing(Follow newFollow) {
         this.following.remove(newFollow);
-        newFollow.toUser()
-                .removeFollow(newFollow);
     }
 
-    private void removeFollow(Follow newFollow) {
-        this.followers.remove(newFollow);
-        updateFollowFlag(newFollow.fromUser());
-    }
-
-    private void addFollow(Follow newFollow) {
-        this.followers.add(newFollow);
-        updateFollowFlag(newFollow.fromUser());
+    public void unFollowers(Follow newFollow) {
+        this.following.remove(newFollow);
+        updateFollowFlag(newFollow.toUser());
     }
 
     private void updateFollowFlag(User toUser) {
@@ -136,6 +133,11 @@ public class User extends BaseTimeEntity implements Serializable {
     // 팔로우 관계인지 확인
     public boolean isFollowing(User toUser) {
         return this.following.stream()
+                .anyMatch(follow -> follow.isSameToUser(toUser));
+    }
+
+    public boolean isFollowers(User toUser) {
+        return this.followers.stream()
                 .anyMatch(follow -> follow.isSameToUser(toUser));
     }
 

@@ -20,7 +20,7 @@ class FollowTest {
         User toUser = createUser("seok2@gmail.com");
 
         final Follow following = Follow.following(fromUser, toUser);
-        fromUser.follow(following);
+        fromUser.following(following);
 
         // given
         boolean isFollow = fromUser.isFollowing(toUser);
@@ -37,13 +37,13 @@ class FollowTest {
         User toUser = createUser("seok2@gmail.com");
 
         final Follow following = Follow.following(fromUser, toUser);
-        fromUser.follow(following);
+        fromUser.following(following);
 
         boolean isFollow = fromUser.isFollowing(toUser);
         assertThat(isFollow).isTrue();
 
         // given
-        fromUser.unFollow(following);
+        fromUser.unFollowing(following);
         boolean isUnFollow = fromUser.isFollowing(toUser);
 
         // then
