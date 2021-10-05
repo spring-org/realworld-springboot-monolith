@@ -14,6 +14,7 @@ def jacocoExclude = [
         '**/*Config.class',
         '**/Response*.class',
         '**/Request*.class',
+        '**/*Fixture.class',
         '**/Q*.class'
 ]
 
