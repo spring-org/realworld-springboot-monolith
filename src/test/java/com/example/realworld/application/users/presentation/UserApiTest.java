@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MvcResult;
 
+import static com.example.realworld.application.users.UserFixture.getRequestSaveUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -43,7 +44,7 @@ class UserApiTest extends BaseSpringBootTest {
     @Test
     void when_getCurrentUser_expect_success_get_current_user() throws Exception {
         // given
-        RequestSaveUser saveUser = RequestSaveUser.of("seokrae@gmail.com", "seok", "1234");
+        RequestSaveUser saveUser = getRequestSaveUser("seokrae@gmail.com");
         // when
         userService.postUser(saveUser);
         // then
@@ -54,7 +55,7 @@ class UserApiTest extends BaseSpringBootTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("email").value("seokrae@gmail.com"))
-                .andExpect(jsonPath("userName").value("seok"));
+                .andExpect(jsonPath("userName").value("seokrae"));
     }
 
     @DisplayName("현재 사용자의 정보를 조회 실패 (빈 세션 권한 예외) 테스트")

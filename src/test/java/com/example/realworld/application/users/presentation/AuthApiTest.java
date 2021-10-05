@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 
+import static com.example.realworld.application.users.UserFixture.getRequestLoginUser;
+import static com.example.realworld.application.users.UserFixture.getRequestSaveUser;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -41,18 +43,17 @@ class AuthApiTest extends BaseSpringBootTest {
     @Test
     void when_signUpUser_expect_success_new_user() throws Exception {
         // given
-        RequestSaveUser seok = RequestSaveUser.of("seokrae@gmail.com", "seok", "1234");
-
+        RequestSaveUser requestSaveUser = getRequestSaveUser("seokrae@gmail.com");
         // then
         mockMvc.perform(
                         post("/api/users")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(mapper.writeValueAsString(seok))
+                                .content(mapper.writeValueAsString(requestSaveUser))
                 )
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("email").value("seokrae@gmail.com"))
-                .andExpect(jsonPath("userName").value("seok"));
+                .andExpect(jsonPath("userName").value("seokrae"));
     }
 
     @DisplayName("사용자 로그인 API 테스트")
@@ -60,12 +61,10 @@ class AuthApiTest extends BaseSpringBootTest {
     void when_loginUser_expect_success_() throws Exception {
         // given
         String email = "seokrae@gmail.com";
-        RequestSaveUser saveUser = RequestSaveUser.of(email, "seok", "1234");
-        RequestLoginUser loginUser = RequestLoginUser.of(email, "1234");
-
+        RequestSaveUser saveUser = getRequestSaveUser(email);
+        RequestLoginUser loginUser = getRequestLoginUser(email);
         // when
         userService.postUser(saveUser);
-
         // then
         mockMvc.perform(
                         post("/api/users/login")
@@ -75,7 +74,7 @@ class AuthApiTest extends BaseSpringBootTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("email").value("seokrae@gmail.com"))
-                .andExpect(jsonPath("userName").value("seok"));
+                .andExpect(jsonPath("userName").value("seokrae"));
     }
 
     @DisplayName("사용자 로그아웃 테스트")
@@ -83,12 +82,10 @@ class AuthApiTest extends BaseSpringBootTest {
     void when_logout_expect_success_session_remove() throws Exception {
         // given
         String email = "seokrae@gmail.com";
-        RequestSaveUser saveUser = RequestSaveUser.of(email, "seok", "1234");
-        RequestLoginUser loginUser = RequestLoginUser.of(email, "1234");
-
+        RequestSaveUser saveUser = getRequestSaveUser(email);
+        RequestLoginUser loginUser = getRequestLoginUser(email);
         // when
         userService.postUser(saveUser);
-
         // then
         mockMvc.perform(
                         delete("/api/users/logout")
@@ -104,11 +101,9 @@ class AuthApiTest extends BaseSpringBootTest {
     @Test
     void when_logout_expect_success_fail_exception() throws Exception {
         // given
-        RequestSaveUser saveUser = RequestSaveUser.of("seokrae@gmail.com", "seok", "1234");
-
+        RequestSaveUser saveUser = getRequestSaveUser("seokrae@gmail.com");
         // when
         userService.postUser(saveUser);
-
         // then
         mockMvc.perform(
                         delete("/api/users/logout").session(session)
@@ -116,4 +111,5 @@ class AuthApiTest extends BaseSpringBootTest {
                 .andDo(print())
                 .andExpect(status().isNoContent());
     }
+
 }

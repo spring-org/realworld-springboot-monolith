@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import static com.example.realworld.application.users.UserFixture.createUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
@@ -30,7 +31,7 @@ class UserDomainServiceTest {
     void when_findUserByEmail_expect_success_find_user() {
         // given
         String email = "seokrae@gmail.com";
-        User actual = userDomainService.save(User.of(email, "1234", "SR"));
+        User actual = userDomainService.save(createUser(email));
         // when
         User expect = userDomainService.findUserByEmail(email);
         // then
@@ -42,7 +43,7 @@ class UserDomainServiceTest {
     void when_findUserByEmail_expect_fail_not_found_exception() {
         // given
         String email = "seokrae@gmail.com";
-        userDomainService.save(User.of(email, "1234", "SR"));
+        userDomainService.save(createUser(email));
         // when
         String notExistsUserEmail = "not_found@gmail.com";
         // then
@@ -55,7 +56,7 @@ class UserDomainServiceTest {
     void when_existsByEmail_expect_success_true() {
         // given
         String email = "seokrae@gmail.com";
-        userDomainService.save(User.of(email, "1234", "SR"));
+        userDomainService.save(createUser(email));
         // when
         boolean expect = userDomainService.existsByEmail(email);
         // then

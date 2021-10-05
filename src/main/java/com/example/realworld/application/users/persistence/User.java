@@ -3,7 +3,6 @@ package com.example.realworld.application.users.persistence;
 import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.favorites.exception.NotFoundFavoriteArticleException;
 import com.example.realworld.application.favorites.persistence.FavoriteArticle;
-import com.example.realworld.application.follows.exception.NotFoundFollowException;
 import com.example.realworld.application.follows.persistence.Follow;
 import com.example.realworld.application.users.dto.RequestUpdateUser;
 import com.example.realworld.core.persistence.BaseTimeEntity;
@@ -25,18 +24,7 @@ import static javax.persistence.CascadeType.REMOVE;
 @Entity(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity implements Serializable {
-    @OneToMany(mappedBy = "fromUser", fetch = FetchType.LAZY, orphanRemoval = true, cascade = {PERSIST, REMOVE})
-    @ToString.Exclude
-    private final Set<Follow> following = new HashSet<>();
-    @OneToMany(mappedBy = "toUser", fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private final Set<Follow> followers = new HashSet<>();
-    @OneToMany(mappedBy = "author", orphanRemoval = true, cascade = {PERSIST, REMOVE})
-    @ToString.Exclude
-    private final Set<Article> articles = new HashSet<>();
-    @OneToMany(mappedBy = "favoriteUser", orphanRemoval = true, cascade = {PERSIST, REMOVE})
-    @ToString.Exclude
-    private final Set<FavoriteArticle> favoriteArticles = new HashSet<>();
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "USER_ID", nullable = false)
@@ -44,21 +32,31 @@ public class User extends BaseTimeEntity implements Serializable {
     @Column(nullable = false, unique = true)
     private String email;
     private String password;
-    @Embedded
-    private Profile profile;
     @LastModifiedDate
     private LocalDateTime updatedAt;
     private String token;
+    @Embedded
+    private Profile profile;
+    @Embedded
+    private Follows follows;
+
+    @OneToMany(mappedBy = "author", orphanRemoval = true, cascade = {PERSIST, REMOVE})
+    @ToString.Exclude
+    private final Set<Article> articles = new HashSet<>();
+    @OneToMany(mappedBy = "favoriteUser", orphanRemoval = true, cascade = {PERSIST, REMOVE})
+    @ToString.Exclude
+    private final Set<FavoriteArticle> favoriteArticles = new HashSet<>();
 
     private User(String email, String password) {
-        this(email, password, new Profile(), null);
+        this(email, password, new Profile(), new Follows(), null);
     }
 
-    private User(String email, String password, Profile profile, String token) {
+    private User(String email, String password, Profile profile, Follows follows, String token) {
         this.email = email;
         this.password = password;
         this.profile = profile;
         this.token = token;
+        this.follows = follows;
     }
 
     // ========================================== User
@@ -67,7 +65,7 @@ public class User extends BaseTimeEntity implements Serializable {
     }
 
     public static User of(String email, String password, String userName) {
-        return new User(email, password, Profile.from(userName), null);
+        return new User(email, password, Profile.from(userName), Follows.init(), null);
     }
 
     public boolean isSameUser(User toUser) {
@@ -103,48 +101,47 @@ public class User extends BaseTimeEntity implements Serializable {
     }
 
     // ========================================== Follow
+    public Follows follows() {
+        return follows;
+    }
+
     // 팔로우 추가
-    public void follow(Follow newFollow) {
-        this.following.add(newFollow);
-        newFollow.toUser()
-                .addFollow(newFollow);
+    public void following(Follow newFollow) {
+        follows.addFollowing(newFollow);
+    }
+
+    public void followers(Follow newFollow) {
+        follows.addFollowers(newFollow);
+        updateFollowFlag(newFollow.toUser());
     }
 
     // 언팔
-    public void unFollow(Follow newFollow) {
-        this.following.remove(newFollow);
-        newFollow.toUser()
-                .removeFollow(newFollow);
+    public void unFollowing(Follow newFollow) {
+        follows.removeFollowing(newFollow);
     }
 
-    private void removeFollow(Follow newFollow) {
-        this.followers.remove(newFollow);
-        updateFollowFlag(newFollow.fromUser());
-    }
-
-    private void addFollow(Follow newFollow) {
-        this.followers.add(newFollow);
-        updateFollowFlag(newFollow.fromUser());
+    public void unFollowers(Follow newFollow) {
+        follows.removeFollowers(newFollow);
+        updateFollowFlag(newFollow.toUser());
     }
 
     private void updateFollowFlag(User toUser) {
-        boolean anyMatch = this.followers.stream()
-                .anyMatch(follow -> follow.isSameToUser(toUser));
+        boolean anyMatch = follows.isFollowers(toUser);
         this.profile.changeFollowing(anyMatch);
     }
 
     // 팔로우 관계인지 확인
     public boolean isFollowing(User toUser) {
-        return this.following.stream()
-                .anyMatch(follow -> follow.isSameToUser(toUser));
+        return follows.isFollowing(toUser);
+    }
+
+    public boolean isFollowers(User toUser) {
+        return follows.isFollowers(toUser);
     }
 
     // 팔로우 관계를 찾기위한 검색
     public Follow findFollowing(User toUser) {
-        return this.following.stream()
-                .filter(follow -> follow.isSameToUser(toUser))
-                .findFirst()
-                .orElseThrow(NotFoundFollowException::new);
+        return follows.findFollowing(toUser);
     }
 
     // ========================================== Article

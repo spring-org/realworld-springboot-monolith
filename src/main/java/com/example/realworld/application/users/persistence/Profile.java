@@ -53,6 +53,10 @@ public class Profile implements Serializable {
         return image;
     }
 
+    public boolean isFollowing() {
+        return following;
+    }
+
     public void changeUserName(String userName) {
         this.userName = userName;
     }

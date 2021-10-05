@@ -3,13 +3,10 @@ package com.example.realworld.application.users.persistence;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static com.example.realworld.application.users.UserFixture.createUser;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class UserTest {
-
-    public static User createUser(String email) {
-        return User.of(email, "1234", "seok");
-    }
 
     @DisplayName("사용자 엔티티 생성 테스트")
     @Test

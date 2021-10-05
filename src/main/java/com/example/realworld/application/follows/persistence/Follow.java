@@ -39,10 +39,6 @@ public class Follow extends BaseTimeEntity {
         return this.toUser.isSameUser(toUser);
     }
 
-    public User fromUser() {
-        return fromUser;
-    }
-
     public User toUser() {
         return toUser;
     }

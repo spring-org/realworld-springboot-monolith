@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import static com.example.realworld.application.users.UserFixture.getRequestSaveUser;
+import static com.example.realworld.application.users.UserFixture.getRequestUpdateUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
@@ -32,8 +34,7 @@ class UserBusinessServiceTest {
     @Test
     void when_addUser_expected_success_createUser() {
         // given
-        RequestSaveUser saveUser =
-                RequestSaveUser.of("seokrae@gmail.com", "seok", "1234");
+        RequestSaveUser saveUser = getRequestSaveUser("seokrae@gmail.com", "seok");
         // when
         ResponseUser responseUser = userBusinessService.postUser(saveUser);
         // then
@@ -45,8 +46,7 @@ class UserBusinessServiceTest {
     void when_duplicateAddUser_expect_fail_exception() {
         // given
         String email = "seokrae@gmail.com";
-        RequestSaveUser saveUser =
-                RequestSaveUser.of(email, "seok", "1234");
+        RequestSaveUser saveUser = getRequestSaveUser(email, "seok");
         // when
         userBusinessService.postUser(saveUser);
         // then
@@ -59,8 +59,7 @@ class UserBusinessServiceTest {
     void when_getProfile_expect_success_profile_info() {
         // given
         String email = "seokrae@gmail.com";
-        RequestSaveUser saveUser =
-                RequestSaveUser.of(email, "seok", "1234");
+        RequestSaveUser saveUser = getRequestSaveUser(email, "seok");
         // when
         ResponseUser responseUser = userBusinessService.postUser(saveUser);
         ResponseProfile profile = userBusinessService.getProfile(email);
@@ -73,8 +72,7 @@ class UserBusinessServiceTest {
     void when_getProfile_expect_fail_profile_info() {
         // given
         String email = "seokrae@gmail.com";
-        RequestSaveUser saveUser =
-                RequestSaveUser.of(email, "seok", "1234");
+        RequestSaveUser saveUser = getRequestSaveUser(email, "seok");
         // when
         userBusinessService.postUser(saveUser);
         // then
@@ -86,8 +84,7 @@ class UserBusinessServiceTest {
     @Test
     void when_getUserByEmail_expect_success_currentUser() {
         String email = "seokrae@gmail.com";
-        RequestSaveUser saveUser =
-                RequestSaveUser.of(email, "seok", "1234");
+        RequestSaveUser saveUser = getRequestSaveUser(email, "seok");
         // when
         ResponseUser savedUser = userBusinessService.postUser(saveUser);
         ResponseUser currentUser = userBusinessService.getUserByEmail(email);
@@ -98,15 +95,13 @@ class UserBusinessServiceTest {
     @DisplayName("사용자 정보 수정 테스트")
     @Test
     void when_updateUser_expect_success_change_username() {
-        // givien
-        String email = "seokrae@gmail.com";
-        RequestSaveUser saveUser =
-                RequestSaveUser.of(email, "seok", "1234");
-        RequestUpdateUser updateUser =
-                RequestUpdateUser.of(email, "seokrae", "12345", "/image.png", "hello bio");
+        // given
+        String currentUserEmail = "seokrae@gmail.com";
+        RequestSaveUser saveUser = getRequestSaveUser(currentUserEmail, "seok");
+        RequestUpdateUser updateUser = getRequestUpdateUser(currentUserEmail, "seokrae", "12345", "/image.png", "hello bio");
         // when
         userBusinessService.postUser(saveUser);
-        ResponseUser updatedUser = userBusinessService.updateUser(email, updateUser);
+        ResponseUser updatedUser = userBusinessService.updateUser(currentUserEmail, updateUser);
         // then
         assertThat(updatedUser.getUserName()).isEqualTo("seokrae");
     }
@@ -114,28 +109,27 @@ class UserBusinessServiceTest {
     @DisplayName("사용자 정보 수정 요청 시 변동 없는 테스트(수정 데이터 입력X)")
     @Test
     void when_updateUser_expect_success_no_data() {
-        RequestSaveUser saveUser =
-                RequestSaveUser.of("seokrae@gmail.com", "seok", "1234");
-        RequestUpdateUser updateUser =
-                RequestUpdateUser.of("", "", "", "", "");
-
-        ResponseUser responseUser = userBusinessService.postUser(saveUser);
-        ResponseUser updatedUser = userBusinessService.updateUser(responseUser.getEmail(), updateUser);
-
-        assertThat(updatedUser.getEmail()).isEqualTo(responseUser.getEmail());
+        // given
+        String currentUserEmail = "seokrae@gmail.com";
+        RequestSaveUser saveUser = getRequestSaveUser(currentUserEmail, "seok");
+        RequestUpdateUser updateUser = getRequestUpdateUser("", "", "", "", "");
+        // when
+        userBusinessService.postUser(saveUser);
+        ResponseUser updatedUser = userBusinessService.updateUser(currentUserEmail, updateUser);
+        // then
+        assertThat(currentUserEmail).isEqualTo(updatedUser.getEmail());
     }
 
     @DisplayName("특정 사용자의 프로필 조회 테스트")
     @Test
     void when_getProfile_expect_success_user_profile() {
+        // given
         String email = "seokrae@gmail.com";
-
-        RequestSaveUser saveUser =
-                RequestSaveUser.of(email, "seok", "1234");
-
+        RequestSaveUser saveUser = getRequestSaveUser(email, "seok");
+        // when
         userBusinessService.postUser(saveUser);
         ResponseProfile profile = userBusinessService.getProfile(email);
-
+        // then
         assertThat(profile.getUserName()).isEqualTo("seok");
     }
 }
