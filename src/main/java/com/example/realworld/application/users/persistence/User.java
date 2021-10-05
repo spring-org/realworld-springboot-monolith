@@ -25,6 +25,7 @@ import static javax.persistence.CascadeType.REMOVE;
 @Entity(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "USER_ID", nullable = false)
@@ -37,7 +38,6 @@ public class User extends BaseTimeEntity implements Serializable {
     @LastModifiedDate
     private LocalDateTime updatedAt;
     private String token;
-
     @OneToMany(mappedBy = "fromUser", fetch = FetchType.LAZY, orphanRemoval = true, cascade = {PERSIST, REMOVE})
     @ToString.Exclude
     private final Set<Follow> following = new HashSet<>();
