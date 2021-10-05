@@ -41,13 +41,11 @@ class FollowRepositoryTest {
         userRepository.saveAll(List.of(fromUser, toUser));
 
         final Follow newFollow = Follow.following(fromUser, toUser);
-        Follow savedFollow = followRepository.save(newFollow);
-        fromUser.getFollowing().add(savedFollow);
-
+        final Follow savedFollow = followRepository.save(newFollow);
+        fromUser.follows().addFollowing(savedFollow);
         // when
         boolean contains = fromUser.isFollowing(toUser);
-        long followSize = fromUser.getFollowing().size();
-
+        int followSize = fromUser.follows().followingSize();
         // then
         assertThat(contains).isTrue();
         assertThat(followSize).isNotZero();

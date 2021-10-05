@@ -37,7 +37,7 @@ public class ArticleRepositoryImpl implements ArticleQuerydslRepository {
                         .where(
                                 condition(condition.getTag(), article.tags.any().name::eq),
                                 condition(condition.getAuthor(), article.author.email::eq),
-                                condition(condition.getFavorited(), user.followers.any().toUser.email::eq)
+                                condition(condition.getFavorited(), user.follows.followers.any().toUser.email::eq)
                         )
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())

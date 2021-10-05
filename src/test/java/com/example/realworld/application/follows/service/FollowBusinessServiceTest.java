@@ -59,15 +59,14 @@ class FollowBusinessServiceTest {
     @Test
     void when_follow_expect_success_user_relationship() {
         // given
-        User fromUser = User.of("seok1@gmail.com", "1234", "seok1");
+        User currentUser = User.of("seok1@gmail.com", "1234", "seok1");
         User toUser = User.of("seok2@gmail.com", "1234", "seok2");
 
-        userDomainService.save(fromUser);
+        userDomainService.save(currentUser);
         userDomainService.save(toUser);
 
         // when
-        ResponseProfile responseProfile = followBusinessService.follow(fromUser.getEmail(), toUser.getEmail());
-
+        ResponseProfile responseProfile = followBusinessService.follow(currentUser.getEmail(), toUser.getEmail());
         // then
         assertThat(responseProfile.isFollowing()).isTrue();
     }
