@@ -56,8 +56,8 @@ class ProfileApiTest extends BaseSpringBootTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value("seokrae@gmail.com"))
-                .andExpect(jsonPath("userName").value("seokrae"));
+                .andExpect(jsonPath("$.profile.email").value("seokrae@gmail.com"))
+                .andExpect(jsonPath("$.profile.userName").value("seokrae"));
     }
 
     @DisplayName("프로필 조회 (현재 사용자 존재 시) 테스트")
@@ -77,9 +77,9 @@ class ProfileApiTest extends BaseSpringBootTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value("other@gmail.com"))
-                .andExpect(jsonPath("userName").value("other"))
-                .andExpect(jsonPath("following").value(false));
+                .andExpect(jsonPath("$.profile.email").value("other@gmail.com"))
+                .andExpect(jsonPath("$.profile.userName").value("other"))
+                .andExpect(jsonPath("$.profile.following").value(false));
     }
 
     @DisplayName("팔로우 성공 시 프로필 조회 테스트")
@@ -99,9 +99,9 @@ class ProfileApiTest extends BaseSpringBootTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value(toUserEmail))
-                .andExpect(jsonPath("userName").value("seok"))
-                .andExpect(jsonPath("following").value(true));
+                .andExpect(jsonPath("$.profile.email").value(toUserEmail))
+                .andExpect(jsonPath("$.profile.userName").value("seok"))
+                .andExpect(jsonPath("$.profile.following").value(true));
     }
 
     @DisplayName("팔로우 성공 시 프로필 조회 (권한 예외) 실패 테스트")
@@ -147,9 +147,9 @@ class ProfileApiTest extends BaseSpringBootTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value(toUserEmail))
-                .andExpect(jsonPath("userName").value("seok"))
-                .andExpect(jsonPath("following").value(false));
+                .andExpect(jsonPath("$.profile.email").value(toUserEmail))
+                .andExpect(jsonPath("$.profile.userName").value("seok"))
+                .andExpect(jsonPath("$.profile.following").value(false));
     }
 
     @DisplayName("언팔로우시 프로필 조회 실패(권한 예외) 테스트")

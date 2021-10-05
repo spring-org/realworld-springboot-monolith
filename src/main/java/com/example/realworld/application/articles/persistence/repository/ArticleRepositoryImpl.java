@@ -2,12 +2,18 @@ package com.example.realworld.application.articles.persistence.repository;
 
 import com.example.realworld.application.articles.dto.RequestArticleCondition;
 import com.example.realworld.application.articles.persistence.Article;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.PathBuilder;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.support.PageableExecutionUtils;
 
 import javax.persistence.EntityManager;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -26,28 +32,40 @@ public class ArticleRepositoryImpl implements ArticleQuerydslRepository {
     }
 
     @Override
-    public List<Article> searchPageArticle(RequestArticleCondition condition, Pageable pageable) { // string
+    public Page<Article> searchPageArticle(RequestArticleCondition condition, Pageable pageable) { // string
 
-        return Collections.unmodifiableList(
-                queryFactory
-                        .select(article)
-                        .from(article)
-                        .innerJoin(article.author, user)
-                        .innerJoin(article.tags, tag)
-                        .where(
-                                condition(condition.getTag(), article.tags.any().name::eq),
-                                condition(condition.getAuthor(), article.author.email::eq),
-                                condition(condition.getFavorited(), user.follows.followers.any().toUser.email::eq)
-                        )
-                        .offset(pageable.getOffset())
-                        .limit(pageable.getPageSize())
-                        .fetch()
-        );
+        JPAQuery<Article> query = getQuery(condition, pageable);
+
+        for (Sort.Order o : pageable.getSort()) {
+            PathBuilder<Article> pathBuilder = new PathBuilder<>(article.getType(), article.getMetadata());
+            query.orderBy(new OrderSpecifier(o.isAscending() ? Order.ASC : Order.DESC, pathBuilder.get(o.getProperty())));
+        }
+
+        List<Article> contents = query.fetch();
+
+        JPAQuery<Article> countQuery = getQuery(condition, pageable);
+
+        return PageableExecutionUtils.getPage(contents, pageable, countQuery::fetchCount);
+    }
+
+    private JPAQuery<Article> getQuery(RequestArticleCondition condition, Pageable pageable) {
+        return queryFactory
+                .select(article)
+                .from(article)
+                .innerJoin(article.author, user)
+                .innerJoin(article.tags, tag)
+                .where(
+                        condition(condition.getTag(), article.tags.any().name::eq),
+                        condition(condition.getAuthor(), article.author.email::eq),
+                        condition(condition.getFavorited(), user.follows.followers.any().toUser.email::eq)
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize());
     }
 
     @Override
     public List<Article> searchPageFeed(String email, Pageable pageable) {
-        return Collections.unmodifiableList(queryFactory
+        return queryFactory
                 .select(article)
                 .from(user)
                 .innerJoin(follow).on(follow.fromUser.id.eq(user.id))
@@ -56,7 +74,7 @@ public class ArticleRepositoryImpl implements ArticleQuerydslRepository {
                 .orderBy(article.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .fetch());
+                .fetch();
     }
 
     private <T> BooleanExpression condition(T value, Function<T, BooleanExpression> function) {

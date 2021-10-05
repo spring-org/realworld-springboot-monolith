@@ -3,6 +3,7 @@ package com.example.realworld.application.articles.dto;
 import com.example.realworld.application.articles.persistence.Article;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Getter;
 import lombok.ToString;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @ToString
+@JsonTypeInfo(use = JsonTypeInfo.Id.NONE, include = JsonTypeInfo.As.WRAPPER_OBJECT)
 @JsonPropertyOrder({"articles", "articleCount"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseMultiArticle {

@@ -4,10 +4,7 @@ import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.tags.dto.ResponseMultiTag;
 import com.example.realworld.application.users.dto.ResponseProfile;
 import com.example.realworld.application.users.persistence.User;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.annotation.*;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -15,6 +12,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @ToString
+@JsonTypeName(value = "article")
+@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
 @JsonPropertyOrder({"slug", "title", "description", "body", "tagList", "createdAt", "updatedAt", "favorited", "favoritesCount", "author"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseSingleArticle {
@@ -31,6 +30,8 @@ public class ResponseSingleArticle {
     private final LocalDateTime updatedAt;
     private final boolean favorited;
     private final int favoritesCount;
+
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
     private final ResponseProfile author;
 
     private ResponseSingleArticle(Article article, ResponseProfile author) {

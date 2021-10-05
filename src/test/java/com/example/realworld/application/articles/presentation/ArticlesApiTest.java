@@ -8,6 +8,8 @@ import com.example.realworld.application.articles.service.ArticleService;
 import com.example.realworld.application.articles.service.CommentService;
 import com.example.realworld.application.favorites.persistence.repository.FavoriteArticleRepository;
 import com.example.realworld.application.favorites.service.FavoriteArticleService;
+import com.example.realworld.application.follows.persistence.repository.FollowRepository;
+import com.example.realworld.application.follows.service.FollowService;
 import com.example.realworld.application.users.dto.RequestSaveUser;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
 import com.example.realworld.application.users.service.UserService;
@@ -20,6 +22,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 
+import static com.example.realworld.application.articles.ArticleFixture.getRequestSaveArticle;
+import static com.example.realworld.application.articles.ArticleFixture.getRequestUpdateArticle;
+import static com.example.realworld.application.users.UserFixture.getRequestSaveUser;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -45,6 +50,11 @@ class ArticlesApiTest extends BaseSpringBootTest {
     @Autowired
     private FavoriteArticleRepository favoriteArticleRepository;
 
+    @Autowired
+    private FollowService followService;
+    @Autowired
+    private FollowRepository followRepository;
+
     @BeforeEach
     void setUp() {
         session = new MockHttpSession();
@@ -56,6 +66,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
         favoriteArticleRepository.deleteAll();
         commentRepository.deleteAll();
         articleRepository.deleteAll();
+        followRepository.deleteAll();
         userRepository.deleteAll();
     }
 
@@ -64,11 +75,11 @@ class ArticlesApiTest extends BaseSpringBootTest {
     void when_postArticle_expect_success_new_article() throws Exception {
         // given
         String email = "seokrae@gmail.com";
-        RequestSaveUser saveUser = RequestSaveUser.of(email, "seok", "1234");
-        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java", "JavaScript");
+        RequestSaveUser requestSaveUser = getRequestSaveUser(email);
+        RequestSaveArticle requestSaveArticle = getRequestSaveArticle("타이틀", new String[]{"Java", "JavaScript"});
 
         // when
-        userService.postUser(saveUser);
+        userService.postUser(requestSaveUser);
 
         mockMvc.perform(
                         post("/api/articles")
@@ -79,17 +90,17 @@ class ArticlesApiTest extends BaseSpringBootTest {
                 )
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.slug").value(makeSlug("타이틀")))
-                .andExpect(jsonPath("$.title").value("타이틀"))
-                .andExpect(jsonPath("$.description").value("설명"))
-                .andExpect(jsonPath("$.body").value("내용"))
-                .andExpect(jsonPath("$.tagList.[0]").value("Java"))
-                .andExpect(jsonPath("$.tagList.[1]").value("JavaScript"))
-                .andExpect(jsonPath("$.favorited").value(false))
-                .andExpect(jsonPath("$.favoritesCount").value(0))
-                .andExpect(jsonPath("$.author.email").value("seokrae@gmail.com"))
-                .andExpect(jsonPath("$.author.userName").value("seok"))
-                .andExpect(jsonPath("$.author.following").value(false));
+                .andExpect(jsonPath("$.article.slug").value(makeSlug("타이틀")))
+                .andExpect(jsonPath("$.article.title").value("타이틀"))
+                .andExpect(jsonPath("$.article.description").value("설명"))
+                .andExpect(jsonPath("$.article.body").value("내용"))
+                .andExpect(jsonPath("$.article.tagList.[0]").value("Java"))
+                .andExpect(jsonPath("$.article.tagList.[1]").value("JavaScript"))
+                .andExpect(jsonPath("$.article.favorited").value(false))
+                .andExpect(jsonPath("$.article.favoritesCount").value(0))
+                .andExpect(jsonPath("$.article.author.email").value("seokrae@gmail.com"))
+                .andExpect(jsonPath("$.article.author.userName").value("seokrae"))
+                .andExpect(jsonPath("$.article.author.following").value(false));
     }
 
     @DisplayName("특정 글 조회 테스트")
@@ -97,11 +108,11 @@ class ArticlesApiTest extends BaseSpringBootTest {
     void when_getArticle_expect_success_article() throws Exception {
         // given
         String email = "seokrae@gmail.com";
-        RequestSaveUser saveUser = RequestSaveUser.of(email, "seok", "1234");
-        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java");
+        RequestSaveUser requestSaveUser = getRequestSaveUser(email);
+        RequestSaveArticle requestSaveArticle = getRequestSaveArticle("타이틀", new String[]{"Java"});
 
         // when
-        userService.postUser(saveUser);
+        userService.postUser(requestSaveUser);
         ResponseSingleArticle responseSingleArticle = articleService.postArticle(email, requestSaveArticle);
 
         // then
@@ -112,16 +123,16 @@ class ArticlesApiTest extends BaseSpringBootTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.slug").value(makeSlug("타이틀")))
-                .andExpect(jsonPath("$.title").value("타이틀"))
-                .andExpect(jsonPath("$.description").value("설명"))
-                .andExpect(jsonPath("$.body").value("내용"))
-                .andExpect(jsonPath("$.tagList", 0).value("Java"))
-                .andExpect(jsonPath("$.favorited").value(false))
-                .andExpect(jsonPath("$.favoritesCount").value(0))
-                .andExpect(jsonPath("$.author.email").value("seokrae@gmail.com"))
-                .andExpect(jsonPath("$.author.userName").value("seok"))
-                .andExpect(jsonPath("$.author.following").value(false));
+                .andExpect(jsonPath("$.article.slug").value(makeSlug("타이틀")))
+                .andExpect(jsonPath("$.article.title").value("타이틀"))
+                .andExpect(jsonPath("$.article.description").value("설명"))
+                .andExpect(jsonPath("$.article.body").value("내용"))
+                .andExpect(jsonPath("$.article.tagList", 0).value("Java"))
+                .andExpect(jsonPath("$.article.favorited").value(false))
+                .andExpect(jsonPath("$.article.favoritesCount").value(0))
+                .andExpect(jsonPath("$.article.author.email").value("seokrae@gmail.com"))
+                .andExpect(jsonPath("$.article.author.userName").value("seokrae"))
+                .andExpect(jsonPath("$.article.author.following").value(false));
 
     }
 
@@ -130,11 +141,11 @@ class ArticlesApiTest extends BaseSpringBootTest {
     void when_updateArticle_expect_success_updated_article() throws Exception {
         // given
         String email = "seokrae@gmail.com";
-        RequestSaveUser saveUser = RequestSaveUser.of(email, "seok", "1234");
-        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java");
-        RequestUpdateArticle updateArticle = RequestUpdateArticle.of("수정된 타이틀", "설명 추가", "내용");
+        RequestSaveUser requestSaveUser = getRequestSaveUser(email);
+        RequestSaveArticle requestSaveArticle = getRequestSaveArticle("타이틀", new String[]{"Java"});
+        RequestUpdateArticle updateArticle = getRequestUpdateArticle("수정된 타이틀", "설명 추가");
         // when
-        userService.postUser(saveUser);
+        userService.postUser(requestSaveUser);
         ResponseSingleArticle responseSingleArticle = articleService.postArticle(email, requestSaveArticle);
 
         // then
@@ -147,16 +158,16 @@ class ArticlesApiTest extends BaseSpringBootTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.slug").value(makeSlug("수정된 타이틀")))
-                .andExpect(jsonPath("$.title").value("수정된 타이틀"))
-                .andExpect(jsonPath("$.description").value("설명 추가"))
-                .andExpect(jsonPath("$.body").value("내용"))
-                .andExpect(jsonPath("$.tagList", 0).value("Java"))
-                .andExpect(jsonPath("$.favorited").value(false))
-                .andExpect(jsonPath("$.favoritesCount").value(0))
-                .andExpect(jsonPath("$.author.email").value("seokrae@gmail.com"))
-                .andExpect(jsonPath("$.author.userName").value("seok"))
-                .andExpect(jsonPath("$.author.following").value(false));
+                .andExpect(jsonPath("$.article.slug").value(makeSlug("수정된 타이틀")))
+                .andExpect(jsonPath("$.article.title").value("수정된 타이틀"))
+                .andExpect(jsonPath("$.article.description").value("설명 추가"))
+                .andExpect(jsonPath("$.article.body").value("내용"))
+                .andExpect(jsonPath("$.article.tagList", 0).value("Java"))
+                .andExpect(jsonPath("$.article.favorited").value(false))
+                .andExpect(jsonPath("$.article.favoritesCount").value(0))
+                .andExpect(jsonPath("$.article.author.email").value("seokrae@gmail.com"))
+                .andExpect(jsonPath("$.article.author.userName").value("seokrae"))
+                .andExpect(jsonPath("$.article.author.following").value(false));
     }
 
     @DisplayName("특정 글 삭제 테스트")
@@ -164,11 +175,11 @@ class ArticlesApiTest extends BaseSpringBootTest {
     void when_deleteArticle_expect_success_deleted_article() throws Exception {
         // given
         String email = "seokrae@gmail.com";
-        RequestSaveUser saveUser = RequestSaveUser.of(email, "seok", "1234");
-        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java");
+        RequestSaveUser requestSaveUser = getRequestSaveUser(email);
+        RequestSaveArticle requestSaveArticle = getRequestSaveArticle("타이틀", new String[]{"Java"});
 
         // when
-        userService.postUser(saveUser);
+        userService.postUser(requestSaveUser);
         ResponseSingleArticle responseSingleArticle = articleService.postArticle(email, requestSaveArticle);
 
         // then
@@ -185,8 +196,8 @@ class ArticlesApiTest extends BaseSpringBootTest {
     void when_addCommentsToArticle_expect_success_comments() throws Exception {
         // given
         String email = "seokrae@gmail.com";
-        RequestSaveUser requestSaveUser = RequestSaveUser.of(email, "seok", "1234");
-        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java");
+        RequestSaveUser requestSaveUser = getRequestSaveUser(email);
+        RequestSaveArticle requestSaveArticle = getRequestSaveArticle("타이틀", new String[]{"Java"});
         RequestSaveComment requestSaveComment = RequestSaveComment.from("글 좋아요 ~");
 
         // when
@@ -203,10 +214,10 @@ class ArticlesApiTest extends BaseSpringBootTest {
                 )
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("id").exists())
-                .andExpect(jsonPath("body").value("글 좋아요 ~"))
-                .andExpect(jsonPath("author.email").value("seokrae@gmail.com"))
-                .andExpect(jsonPath("author.userName").value("seok"));
+                .andExpect(jsonPath("$.comment.id").exists())
+                .andExpect(jsonPath("$.comment.body").value("글 좋아요 ~"))
+                .andExpect(jsonPath("$.comment.author.email").value("seokrae@gmail.com"))
+                .andExpect(jsonPath("$.comment.author.userName").value("seokrae"));
     }
 
     @DisplayName("특정 글의 모든 커멘트 조회 테스트")
@@ -214,12 +225,11 @@ class ArticlesApiTest extends BaseSpringBootTest {
     void when_getCommentsFromAnArticle_expect_success_comments() throws Exception {
         // given
         String email = "seokrae@gmail.com";
-        RequestSaveUser requestSaveUser = RequestSaveUser.of(email, "seok", "1234");
-        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java");
+        RequestSaveUser requestSaveUser = getRequestSaveUser(email);
+        RequestSaveArticle requestSaveArticle = getRequestSaveArticle("타이틀", new String[]{"Java"});
         RequestSaveComment requestSaveComment1 = RequestSaveComment.from("퍼가요 ~ ");
         RequestSaveComment requestSaveComment2 = RequestSaveComment.from("퍼가요 ~ ");
         RequestSaveComment requestSaveComment3 = RequestSaveComment.from("퍼가요 ~ ");
-
         // when
         userService.postUser(requestSaveUser);
         String slug = articleService.postArticle(email, requestSaveArticle).getSlug();
@@ -235,6 +245,10 @@ class ArticlesApiTest extends BaseSpringBootTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 // comments 사이즈 확인
+                .andExpect(jsonPath("$.comments.[0].comment.body").value("퍼가요 ~ "))
+                .andExpect(jsonPath("$.comments.[0].comment.author.email").value("seokrae@gmail.com"))
+                .andExpect(jsonPath("$.comments.[0].comment.author.userName").value("seokrae"))
+                .andExpect(jsonPath("$.comments.[0].comment.author.following").value(false))
                 .andExpect(jsonPath("$.commentSize").value(3));
     }
 
@@ -243,8 +257,8 @@ class ArticlesApiTest extends BaseSpringBootTest {
     void when_deleteComments_expect_success_delete_comment() throws Exception {
         // given
         String email = "seokrae@gmail.com";
-        RequestSaveUser requestSaveUser = RequestSaveUser.of(email, "seok", "1234");
-        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java");
+        RequestSaveUser requestSaveUser = getRequestSaveUser(email);
+        RequestSaveArticle requestSaveArticle = getRequestSaveArticle("타이틀", new String[]{"Java"});
         RequestSaveComment requestSaveComment1 = RequestSaveComment.from("1. 퍼가요 ~ ");
         RequestSaveComment requestSaveComment2 = RequestSaveComment.from("2. 퍼가요 ~ ");
         RequestSaveComment requestSaveComment3 = RequestSaveComment.from("3. 퍼가요 ~ ");
@@ -271,11 +285,11 @@ class ArticlesApiTest extends BaseSpringBootTest {
     void when_favoriteArticle_expect_success_favorite() throws Exception {
         // user given
         String email = "seokrae@gmail.com";
-        RequestSaveUser requestSaveUser = RequestSaveUser.of(email, "seok", "1234");
+        RequestSaveUser requestSaveUser = getRequestSaveUser(email);
         String otherUserEmail = "other@gmail.com";
-        RequestSaveUser requestSaveOtherUser = RequestSaveUser.of(otherUserEmail, "otherSeok", "1234");
+        RequestSaveUser requestSaveOtherUser = getRequestSaveUser(otherUserEmail, "other");
         // article given
-        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java");
+        RequestSaveArticle requestSaveArticle = getRequestSaveArticle("타이틀", new String[]{"Java"});
 
         // when
         userService.postUser(requestSaveUser);
@@ -290,16 +304,16 @@ class ArticlesApiTest extends BaseSpringBootTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.slug").value(makeSlug("타이틀")))
-                .andExpect(jsonPath("$.title").value("타이틀"))
-                .andExpect(jsonPath("$.description").value("설명"))
-                .andExpect(jsonPath("$.body").value("내용"))
-                .andExpect(jsonPath("$.tagList", 0).value("Java"))
-                .andExpect(jsonPath("$.favorited").value(true))
-                .andExpect(jsonPath("$.favoritesCount").value(1))
-                .andExpect(jsonPath("$.author.email").value("other@gmail.com"))
-                .andExpect(jsonPath("$.author.userName").value("otherSeok"))
-                .andExpect(jsonPath("$.author.following").value(false));
+                .andExpect(jsonPath("$.article.slug").value(makeSlug("타이틀")))
+                .andExpect(jsonPath("$.article.title").value("타이틀"))
+                .andExpect(jsonPath("$.article.description").value("설명"))
+                .andExpect(jsonPath("$.article.body").value("내용"))
+                .andExpect(jsonPath("$.article.tagList", 0).value("Java"))
+                .andExpect(jsonPath("$.article.favorited").value(true))
+                .andExpect(jsonPath("$.article.favoritesCount").value(1))
+                .andExpect(jsonPath("$.article.author.email").value("other@gmail.com"))
+                .andExpect(jsonPath("$.article.author.userName").value("other"))
+                .andExpect(jsonPath("$.article.author.following").value(false));
     }
 
     @DisplayName("관심 글 취소")
@@ -307,11 +321,11 @@ class ArticlesApiTest extends BaseSpringBootTest {
     void when_unFavoriteArticle_expect_success_un_favorite() throws Exception {
         // user given
         String email = "seokrae@gmail.com";
-        RequestSaveUser requestSaveUser = RequestSaveUser.of(email, "seok", "1234");
+        RequestSaveUser requestSaveUser = getRequestSaveUser(email);
         String otherUserEmail = "other@gmail.com";
-        RequestSaveUser requestSaveOtherUser = RequestSaveUser.of(otherUserEmail, "otherSeok", "1234");
+        RequestSaveUser requestSaveOtherUser = getRequestSaveUser(otherUserEmail, "other");
         // article given
-        RequestSaveArticle requestSaveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java");
+        RequestSaveArticle requestSaveArticle = getRequestSaveArticle("타이틀", new String[]{"Java"});
 
         // when
         userService.postUser(requestSaveUser);
@@ -327,16 +341,16 @@ class ArticlesApiTest extends BaseSpringBootTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.slug").value(makeSlug("타이틀")))
-                .andExpect(jsonPath("$.title").value("타이틀"))
-                .andExpect(jsonPath("$.description").value("설명"))
-                .andExpect(jsonPath("$.body").value("내용"))
-                .andExpect(jsonPath("$.tagList", 0).value("Java"))
-                .andExpect(jsonPath("$.favorited").value(false))
-                .andExpect(jsonPath("$.favoritesCount").value(0))
-                .andExpect(jsonPath("$.author.email").value("other@gmail.com"))
-                .andExpect(jsonPath("$.author.userName").value("otherSeok"))
-                .andExpect(jsonPath("$.author.following").value(false));
+                .andExpect(jsonPath("$.article.slug").value(makeSlug("타이틀")))
+                .andExpect(jsonPath("$.article.title").value("타이틀"))
+                .andExpect(jsonPath("$.article.description").value("설명"))
+                .andExpect(jsonPath("$.article.body").value("내용"))
+                .andExpect(jsonPath("$.article.tagList", 0).value("Java"))
+                .andExpect(jsonPath("$.article.favorited").value(false))
+                .andExpect(jsonPath("$.article.favoritesCount").value(0))
+                .andExpect(jsonPath("$.article.author.email").value("other@gmail.com"))
+                .andExpect(jsonPath("$.article.author.userName").value("other"))
+                .andExpect(jsonPath("$.article.author.following").value(false));
     }
 
     @DisplayName("글 페이징 조건 조회")
@@ -344,15 +358,15 @@ class ArticlesApiTest extends BaseSpringBootTest {
     void when_getArticles_expect_success_page_article() throws Exception {
         // user given
         String email = "seokrae@gmail.com";
-        RequestSaveUser requestSaveUser = RequestSaveUser.of(email, "seok", "1234");
+        RequestSaveUser requestSaveUser = getRequestSaveUser(email);
         String otherUserEmail = "other@gmail.com";
-        RequestSaveUser requestSaveOtherUser = RequestSaveUser.of(otherUserEmail, "otherSeok", "1234");
+        RequestSaveUser requestSaveOtherUser = getRequestSaveUser(otherUserEmail, "otherSeok");
         // article given
-        RequestSaveArticle requestSaveArticle1 = RequestSaveArticle.of("타이틀1", "설명", "내용", "Java");
-        RequestSaveArticle requestSaveArticle2 = RequestSaveArticle.of("타이틀2", "설명", "내용", "JavaScript");
-        RequestSaveArticle requestSaveArticle3 = RequestSaveArticle.of("타이틀3", "설명", "내용", "JavaScript");
-        RequestSaveArticle requestSaveArticle4 = RequestSaveArticle.of("타이틀4", "설명", "내용", "Python");
-        RequestSaveArticle requestSaveArticle5 = RequestSaveArticle.of("타이틀5", "설명", "내용", "JavaScript");
+        RequestSaveArticle requestSaveArticle1 = getRequestSaveArticle("타이틀1", new String[]{"Java"});
+        RequestSaveArticle requestSaveArticle2 = getRequestSaveArticle("타이틀2", new String[]{"Python"});
+        RequestSaveArticle requestSaveArticle3 = getRequestSaveArticle("타이틀3", new String[]{"JavaScript"});
+        RequestSaveArticle requestSaveArticle4 = getRequestSaveArticle("타이틀4", new String[]{"Java"});
+        RequestSaveArticle requestSaveArticle5 = getRequestSaveArticle("타이틀5", new String[]{"JavaScript"});
         RequestArticleCondition pageCondition =
                 RequestArticleCondition.of("JavaScript", "other@gmail.com", null);
         // when
@@ -374,22 +388,22 @@ class ArticlesApiTest extends BaseSpringBootTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.articles.[0].slug").value(responseSingleArticle5.getSlug()))
-                .andExpect(jsonPath("$.articles.[0].title").value(responseSingleArticle5.getTitle()))
-                .andExpect(jsonPath("$.articles.[0].description").value(responseSingleArticle5.getDescription()))
-                .andExpect(jsonPath("$.articles.[0].body").value(responseSingleArticle5.getBody()))
-                .andExpect(jsonPath("$.articles.[0].tagList.[0]").value("JavaScript"))
-                .andExpect(jsonPath("$.articles.[0].createdAt").exists())
-                .andExpect(jsonPath("$.articles.[0].updatedAt").exists())
-                .andExpect(jsonPath("$.articles.[0].favorited").value(false))
-                .andExpect(jsonPath("$.articles.[0].favoritesCount").value(0))
-                .andExpect(jsonPath("$.articles.[0].author.email").value("other@gmail.com"))
-                .andExpect(jsonPath("$.articles.[0].author.userName").value("otherSeok"))
-                .andExpect(jsonPath("$.articles.[0].author.following").value(false))
-                .andExpect(jsonPath("$.articles.[1].slug").value(responseSingleArticle3.getSlug()))
-                .andExpect(jsonPath("$.articles.[1].title").value(responseSingleArticle3.getTitle()))
-                .andExpect(jsonPath("$.articles.[1].description").value(responseSingleArticle3.getDescription()))
-                .andExpect(jsonPath("$.articles.[1].body").value(responseSingleArticle3.getBody()))
+                .andExpect(jsonPath("$.articles.[0].article.slug").value(responseSingleArticle5.getSlug()))
+                .andExpect(jsonPath("$.articles.[0].article.title").value(responseSingleArticle5.getTitle()))
+                .andExpect(jsonPath("$.articles.[0].article.description").value(responseSingleArticle5.getDescription()))
+                .andExpect(jsonPath("$.articles.[0].article.body").value(responseSingleArticle5.getBody()))
+                .andExpect(jsonPath("$.articles.[0].article.tagList.[0]").value("JavaScript"))
+                .andExpect(jsonPath("$.articles.[0].article.createdAt").exists())
+                .andExpect(jsonPath("$.articles.[0].article.updatedAt").exists())
+                .andExpect(jsonPath("$.articles.[0].article.favorited").value(false))
+                .andExpect(jsonPath("$.articles.[0].article.favoritesCount").value(0))
+                .andExpect(jsonPath("$.articles.[0].article.author.email").value("other@gmail.com"))
+                .andExpect(jsonPath("$.articles.[0].article.author.userName").value("otherSeok"))
+                .andExpect(jsonPath("$.articles.[0].article.author.following").value(false))
+                .andExpect(jsonPath("$.articles.[1].article.slug").value(responseSingleArticle3.getSlug()))
+                .andExpect(jsonPath("$.articles.[1].article.title").value(responseSingleArticle3.getTitle()))
+                .andExpect(jsonPath("$.articles.[1].article.description").value(responseSingleArticle3.getDescription()))
+                .andExpect(jsonPath("$.articles.[1].article.body").value(responseSingleArticle3.getBody()))
                 .andExpect(jsonPath("$.articleCount").value(2));
     }
 
@@ -398,17 +412,17 @@ class ArticlesApiTest extends BaseSpringBootTest {
     void when_getPeed_expect_success_following_article() throws Exception {
         // user given
         String email = "seokrae@gmail.com";
-        RequestSaveUser requestSaveUser = RequestSaveUser.of(email, "seok", "1234");
+        RequestSaveUser requestSaveUser = getRequestSaveUser(email);
         String otherUserEmail = "other@gmail.com";
-        RequestSaveUser requestSaveOtherUser = RequestSaveUser.of(otherUserEmail, "otherSeok", "1234");
+        RequestSaveUser requestSaveOtherUser = getRequestSaveUser(otherUserEmail, "otherSeok");
         String anotherUserEmail = "another@gmail.com";
-        RequestSaveUser requestSaveAnotherUser = RequestSaveUser.of(anotherUserEmail, "anotherSeok", "1234");
+        RequestSaveUser requestSaveAnotherUser = getRequestSaveUser(anotherUserEmail, "anotherSeok");
         // article given
-        RequestSaveArticle requestSaveArticle1 = RequestSaveArticle.of("타이틀1", "설명", "내용", "Java");
-        RequestSaveArticle requestSaveArticle2 = RequestSaveArticle.of("타이틀2", "설명", "내용", "Java");
-        RequestSaveArticle requestSaveArticle3 = RequestSaveArticle.of("타이틀3", "설명", "내용", "Python");
-        RequestSaveArticle requestSaveArticle4 = RequestSaveArticle.of("타이틀4", "설명", "내용", "R");
-        RequestSaveArticle requestSaveArticle5 = RequestSaveArticle.of("타이틀5", "설명", "내용", "JavaScript");
+        RequestSaveArticle requestSaveArticle1 = getRequestSaveArticle("타이틀1", new String[]{"Java"});
+        RequestSaveArticle requestSaveArticle2 = getRequestSaveArticle("타이틀2", new String[]{"Java"});
+        RequestSaveArticle requestSaveArticle3 = getRequestSaveArticle("타이틀3", new String[]{"Python"});
+        RequestSaveArticle requestSaveArticle4 = getRequestSaveArticle("타이틀4", new String[]{"R"});
+        RequestSaveArticle requestSaveArticle5 = getRequestSaveArticle("타이틀5", new String[]{"JavaScript"});
 
         PageRequest pageRequest = PageRequest.of(0, 20);
 
@@ -417,17 +431,14 @@ class ArticlesApiTest extends BaseSpringBootTest {
         userService.postUser(requestSaveOtherUser);
         userService.postUser(requestSaveAnotherUser);
 
-        String slug1 = articleService.postArticle(otherUserEmail, requestSaveArticle1).getSlug();
-        String slug2 = articleService.postArticle(otherUserEmail, requestSaveArticle2).getSlug();
-        String slug3 = articleService.postArticle(anotherUserEmail, requestSaveArticle3).getSlug();
-        String slug4 = articleService.postArticle(anotherUserEmail, requestSaveArticle4).getSlug();
-        String slug5 = articleService.postArticle(anotherUserEmail, requestSaveArticle5).getSlug();
+        articleService.postArticle(otherUserEmail, requestSaveArticle1);
+        articleService.postArticle(otherUserEmail, requestSaveArticle2);
+        articleService.postArticle(anotherUserEmail, requestSaveArticle3);
+        articleService.postArticle(anotherUserEmail, requestSaveArticle4);
+        articleService.postArticle(anotherUserEmail, requestSaveArticle5);
 
-        favoriteArticleService.favoriteArticle(email, slug1);
-        favoriteArticleService.favoriteArticle(email, slug2);
-        favoriteArticleService.favoriteArticle(email, slug3);
-        favoriteArticleService.favoriteArticle(email, slug4);
-        favoriteArticleService.favoriteArticle(email, slug5);
+        followService.follow(email, otherUserEmail);
+        followService.follow(email, anotherUserEmail);
 
         // then
         mockMvc.perform(
@@ -438,17 +449,8 @@ class ArticlesApiTest extends BaseSpringBootTest {
                                 .accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 )
                 .andDo(print())
-                .andExpect(status().isOk());
-    }
-
-    @DisplayName("모든 태그타입 조회 테스트")
-    @Test
-    void when_getTags_expect_success_all_data() throws Exception {
-        mockMvc.perform(
-                        get("/api/tags")
-                )
-                .andDo(print())
-                .andExpect(status().isOk());
-
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.articles.*").isNotEmpty())
+                .andExpect(jsonPath("$.articleCount").value(5));
     }
 }

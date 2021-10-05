@@ -1,7 +1,6 @@
 package com.example.realworld.application.tags.dto;
 
 import com.example.realworld.application.tags.persistence.Tag;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Getter;
 
 import java.util.Comparator;
@@ -12,7 +11,6 @@ import java.util.stream.Collectors;
 @Getter
 public class ResponseMultiTag {
 
-    @JsonUnwrapped
     private final List<String> tagList;
 
     private ResponseMultiTag(List<String> tagList) {

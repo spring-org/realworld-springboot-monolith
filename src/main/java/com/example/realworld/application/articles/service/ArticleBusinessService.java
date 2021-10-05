@@ -33,7 +33,7 @@ public class ArticleBusinessService implements ArticleService {
     @Override
     public ResponseMultiArticle searchPageArticles(RequestArticleCondition condition, Pageable pageable) {
 
-        List<Article> articles = articleRepository.searchPageArticle(condition, pageable);
+        List<Article> articles = articleRepository.searchPageArticle(condition, pageable).toList();
 
         return ResponseMultiArticle.of(articles);
     }

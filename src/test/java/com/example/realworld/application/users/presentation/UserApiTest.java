@@ -16,6 +16,7 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static com.example.realworld.application.users.UserFixture.getRequestSaveUser;
+import static com.example.realworld.application.users.UserFixture.getRequestUpdateUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -54,15 +55,15 @@ class UserApiTest extends BaseSpringBootTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value("seokrae@gmail.com"))
-                .andExpect(jsonPath("userName").value("seokrae"));
+                .andExpect(jsonPath("$.user.email").value("seokrae@gmail.com"))
+                .andExpect(jsonPath("$.user.userName").value("seokrae"));
     }
 
     @DisplayName("현재 사용자의 정보를 조회 실패 (빈 세션 권한 예외) 테스트")
     @Test
     void when_getCurrentUser_expect_fail_session_is_empty() throws Exception {
         // given
-        RequestSaveUser saveUser = RequestSaveUser.of("seokrae@gmail.com", "seok", "1234");
+        RequestSaveUser saveUser = getRequestSaveUser("seokrae@gmail.com");
         // when
         userService.postUser(saveUser);
         // then
@@ -80,9 +81,8 @@ class UserApiTest extends BaseSpringBootTest {
     @Test
     void when_putUser_expect_success_updated_user_info() throws Exception {
         // given
-        RequestSaveUser saveUser = RequestSaveUser.of("seokrae@gmail.com", "seok", "1234");
-        RequestUpdateUser updateUser = RequestUpdateUser.of(
-                "seokrae@gmail.com", "updatedUser", "1234", "newImage.png", "newBio");
+        RequestSaveUser saveUser = getRequestSaveUser("seokrae@gmail.com");
+        RequestUpdateUser updateUser = getRequestUpdateUser("seokrae@gmail.com", "updatedUser", "1234", "newImage.png", "newBio");
         // when
         userService.postUser(saveUser);
         // then
@@ -94,10 +94,10 @@ class UserApiTest extends BaseSpringBootTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value("seokrae@gmail.com"))
-                .andExpect(jsonPath("userName").value("updatedUser"))
-                .andExpect(jsonPath("bio").value("newBio"))
-                .andExpect(jsonPath("image").value("newImage.png"));
+                .andExpect(jsonPath("$.user.email").value("seokrae@gmail.com"))
+                .andExpect(jsonPath("$.user.userName").value("updatedUser"))
+                .andExpect(jsonPath("$.user.bio").value("newBio"))
+                .andExpect(jsonPath("$.user.image").value("newImage.png"));
     }
 
     @DisplayName("현재 사용자의 정보를 수정 (빈 이메일 권한예외) 테스트")
@@ -105,9 +105,8 @@ class UserApiTest extends BaseSpringBootTest {
     void when_putUser_expect_fail_unAuthorized() throws Exception {
 
         // given
-        RequestSaveUser saveUser = RequestSaveUser.of("seokrae@gmail.com", "seok", "1234");
-        RequestUpdateUser updateUser = RequestUpdateUser.of(
-                "seokrae@gmail.com", "updatedUser", "1234", "newImage.png", "newBio");
+        RequestSaveUser saveUser = getRequestSaveUser("seokrae@gmail.com");
+        RequestUpdateUser updateUser = getRequestUpdateUser("seokrae@gmail.com", "updatedUser", "1234", "newImage.png", "newBio");
         session = new MockHttpSession();
         session.setAttribute("email", "");
 
@@ -130,12 +129,11 @@ class UserApiTest extends BaseSpringBootTest {
     @DisplayName("현재 사용자의 정보를 수정 (잘못된 이메일로 권한예외) 테스트")
     @Test
     void when_putUser_expect_fail_un_matches_email_unAuthorized() throws Exception {
+        // given
+        RequestSaveUser saveUser = getRequestSaveUser("seokrae@gmail.com");
+        RequestUpdateUser updateUser = getRequestUpdateUser("seokrae@gmail.com", "updatedUser", "1234", "newImage.png", "newBio");
         session = new MockHttpSession();
         session.setAttribute("email", "seok@gmail.com");
-        // given
-        RequestSaveUser saveUser = RequestSaveUser.of("seokrae@gmail.com", "seok", "1234");
-        RequestUpdateUser updateUser = RequestUpdateUser.of(
-                "seokrae@gmail.com", "updatedUser", "1234", "newImage.png", "newBio");
         // when
         userService.postUser(saveUser);
         // then

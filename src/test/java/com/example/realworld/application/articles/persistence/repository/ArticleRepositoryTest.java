@@ -8,11 +8,13 @@ import com.example.realworld.application.tags.persistence.Tag;
 import com.example.realworld.application.users.exception.NotFoundUserException;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -144,9 +146,9 @@ class ArticleRepositoryTest {
         assertThat(updatedArticle.getTitle()).isEqualTo("title-1");
     }
 
-    @DisplayName("글 조건 조회 테스트")
+    @DisplayName("글 조건 조회 오름차순 정렬 테스트")
     @Test
-    void when_searchPageArticle_expect_success() {
+    void when_searchPageArticle_expect_success_ascending() throws JsonProcessingException {
         // given
         String email = "seokrae@gmail.com";
         User author = User.of(email, "1234", "SR");
@@ -168,20 +170,63 @@ class ArticleRepositoryTest {
 
         // when
         RequestArticleCondition condition = RequestArticleCondition.of("Java", email, null);
-        PageRequest pageRequest = PageRequest.of(0, 20);
-        List<Article> searchArticles = articleRepository.searchPageArticle(condition, pageRequest);
+        PageRequest pageRequest = PageRequest.of(0, 20, Sort.by("title").ascending());
+        List<Article> searchArticles = articleRepository.searchPageArticle(condition, pageRequest).toList();
 
         // then
         assertThat(searchArticles.size()).isEqualTo(3);
 
-        Article actual = searchArticles.get(0);
-        Article expected = articles.get(0);
+        Article actual = searchArticles.get(2);
+        Article expected = articles.get(2);
 
         assertAll("first Article Assertion",
                 () -> {
                     assertThat(actual.getSlug()).isEqualTo(makeSlug(expected.getTitle()));
                     assertThat(actual.getAuthor()).isEqualTo(expected.getAuthor());
                     assertThat(actual.getTags()).contains(Tag.of("Java"));
+                }
+        );
+    }
+
+    @DisplayName("글 조건 조회 내림차순 정렬 테스트")
+    @Test
+    void when_searchPageArticle_expect_success_descending() {
+        // given
+        String email = "seokrae@gmail.com";
+        User author = User.of(email, "1234", "SR");
+        User savedUser = userRepository.save(author);
+
+        List<RequestSaveArticle> requestSaveArticles = List.of(
+                RequestSaveArticle.of("타이틀-1", "설명", "바디", "Java"),
+                RequestSaveArticle.of("타이틀-2", "설명", "바디", "Java"),
+                RequestSaveArticle.of("타이틀-3", "설명", "바디", "Java"),
+                RequestSaveArticle.of("타이틀-4", "설명", "바디", "Python"),
+                RequestSaveArticle.of("타이틀-5", "설명", "바디", "JavaScript"),
+                RequestSaveArticle.of("타이틀-6", "설명", "바디", "JavaScript")
+        );
+
+        List<Article> dummyArticles = requestSaveArticles.stream()
+                .map(request -> RequestSaveArticle.toEntity(request, savedUser))
+                .collect(Collectors.toList());
+
+        List<Article> articles = articleRepository.saveAll(dummyArticles);
+
+        // when
+        RequestArticleCondition condition = RequestArticleCondition.of("JavaScript", email, null);
+        PageRequest pageRequest = PageRequest.of(0, 20, Sort.by("title").descending());
+        List<Article> searchArticles = articleRepository.searchPageArticle(condition, pageRequest).toList();
+
+        // then
+        assertThat(searchArticles.size()).isEqualTo(2);
+
+        Article actual = searchArticles.get(0);
+        Article expected = articles.get(5);
+
+        assertAll("first Article Assertion",
+                () -> {
+                    assertThat(actual.getSlug()).isEqualTo(makeSlug(expected.getTitle()));
+                    assertThat(actual.getAuthor()).isEqualTo(expected.getAuthor());
+                    assertThat(actual.getTags()).contains(Tag.of("JavaScript"));
                 }
         );
     }
@@ -195,19 +240,19 @@ class ArticleRepositoryTest {
         // when
         RequestArticleCondition condition = RequestArticleCondition.of(null, null, null);
         PageRequest pageRequest = PageRequest.of(0, 20);
-        List<Article> searchArticles = articleRepository.searchPageArticle(condition, pageRequest);
+        List<Article> searchArticles = articleRepository.searchPageArticle(condition, pageRequest).toList();
 
         // then
         assertThat(searchArticles.size()).isEqualTo(5);
 
-        Article actual = searchArticles.get(0);
-        Article expected = articles.get(0);
+        Article actual = searchArticles.get(4);
+        Article expected = articles.get(4);
 
         assertAll("Article Assertion",
                 () -> {
                     assertThat(actual.getSlug()).isEqualTo(makeSlug(expected.getTitle()));
                     assertThat(actual.getAuthor()).isEqualTo(expected.getAuthor());
-                    assertThat(actual.getTags()).contains(Tag.of("Java"));
+                    assertThat(actual.getTags()).contains(Tag.of("PHP"));
                 }
         );
     }

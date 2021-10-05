@@ -26,7 +26,7 @@ import static javax.persistence.CascadeType.REMOVE;
 public class User extends BaseTimeEntity implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "USER_ID", nullable = false)
     private Long id;
     @Column(nullable = false, unique = true)
@@ -133,10 +133,6 @@ public class User extends BaseTimeEntity implements Serializable {
     // 팔로우 관계인지 확인
     public boolean isFollowing(User toUser) {
         return follows.isFollowing(toUser);
-    }
-
-    public boolean isFollowers(User toUser) {
-        return follows.isFollowers(toUser);
     }
 
     // 팔로우 관계를 찾기위한 검색

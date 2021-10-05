@@ -52,8 +52,8 @@ class AuthApiTest extends BaseSpringBootTest {
                 )
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("email").value("seokrae@gmail.com"))
-                .andExpect(jsonPath("userName").value("seokrae"));
+                .andExpect(jsonPath("$.user.email").value("seokrae@gmail.com"))
+                .andExpect(jsonPath("$.user.userName").value("seokrae"));
     }
 
     @DisplayName("사용자 로그인 API 테스트")
@@ -73,8 +73,8 @@ class AuthApiTest extends BaseSpringBootTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value("seokrae@gmail.com"))
-                .andExpect(jsonPath("userName").value("seokrae"));
+                .andExpect(jsonPath("$.user.email").value("seokrae@gmail.com"))
+                .andExpect(jsonPath("$.user.userName").value("seokrae"));
     }
 
     @DisplayName("사용자 로그아웃 테스트")
