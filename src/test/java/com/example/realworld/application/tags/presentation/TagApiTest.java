@@ -3,8 +3,6 @@ package com.example.realworld.application.tags.presentation;
 import com.example.realworld.application.BaseSpringBootTest;
 import com.example.realworld.application.tags.persistence.Tag;
 import com.example.realworld.application.tags.persistence.repository.TagRepository;
-import com.example.realworld.application.tags.service.TagService;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TagApiTest extends BaseSpringBootTest {
 
     @Autowired
-    private TagService tagService;
-    @Autowired
     private TagRepository tagRepository;
-
-    @AfterEach
-    void tearDown() {
-        tagRepository.deleteAll();
-    }
 
     @DisplayName("전체 태그리스트 조회")
     @Test

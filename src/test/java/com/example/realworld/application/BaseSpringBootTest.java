@@ -7,9 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 public abstract class BaseSpringBootTest {
@@ -18,11 +15,4 @@ public abstract class BaseSpringBootTest {
     @Autowired
     protected ObjectMapper mapper;
     protected MockHttpSession session;
-
-    protected String makeSlug(String title) {
-        return String.format(
-                "%s-%s"
-                , LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                , title);
-    }
 }

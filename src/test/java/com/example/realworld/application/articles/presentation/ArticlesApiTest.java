@@ -20,8 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 
-import static com.example.realworld.application.articles.ArticleFixture.getRequestSaveArticle;
-import static com.example.realworld.application.articles.ArticleFixture.getRequestUpdateArticle;
+import static com.example.realworld.application.articles.ArticleFixture.*;
 import static com.example.realworld.application.users.UserFixture.getRequestSaveUser;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
