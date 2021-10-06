@@ -8,21 +8,20 @@ import com.example.realworld.application.tags.persistence.Tag;
 import com.example.realworld.application.users.exception.NotFoundUserException;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.example.realworld.application.articles.ArticleFixture.*;
+import static com.example.realworld.application.users.UserFixture.createUser;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DataJpaTest
@@ -34,103 +33,28 @@ class ArticleRepositoryTest {
     @Autowired
     private ArticleRepository articleRepository;
 
-    private Article createArticle(Integer idx, User author) {
-        return Article.of("title-" + idx, "description", "body", author, Tag.of("Java"));
+    @AfterEach
+    void tearDown() {
+        articleRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
-    private User createUser() {
-        return User.of("seokrae@gmail.com", "1234", "seokrae");
-    }
-
-    private String makeSlug(String title) {
-        return String.format(
-                "%s-%s"
-                , LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                , title);
-    }
-
-    @DisplayName("특정 사용자의 여러 글 등록 테스트")
-    @Test
-    void when_createArticles_expected_success_user_and_articles() {
-        // given
-        User author = createUser();
-        User savedUser = userRepository.save(author);
-
-        List<Article> articles = List.of(
-                createArticle(1, savedUser), createArticle(2, savedUser),
-                createArticle(3, savedUser), createArticle(4, savedUser));
-
-        List<Article> savedArticles = articleRepository.saveAll(articles);
-
-        savedUser.addArticles(savedArticles);
-
-        int userArticlesSize = savedUser.getArticles().size();
-        assertThat(userArticlesSize).isEqualTo(4);
-    }
-
-    @DisplayName("특정 사용자의 등록 글 확인 테스트")
-    @Test
-    void when_findArticle_expected_fail_exception() {
-        // given
-        User author = createUser();
-        User savedUser = userRepository.save(author);
-
-        List<Article> articles = List.of(
-                createArticle(1, savedUser), createArticle(2, savedUser),
-                createArticle(3, savedUser), createArticle(4, savedUser));
-
-        List<Article> savedArticles = articleRepository.saveAll(articles);
-
-        savedUser.addArticles(savedArticles);
-        Optional<Article> actualArticle = savedUser.getArticleByTitle("title");
-        // then
-        assertThatExceptionOfType(NotFoundArticleException.class)
-                .isThrownBy(() -> actualArticle.orElseThrow(NotFoundArticleException::new));
-    }
-
-    @DisplayName("특정 글 정보 수정 테스트")
-    @Test
-    void when_updateArticle_expected_success_article_info() {
-        // given
-        User author = createUser();
-        User savedUser = userRepository.save(author);
-
-        List<Article> articles = List.of(
-                createArticle(1, savedUser), createArticle(2, savedUser),
-                createArticle(3, savedUser), createArticle(4, savedUser));
-
-        List<Article> savedArticles = articleRepository.saveAll(articles);
-        savedUser.addArticles(savedArticles);
-
-        Article article = savedUser.getArticleByTitle("title-1")
-                .orElseThrow(NotFoundArticleException::new);
-
-        article.update("updateTitle-1", "description", "body");
-
-        User findUser = userRepository.findByEmail(savedUser.getEmail())
-                .orElseThrow(NotFoundUserException::new);
-
-        Article updatedArticle = findUser.getArticleByTitle("updateTitle-1")
-                .orElseThrow(NotFoundArticleException::new);
-
-        assertThat(updatedArticle.getTitle()).isEqualTo("updateTitle-1");
-    }
 
     @DisplayName("특정 글에 데이터 없이 정보 수정요청 테스트")
     @Test
     void when_updateArticle_expected_success_article_no_data() {
         // given
-        User author = createUser();
+        User author = createUser("seokrae@gmail.com");
         User savedUser = userRepository.save(author);
 
         List<Article> articles = List.of(
-                createArticle(1, savedUser), createArticle(2, savedUser),
-                createArticle(3, savedUser), createArticle(4, savedUser));
+                createArticle(1, savedUser, Tag.of("Java")), createArticle(2, savedUser, Tag.of("Go")),
+                createArticle(3, savedUser, Tag.of("JavaScript")), createArticle(4, savedUser, Tag.of("Python")));
 
         List<Article> savedArticles = articleRepository.saveAll(articles);
         savedUser.addArticles(savedArticles);
 
-        Article article = savedUser.getArticleByTitle("title-1")
+        Article article = savedUser.getArticleByTitle("타이틀-1")
                 .orElseThrow(NotFoundArticleException::new);
 
         article.update(null, null, null);
@@ -138,10 +62,10 @@ class ArticleRepositoryTest {
         User findUser = userRepository.findByEmail(savedUser.getEmail())
                 .orElseThrow(NotFoundUserException::new);
 
-        Article updatedArticle = findUser.getArticleByTitle("title-1")
+        Article updatedArticle = findUser.getArticleByTitle("타이틀-1")
                 .orElseThrow(NotFoundArticleException::new);
 
-        assertThat(updatedArticle.getTitle()).isEqualTo("title-1");
+        assertThat(updatedArticle.getTitle()).isEqualTo("타이틀-1");
     }
 
     @DisplayName("글 조건 조회 테스트")
@@ -149,15 +73,15 @@ class ArticleRepositoryTest {
     void when_searchPageArticle_expect_success() {
         // given
         String email = "seokrae@gmail.com";
-        User author = User.of(email, "1234", "SR");
+        User author = createUser(email);
         User savedUser = userRepository.save(author);
 
         List<RequestSaveArticle> requestSaveArticles = List.of(
-                RequestSaveArticle.of("타이틀-1", "설명", "바디", "Java"),
-                RequestSaveArticle.of("타이틀-2", "설명", "바디", "Java"),
-                RequestSaveArticle.of("타이틀-3", "설명", "바디", "Java"),
-                RequestSaveArticle.of("타이틀-4", "설명", "바디", "Python"),
-                RequestSaveArticle.of("타이틀-5", "설명", "바디", "JavaScript")
+                getRequestSaveArticle(1, "Java"),
+                getRequestSaveArticle(2, "Java"),
+                getRequestSaveArticle(3, "Java"),
+                getRequestSaveArticle(4, "Python"),
+                getRequestSaveArticle(5, "JavaScript")
         );
 
         List<Article> dummyArticles = requestSaveArticles.stream()
@@ -213,29 +137,29 @@ class ArticleRepositoryTest {
     }
 
     private List<Article> getDummyArticles() {
-        User sr = userRepository.save(User.of("seokrae@gmail.com", "1234", "SR"));
-        User seok = userRepository.save(User.of("other@gmail.com", "1234", "seok"));
+        User srUser = userRepository.save(createUser("seokrae@gmail.com"));
+        User otherUser = userRepository.save(createUser("other@gmail.com", "other"));
 
         List<RequestSaveArticle> srArticles = List.of(
-                RequestSaveArticle.of("타이틀-1", "설명", "바디", "Java"),
-                RequestSaveArticle.of("타이틀-2", "설명", "바디", "JavaScript"),
-                RequestSaveArticle.of("타이틀-3", "설명", "바디", "Java")
+                getRequestSaveArticle(1, "Java"),
+                getRequestSaveArticle(2, "Java"),
+                getRequestSaveArticle(3, "JavaScript")
         );
 
-        List<RequestSaveArticle> seokArticles = List.of(
-                RequestSaveArticle.of("타이틀-4", "설명", "바디", "R"),
-                RequestSaveArticle.of("타이틀-5", "설명", "바디", "PHP")
+        List<RequestSaveArticle> otherArticles = List.of(
+                getRequestSaveArticle(4, "R"),
+                getRequestSaveArticle(5, "PHP")
         );
 
         List<Article> dummySrArticles = srArticles.stream()
-                .map(request -> RequestSaveArticle.toEntity(request, sr))
+                .map(request -> RequestSaveArticle.toEntity(request, srUser))
                 .collect(Collectors.toList());
 
-        List<Article> dummySeokArticles = seokArticles.stream()
-                .map(request -> RequestSaveArticle.toEntity(request, seok))
+        List<Article> dummyOtherArticles = otherArticles.stream()
+                .map(request -> RequestSaveArticle.toEntity(request, otherUser))
                 .collect(Collectors.toList());
 
-        List<Article> dummyArticles = Stream.concat(dummySrArticles.stream(), dummySeokArticles.stream())
+        List<Article> dummyArticles = Stream.concat(dummySrArticles.stream(), dummyOtherArticles.stream())
                 .collect(Collectors.toList());
         return articleRepository.saveAll(dummyArticles);
     }

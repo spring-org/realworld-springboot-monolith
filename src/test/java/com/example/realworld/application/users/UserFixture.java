@@ -8,7 +8,8 @@ import com.example.realworld.application.users.persistence.User;
 
 public class UserFixture {
 
-    private UserFixture() {}
+    private UserFixture() {
+    }
 
     public static RequestUpdateUser getRequestUpdateUser(String email, String updatedUserName, String password, String image, String bio) {
         return RequestUpdateUser.of(email, updatedUserName, password, image, bio);
@@ -19,7 +20,11 @@ public class UserFixture {
     }
 
     public static User createUser(String email) {
-        return User.of(email, "1234", "seok");
+        return User.of(email, "1234", "seokrae");
+    }
+
+    public static User createUser(String email, String username) {
+        return User.of(email, "1234", username);
     }
 
     public static Profile createProfile() {
@@ -33,5 +38,4 @@ public class UserFixture {
     public static RequestSaveUser getRequestSaveUser(String email) {
         return RequestSaveUser.of(email, "seokrae", "1234");
     }
-
 }

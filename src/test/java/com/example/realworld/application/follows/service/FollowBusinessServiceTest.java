@@ -213,14 +213,14 @@ class FollowBusinessServiceTest {
         User otherUser = userDomainService.save(User.of(otherUserEmail, "1234", "seok"));
 
         List<RequestSaveArticle> srArticles = List.of(
-                RequestSaveArticle.of("타이틀-1", "설명", "바디", "Java"),
-                RequestSaveArticle.of("타이틀-2", "설명", "바디", "JavaScript"),
-                RequestSaveArticle.of("타이틀-3", "설명", "바디", "Python")
+                RequestSaveArticle.of("타이틀-1", "설명", "내용", "Java"),
+                RequestSaveArticle.of("타이틀-2", "설명", "내용", "JavaScript"),
+                RequestSaveArticle.of("타이틀-3", "설명", "내용", "Python")
         );
 
         List<RequestSaveArticle> seokArticles = List.of(
-                RequestSaveArticle.of("타이틀-4", "설명", "바디", "Java"),
-                RequestSaveArticle.of("타이틀-5", "설명", "바디", "JavaScript")
+                RequestSaveArticle.of("타이틀-4", "설명", "내용", "Java"),
+                RequestSaveArticle.of("타이틀-5", "설명", "내용", "JavaScript")
         );
 
         List<Article> dummySrArticles = srArticles.stream()
