@@ -2,15 +2,11 @@ package com.example.realworld.application.articles.persistence.repository;
 
 import com.example.realworld.application.articles.dto.RequestArticleCondition;
 import com.example.realworld.application.articles.persistence.Article;
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.PathBuilder;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.support.PageableExecutionUtils;
 
 import javax.persistence.EntityManager;
 import java.util.Collections;
@@ -33,22 +29,8 @@ public class ArticleRepositoryImpl implements ArticleQuerydslRepository {
 
     @Override
     public List<Article> searchPageArticle(RequestArticleCondition condition, Pageable pageable) { // string
-        JPAQuery<Article> query = getContents(condition, pageable);
 
-        for (Sort.Order o : pageable.getSort()) {
-            PathBuilder<Article> pathBuilder = new PathBuilder<>(article.getType(), article.getMetadata());
-            query.orderBy(new OrderSpecifier(o.isAscending() ? Order.ASC : Order.DESC, pathBuilder.get(o.getProperty())));
-        }
-
-        List<Article> content = query.fetch();
-        JPAQuery<Article> countQuery = getContents(condition, pageable);
-
-        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchCount).toList();
-
-    }
-
-    private JPAQuery<Article> getContents(RequestArticleCondition condition, Pageable pageable) {
-        return queryFactory
+        final QueryResults<Article> results = queryFactory
                 .select(article)
                 .from(article)
                 .innerJoin(article.author, user)
@@ -59,7 +41,14 @@ public class ArticleRepositoryImpl implements ArticleQuerydslRepository {
                         condition(condition.getFavorited(), user.follows.followers.any().toUser.email::eq)
                 )
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize());
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+        List<Article> content = results.getResults();
+        long total = results.getTotal();
+
+        return new PageImpl<>(content, pageable, total).getContent();
+
     }
 
     @Override
