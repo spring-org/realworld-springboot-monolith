@@ -6,6 +6,7 @@ import com.example.realworld.application.articles.persistence.Comment;
 import com.example.realworld.application.tags.persistence.Tag;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,13 @@ class CommentRepositoryTest {
     private ArticleRepository articleRepository;
     @Autowired
     private CommentRepository commentRepository;
+
+    @AfterEach
+    void tearDown() {
+        commentRepository.deleteAll();
+        articleRepository.deleteAll();
+        userRepository.deleteAll();
+    }
 
     @DisplayName("글에 새로운 커멘트 등록하는 테스트")
     @Test
