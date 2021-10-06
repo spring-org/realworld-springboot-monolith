@@ -8,6 +8,7 @@ import com.example.realworld.application.tags.persistence.Tag;
 import com.example.realworld.application.users.exception.NotFoundUserException;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,12 @@ class ArticleRepositoryTest {
 
     @Autowired
     private ArticleRepository articleRepository;
+
+    @AfterEach
+    void tearDown() {
+        articleRepository.deleteAll();
+        userRepository.deleteAll();
+    }
 
     @DisplayName("특정 사용자의 여러 글 등록 테스트")
     @Test
