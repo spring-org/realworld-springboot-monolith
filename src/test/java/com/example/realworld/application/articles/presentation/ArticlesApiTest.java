@@ -50,14 +50,11 @@ class ArticlesApiTest extends BaseSpringBootTest {
     private FavoriteArticleService favoriteArticleService;
     @Autowired
     private FavoriteArticleRepository favoriteArticleRepository;
-    @Autowired
-    private TagRepository tagRepository;
 
     @BeforeEach
     void setUp() {
         session = new MockHttpSession();
         session.setAttribute("email", "seokrae@gmail.com");
-        tagRepository.saveAll(List.of(Tag.of("Java"), Tag.of("R"), Tag.of("Python"), Tag.of("Node.js"), Tag.of("JavaScript"), Tag.of("Ruby")));
     }
 
     @AfterEach
