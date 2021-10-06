@@ -14,6 +14,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
 
+import static com.example.realworld.application.articles.ArticleFixture.createArticle;
+import static com.example.realworld.application.users.UserFixture.createUser;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -37,9 +39,9 @@ class CommentRepositoryTest {
     @Test
     void when_postComment_expected_success_posting_comment() {
         // given
-        User author = User.of("seokrae@gmail.com", "1234");
+        User author = createUser("seokrae@gmail.com");
         User savedUser = userRepository.save(author);
-        Article article = Article.of("title", "description", "body", savedUser, Tag.of("Kotlin"));
+        Article article = createArticle(1, savedUser, Tag.of("Kotlin"));
         Article savedArticle = articleRepository.save(article);
 
         // when
@@ -54,9 +56,9 @@ class CommentRepositoryTest {
     @DisplayName("글의 커멘트 조회하기")
     @Test
     void when_getComments_expected_success_commentList() {
-        User author = User.of("seokrae@gmail.com", "1234");
+        User author = createUser("seokrae@gmail.com");
         User savedUser = userRepository.save(author);
-        Article article = Article.of("title", "description", "body", savedUser, Tag.of("Kotlin"));
+        Article article = createArticle(1, savedUser, Tag.of("Kotlin"));
         Article savedArticle = articleRepository.save(article);
 
         // when
@@ -76,10 +78,10 @@ class CommentRepositoryTest {
     @Test
     void when_update_expected_success_comment_info() {
         // given
-        User author = User.of("seokrae@gmail.com", "1234");
+        User author = createUser("seokrae@gmail.com");
         User savedUser = userRepository.save(author);
 
-        Article article = Article.of("title", "description", "body", savedUser, Tag.of("Kotlin"));
+        Article article = createArticle(1, savedUser, Tag.of("Kotlin"));
         Article savedArticle = articleRepository.save(article);
 
         Comment newComment = Comment.of("comment write", savedUser, savedArticle);
@@ -90,7 +92,7 @@ class CommentRepositoryTest {
         // when
         savedComment.update("updateBody");
 
-        Article findArticle = savedUser.getArticleByTitle("title")
+        Article findArticle = savedUser.getArticleByTitle("타이틀-1")
                 .orElseThrow(NotFoundArticleException::new);
         String body = findArticle.comments().get(savedComment.getId()).getBody();
 
@@ -102,10 +104,10 @@ class CommentRepositoryTest {
     @Test
     void when_deleteComment_expected_success_deleted() {
         // given
-        User author = User.of("seokrae@gmail.com", "1234");
+        User author = createUser("seokrae@gmail.com");
         User savedUser = userRepository.save(author);
 
-        Article article = Article.of("title", "description", "body", savedUser, Tag.of("Kotlin"));
+        Article article = createArticle(1, savedUser, Tag.of("Kotlin"));
         Article savedArticle = articleRepository.save(article);
 
         // when
