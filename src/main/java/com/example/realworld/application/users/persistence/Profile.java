@@ -13,7 +13,6 @@ import java.io.Serializable;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Profile implements Serializable {
 
-    @Column(nullable = false, unique = true)
     private String userName;
 
     private String bio;
