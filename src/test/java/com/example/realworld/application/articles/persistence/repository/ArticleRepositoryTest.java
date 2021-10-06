@@ -16,14 +16,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.example.realworld.application.articles.ArticleFixture.*;
 import static com.example.realworld.application.users.UserFixture.createUser;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DataJpaTest
@@ -41,72 +39,6 @@ class ArticleRepositoryTest {
         userRepository.deleteAll();
     }
 
-    @DisplayName("특정 사용자의 여러 글 등록 테스트")
-    @Test
-    void when_createArticles_expected_success_user_and_articles() {
-        // given
-        User author = createUser("seokrae@gmail.com");
-        User savedUser = userRepository.save(author);
-
-        List<Article> articles = List.of(
-                createArticle(1, savedUser, Tag.of("Java")), createArticle(2, savedUser, Tag.of("Go")),
-                createArticle(3, savedUser, Tag.of("JavaScript")), createArticle(4, savedUser, Tag.of("Python")));
-
-        List<Article> savedArticles = articleRepository.saveAll(articles);
-
-        savedUser.addArticles(savedArticles);
-
-        int userArticlesSize = savedUser.getArticles().size();
-        assertThat(userArticlesSize).isEqualTo(4);
-    }
-
-    @DisplayName("특정 사용자의 등록 글 확인 테스트")
-    @Test
-    void when_findArticle_expected_fail_exception() {
-        // given
-        User author = createUser("seokrae@gmail.com");
-        User savedUser = userRepository.save(author);
-
-        List<Article> articles = List.of(
-                createArticle(1, savedUser, Tag.of("Java")), createArticle(2, savedUser, Tag.of("Go")),
-                createArticle(3, savedUser, Tag.of("JavaScript")), createArticle(4, savedUser, Tag.of("Python")));
-
-        List<Article> savedArticles = articleRepository.saveAll(articles);
-
-        savedUser.addArticles(savedArticles);
-        Optional<Article> actualArticle = savedUser.getArticleByTitle("타이틀");
-        // then
-        assertThatExceptionOfType(NotFoundArticleException.class)
-                .isThrownBy(() -> actualArticle.orElseThrow(NotFoundArticleException::new));
-    }
-
-    @DisplayName("특정 글 정보 수정 테스트")
-    @Test
-    void when_updateArticle_expected_success_article_info() {
-        // given
-        User author = createUser("seokrae@gmail.com");
-        User savedUser = userRepository.save(author);
-
-        List<Article> articles = List.of(
-                createArticle(1, savedUser, Tag.of("Java")), createArticle(2, savedUser, Tag.of("Go")),
-                createArticle(3, savedUser, Tag.of("JavaScript")), createArticle(4, savedUser, Tag.of("Python")));
-
-        List<Article> savedArticles = articleRepository.saveAll(articles);
-        savedUser.addArticles(savedArticles);
-
-        Article article = savedUser.getArticleByTitle("타이틀-1")
-                .orElseThrow(NotFoundArticleException::new);
-
-        article.update("updateTitle-1", "description", "body");
-
-        User findUser = userRepository.findByEmail(savedUser.getEmail())
-                .orElseThrow(NotFoundUserException::new);
-
-        Article updatedArticle = findUser.getArticleByTitle("updateTitle-1")
-                .orElseThrow(NotFoundArticleException::new);
-
-        assertThat(updatedArticle.getTitle()).isEqualTo("updateTitle-1");
-    }
 
     @DisplayName("특정 글에 데이터 없이 정보 수정요청 테스트")
     @Test

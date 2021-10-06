@@ -34,7 +34,7 @@ class TagApiTest {
     @DisplayName("태그 전체 조회 테스트")
     @Test
     void when_getTags_expect_success_all_tags() throws Exception {
-        tagRepository.saveAll(List.of(Tag.of("Java"), Tag.of("JavaScript"),Tag.of("R"),  Tag.of("Python")));
+        tagRepository.saveAll(List.of(Tag.of("Java"), Tag.of("JavaScript"), Tag.of("R"), Tag.of("Python")));
 
         mockMvc.perform(get("/api/tags"))
                 .andDo(print())

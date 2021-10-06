@@ -1,10 +1,10 @@
 package com.example.realworld.application.users.persistence;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 
@@ -18,7 +18,7 @@ public class Profile implements Serializable {
     private String bio;
 
     private String image;
-
+    @Getter
     private boolean following;
 
     private Profile(String userName) {
@@ -50,10 +50,6 @@ public class Profile implements Serializable {
 
     public String image() {
         return image;
-    }
-
-    public boolean isFollowing() {
-        return following;
     }
 
     public void changeUserName(String userName) {

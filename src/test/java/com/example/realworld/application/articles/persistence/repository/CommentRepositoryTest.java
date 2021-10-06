@@ -35,24 +35,6 @@ class CommentRepositoryTest {
         userRepository.deleteAll();
     }
 
-    @DisplayName("글에 새로운 커멘트 등록하는 테스트")
-    @Test
-    void when_postComment_expected_success_posting_comment() {
-        // given
-        User author = createUser("seokrae@gmail.com");
-        User savedUser = userRepository.save(author);
-        Article article = createArticle(1, savedUser, Tag.of("Kotlin"));
-        Article savedArticle = articleRepository.save(article);
-
-        // when
-        Comment newComment = Comment.of("comment write", savedUser, savedArticle);
-        savedArticle.comments().add(newComment);
-        Comment savedComment = commentRepository.save(newComment);
-
-        // then
-        assertThat(newComment.getBody()).isEqualTo(savedComment.getBody());
-    }
-
     @DisplayName("글의 커멘트 조회하기")
     @Test
     void when_getComments_expected_success_commentList() {
@@ -98,28 +80,5 @@ class CommentRepositoryTest {
 
         // then
         assertThat(body).isEqualTo(savedComment.getBody());
-    }
-
-    @DisplayName("커멘트 삭제 테스트")
-    @Test
-    void when_deleteComment_expected_success_deleted() {
-        // given
-        User author = createUser("seokrae@gmail.com");
-        User savedUser = userRepository.save(author);
-
-        Article article = createArticle(1, savedUser, Tag.of("Kotlin"));
-        Article savedArticle = articleRepository.save(article);
-
-        // when
-        Comment newComment = Comment.of("comment write", savedUser, savedArticle);
-        Comment savedComment = commentRepository.save(newComment);
-
-        savedArticle.getComments().add(savedComment);
-        savedUser.addArticle(savedArticle);
-
-        savedArticle.getComments().remove(savedComment);
-
-        // then
-        assertThat(savedArticle.getComments().size()).isZero();
     }
 }

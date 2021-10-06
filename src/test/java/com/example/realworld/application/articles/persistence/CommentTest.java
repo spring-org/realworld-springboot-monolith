@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
+import static com.example.realworld.application.articles.ArticleFixture.createArticle;
+import static com.example.realworld.application.users.UserFixture.createUser;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CommentTest {
@@ -15,8 +17,8 @@ class CommentTest {
     @Test
     void when_postComment_expected_success_entity() {
         // given
-        User author = User.of("seokrae@gmail.com", "1234");
-        Article article = Article.of("title", "description", "body", author, Tag.of("Kotlin"));
+        User author = createUser("seokrae@gmail.com");
+        Article article = createArticle(1, author, Tag.of("Kotlin"));
         Comment actualComment = Comment.of("comment write", author, article);
 
         // when
