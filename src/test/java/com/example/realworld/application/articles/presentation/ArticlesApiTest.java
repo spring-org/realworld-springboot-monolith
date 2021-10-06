@@ -8,8 +8,6 @@ import com.example.realworld.application.articles.service.ArticleService;
 import com.example.realworld.application.articles.service.CommentService;
 import com.example.realworld.application.favorites.persistence.repository.FavoriteArticleRepository;
 import com.example.realworld.application.favorites.service.FavoriteArticleService;
-import com.example.realworld.application.tags.persistence.Tag;
-import com.example.realworld.application.tags.persistence.repository.TagRepository;
 import com.example.realworld.application.users.dto.RequestSaveUser;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
 import com.example.realworld.application.users.service.UserService;
@@ -21,8 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
-
-import java.util.List;
 
 import static com.example.realworld.application.articles.ArticleFixture.*;
 import static com.example.realworld.application.users.UserFixture.getRequestSaveUser;

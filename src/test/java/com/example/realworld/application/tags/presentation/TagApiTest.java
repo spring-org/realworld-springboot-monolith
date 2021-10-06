@@ -1,9 +1,7 @@
 package com.example.realworld.application.tags.presentation;
 
-import com.example.realworld.application.BaseSpringBootTest;
 import com.example.realworld.application.tags.persistence.Tag;
 import com.example.realworld.application.tags.persistence.repository.TagRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,11 +29,6 @@ class TagApiTest {
     @BeforeEach
     void setUp() {
         tagRepository.saveAll(List.of(Tag.of("Java"), Tag.of("R"), Tag.of("Python"), Tag.of("Node.js"), Tag.of("JavaScript"), Tag.of("Ruby")));
-    }
-
-    @AfterEach
-    void tearDown() {
-        tagRepository.deleteAll();
     }
 
     @DisplayName("전체 태그리스트 조회")
