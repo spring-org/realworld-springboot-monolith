@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import static com.example.realworld.application.articles.ArticleFixture.createArticle;
+import static com.example.realworld.application.users.UserFixture.createUser;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @SpringBootTest
@@ -34,9 +36,9 @@ class ArticleDomainServiceTest {
     @Test
     void when_getArticle_expect_fail_exception() {
         // given
-        User author = userRepository.save(User.of("seokrae@gmail.com", "1234", "SR"));
+        User author = userRepository.save(createUser("seokrae@gmail.com"));
         User savedUser = userRepository.save(author);
-        Article article = Article.of("타이틀-1", "설명", "내용", savedUser, Tag.of("Kotlin"));
+        Article article = createArticle(1, savedUser, Tag.of("Kotlin"));
 
         // when
         articleRepository.save(article);

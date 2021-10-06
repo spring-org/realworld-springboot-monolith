@@ -42,8 +42,8 @@ class ArticleRepositoryTest {
         User savedUser = userRepository.save(author);
 
         List<Article> articles = List.of(
-                createArticle(1, savedUser), createArticle(2, savedUser),
-                createArticle(3, savedUser), createArticle(4, savedUser));
+                createArticle(1, savedUser, Tag.of("Java")), createArticle(2, savedUser, Tag.of("Go")),
+                createArticle(3, savedUser, Tag.of("JavaScript")), createArticle(4, savedUser, Tag.of("Python")));
 
         List<Article> savedArticles = articleRepository.saveAll(articles);
 
@@ -61,8 +61,8 @@ class ArticleRepositoryTest {
         User savedUser = userRepository.save(author);
 
         List<Article> articles = List.of(
-                createArticle(1, savedUser), createArticle(2, savedUser),
-                createArticle(3, savedUser), createArticle(4, savedUser));
+                createArticle(1, savedUser, Tag.of("Java")), createArticle(2, savedUser, Tag.of("Go")),
+                createArticle(3, savedUser, Tag.of("JavaScript")), createArticle(4, savedUser, Tag.of("Python")));
 
         List<Article> savedArticles = articleRepository.saveAll(articles);
 
@@ -81,8 +81,8 @@ class ArticleRepositoryTest {
         User savedUser = userRepository.save(author);
 
         List<Article> articles = List.of(
-                createArticle(1, savedUser), createArticle(2, savedUser),
-                createArticle(3, savedUser), createArticle(4, savedUser));
+                createArticle(1, savedUser, Tag.of("Java")), createArticle(2, savedUser, Tag.of("Go")),
+                createArticle(3, savedUser, Tag.of("JavaScript")), createArticle(4, savedUser, Tag.of("Python")));
 
         List<Article> savedArticles = articleRepository.saveAll(articles);
         savedUser.addArticles(savedArticles);
@@ -109,8 +109,8 @@ class ArticleRepositoryTest {
         User savedUser = userRepository.save(author);
 
         List<Article> articles = List.of(
-                createArticle(1, savedUser), createArticle(2, savedUser),
-                createArticle(3, savedUser), createArticle(4, savedUser));
+                createArticle(1, savedUser, Tag.of("Java")), createArticle(2, savedUser, Tag.of("Go")),
+                createArticle(3, savedUser, Tag.of("JavaScript")), createArticle(4, savedUser, Tag.of("Python")));
 
         List<Article> savedArticles = articleRepository.saveAll(articles);
         savedUser.addArticles(savedArticles);
@@ -138,11 +138,11 @@ class ArticleRepositoryTest {
         User savedUser = userRepository.save(author);
 
         List<RequestSaveArticle> requestSaveArticles = List.of(
-                getRequestSaveArticle(1, new String[]{"Java"}),
-                getRequestSaveArticle(2, new String[]{"Java"}),
-                getRequestSaveArticle(3, new String[]{"Java"}),
-                getRequestSaveArticle(4, new String[]{"Python"}),
-                getRequestSaveArticle(5, new String[]{"JavaScript"})
+                getRequestSaveArticle(1, "Java"),
+                getRequestSaveArticle(2, "Java"),
+                getRequestSaveArticle(3, "Java"),
+                getRequestSaveArticle(4, "Python"),
+                getRequestSaveArticle(5, "JavaScript")
         );
 
         List<Article> dummyArticles = requestSaveArticles.stream()
@@ -202,14 +202,14 @@ class ArticleRepositoryTest {
         User otherUser = userRepository.save(createUser("other@gmail.com", "other"));
 
         List<RequestSaveArticle> srArticles = List.of(
-                getRequestSaveArticle(1, new String[]{"Java"}),
-                getRequestSaveArticle(2, new String[]{"Java"}),
-                getRequestSaveArticle(3, new String[]{"JavaScript"})
+                getRequestSaveArticle(1, "Java"),
+                getRequestSaveArticle(2, "Java"),
+                getRequestSaveArticle(3, "JavaScript")
         );
 
         List<RequestSaveArticle> otherArticles = List.of(
-                getRequestSaveArticle(4, new String[]{"R"}),
-                getRequestSaveArticle(5, new String[]{"PHP"})
+                getRequestSaveArticle(4, "R"),
+                getRequestSaveArticle(5, "PHP")
         );
 
         List<Article> dummySrArticles = srArticles.stream()
