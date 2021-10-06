@@ -30,7 +30,7 @@ public class ArticleRepositoryImpl implements ArticleQuerydslRepository {
     @Override
     public List<Article> searchPageArticle(RequestArticleCondition condition, Pageable pageable) { // string
 
-        final QueryResults<Article> results = queryFactory
+        return queryFactory
                 .select(article)
                 .from(article)
                 .innerJoin(article.author, user)
@@ -42,12 +42,7 @@ public class ArticleRepositoryImpl implements ArticleQuerydslRepository {
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .fetchResults();
-
-        List<Article> content = results.getResults();
-        long total = results.getTotal();
-
-        return new PageImpl<>(content, pageable, total).getContent();
+                .fetch();
 
     }
 
