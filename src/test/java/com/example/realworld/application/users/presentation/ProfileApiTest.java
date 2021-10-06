@@ -54,7 +54,7 @@ class ProfileApiTest extends BaseSpringBootTest {
         mockMvc.perform(
                         get("/api/profiles/{toEmail}", currentUserEmail)
                 )
-                .andDo(print())
+
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.profile.email").value("seokrae@gmail.com"))
                 .andExpect(jsonPath("$.profile.userName").value("seokrae"));
@@ -75,7 +75,7 @@ class ProfileApiTest extends BaseSpringBootTest {
                         get("/api/profiles/{toEmail}", otherUserEmail)
                                 .session(session)
                 )
-                .andDo(print())
+
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.profile.email").value("other@gmail.com"))
                 .andExpect(jsonPath("$.profile.userName").value("other"))
@@ -97,7 +97,7 @@ class ProfileApiTest extends BaseSpringBootTest {
                         post("/api/profiles/{toEmail}/follow", toUserEmail)
                                 .session(session)
                 )
-                .andDo(print())
+
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.profile.email").value(toUserEmail))
                 .andExpect(jsonPath("$.profile.userName").value("seok"))
@@ -121,7 +121,7 @@ class ProfileApiTest extends BaseSpringBootTest {
                         post("/api/profiles/{toEmail}/follow", currentUserEmail)
                                 .session(session)
                 )
-                .andDo(print())
+
                 .andExpect(status().isUnauthorized())
                 .andReturn();
         assertThat(mvcResult.getResolvedException()).isInstanceOf(UnauthorizedUserException.class);
@@ -145,7 +145,7 @@ class ProfileApiTest extends BaseSpringBootTest {
                                 .session(session)
                                 .accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 )
-                .andDo(print())
+
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.profile.email").value(toUserEmail))
                 .andExpect(jsonPath("$.profile.userName").value("seok"))
@@ -169,7 +169,7 @@ class ProfileApiTest extends BaseSpringBootTest {
                         delete("/api/profiles/{toEmail}/follow", toUserEmail)
                                 .session(session)
                 )
-                .andDo(print())
+
                 .andExpect(status().isUnauthorized())
                 .andReturn();
         assertThat(mvcResult.getResolvedException()).isInstanceOf(UnauthorizedUserException.class);

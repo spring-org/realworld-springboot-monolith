@@ -50,7 +50,7 @@ class AuthApiTest extends BaseSpringBootTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(requestSaveUser))
                 )
-                .andDo(print())
+
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.user.email").value("seokrae@gmail.com"))
                 .andExpect(jsonPath("$.user.userName").value("seokrae"));
@@ -71,7 +71,7 @@ class AuthApiTest extends BaseSpringBootTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(loginUser))
                 )
-                .andDo(print())
+
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.user.email").value("seokrae@gmail.com"))
                 .andExpect(jsonPath("$.user.userName").value("seokrae"));
@@ -93,7 +93,7 @@ class AuthApiTest extends BaseSpringBootTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(loginUser))
                 )
-                .andDo(print())
+
                 .andExpect(status().isNoContent());
     }
 
@@ -108,7 +108,7 @@ class AuthApiTest extends BaseSpringBootTest {
         mockMvc.perform(
                         delete("/api/users/logout").session(session)
                 )
-                .andDo(print())
+
                 .andExpect(status().isNoContent());
     }
 

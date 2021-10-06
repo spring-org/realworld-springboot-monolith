@@ -36,7 +36,7 @@ class TagApiTest extends BaseSpringBootTest {
         tagRepository.saveAll(List.of(Tag.of("Java"), Tag.of("JavaScript"), Tag.of("Python")));
 
         mockMvc.perform(get("/api/tags"))
-                .andDo(print())
+
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("tagList[0]").value("Java"))
                 .andExpect(jsonPath("tagList[1]").value("JavaScript"))

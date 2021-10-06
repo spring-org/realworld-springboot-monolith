@@ -53,7 +53,7 @@ class UserApiTest extends BaseSpringBootTest {
                         get("/api/user")
                                 .session(session)
                 )
-                .andDo(print())
+
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.user.email").value("seokrae@gmail.com"))
                 .andExpect(jsonPath("$.user.userName").value("seokrae"));
@@ -70,7 +70,7 @@ class UserApiTest extends BaseSpringBootTest {
         MvcResult mvcResult = mockMvc.perform(
                         get("/api/user")
                 )
-                .andDo(print())
+
                 .andExpect(status().isUnauthorized())
                 .andReturn();
 
@@ -92,7 +92,7 @@ class UserApiTest extends BaseSpringBootTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(updateUser))
                 )
-                .andDo(print())
+
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.user.email").value("seokrae@gmail.com"))
                 .andExpect(jsonPath("$.user.userName").value("updatedUser"))
@@ -119,7 +119,7 @@ class UserApiTest extends BaseSpringBootTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(updateUser))
                 )
-                .andDo(print())
+
                 .andExpect(status().isUnauthorized())
                 .andReturn();
 
@@ -143,7 +143,7 @@ class UserApiTest extends BaseSpringBootTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(updateUser))
                 )
-                .andDo(print())
+
                 .andExpect(status().isUnauthorized())
                 .andReturn();
 
