@@ -16,6 +16,7 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static com.example.realworld.application.users.UserFixture.getRequestSaveUser;
+import static com.example.realworld.application.users.UserFixture.getRequestUpdateUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -62,7 +63,7 @@ class UserApiTest extends BaseSpringBootTest {
     @Test
     void when_getCurrentUser_expect_fail_session_is_empty() throws Exception {
         // given
-        RequestSaveUser saveUser = RequestSaveUser.of("seokrae@gmail.com", "seok", "1234");
+        RequestSaveUser saveUser = getRequestSaveUser("seokrae@gmail.com");
         // when
         userService.postUser(saveUser);
         // then
@@ -80,9 +81,8 @@ class UserApiTest extends BaseSpringBootTest {
     @Test
     void when_putUser_expect_success_updated_user_info() throws Exception {
         // given
-        RequestSaveUser saveUser = RequestSaveUser.of("seokrae@gmail.com", "seok", "1234");
-        RequestUpdateUser updateUser = RequestUpdateUser.of(
-                "seokrae@gmail.com", "updatedUser", "1234", "newImage.png", "newBio");
+        RequestSaveUser saveUser = getRequestSaveUser("seokrae@gmail.com");
+        RequestUpdateUser updateUser = getRequestUpdateUser("seokrae@gmail.com", "updatedUser", "1234", "newImage.png", "newBio");
         // when
         userService.postUser(saveUser);
         // then
@@ -105,9 +105,9 @@ class UserApiTest extends BaseSpringBootTest {
     void when_putUser_expect_fail_unAuthorized() throws Exception {
 
         // given
-        RequestSaveUser saveUser = RequestSaveUser.of("seokrae@gmail.com", "seok", "1234");
-        RequestUpdateUser updateUser = RequestUpdateUser.of(
-                "seokrae@gmail.com", "updatedUser", "1234", "newImage.png", "newBio");
+        RequestSaveUser saveUser = getRequestSaveUser("seokrae@gmail.com");
+        RequestUpdateUser updateUser = getRequestUpdateUser("seokrae@gmail.com", "updatedUser", "1234", "newImage.png", "newBio");
+
         session = new MockHttpSession();
         session.setAttribute("email", "");
 
@@ -133,9 +133,8 @@ class UserApiTest extends BaseSpringBootTest {
         session = new MockHttpSession();
         session.setAttribute("email", "seok@gmail.com");
         // given
-        RequestSaveUser saveUser = RequestSaveUser.of("seokrae@gmail.com", "seok", "1234");
-        RequestUpdateUser updateUser = RequestUpdateUser.of(
-                "seokrae@gmail.com", "updatedUser", "1234", "newImage.png", "newBio");
+        RequestSaveUser saveUser = getRequestSaveUser("seokrae@gmail.com");
+        RequestUpdateUser updateUser = getRequestUpdateUser("seokrae@gmail.com", "updatedUser", "1234", "newImage.png", "newBio");
         // when
         userService.postUser(saveUser);
         // then
