@@ -21,7 +21,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -77,7 +76,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
                                 .content(mapper.writeValueAsString(requestSaveArticle))
                                 .accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 )
-                .andDo(print())
+
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.slug").value(makeSlug("타이틀")))
                 .andExpect(jsonPath("$.title").value("타이틀"))
@@ -110,7 +109,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 )
-                .andDo(print())
+
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.slug").value(makeSlug("타이틀")))
                 .andExpect(jsonPath("$.title").value("타이틀"))
@@ -145,7 +144,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
                                 .content(mapper.writeValueAsString(updateArticle))
                                 .accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 )
-                .andDo(print())
+
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.slug").value(makeSlug("수정된 타이틀")))
                 .andExpect(jsonPath("$.title").value("수정된 타이틀"))
@@ -176,7 +175,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
                         delete("/api/articles/{slug}", responseSingleArticle.getSlug())
                                 .session(session)
                 )
-                .andDo(print())
+
                 .andExpect(status().isNoContent());
     }
 
@@ -201,7 +200,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
                                 .content(mapper.writeValueAsString(requestSaveComment))
                                 .accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 )
-                .andDo(print())
+
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("id").exists())
                 .andExpect(jsonPath("body").value("글 좋아요 ~"))
@@ -232,7 +231,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
                                 .session(session)
                                 .accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 )
-                .andDo(print())
+
                 .andExpect(status().isOk())
                 // comments 사이즈 확인
                 .andExpect(jsonPath("$.commentSize").value(3));
@@ -262,7 +261,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
                                 .session(session)
                                 .accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 )
-                .andDo(print())
+
                 .andExpect(status().isNoContent());
     }
 
@@ -288,7 +287,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
                                 .session(session)
                                 .accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 )
-                .andDo(print())
+
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.slug").value(makeSlug("타이틀")))
                 .andExpect(jsonPath("$.title").value("타이틀"))
@@ -325,7 +324,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
                                 .session(session)
                                 .accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 )
-                .andDo(print())
+
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.slug").value(makeSlug("타이틀")))
                 .andExpect(jsonPath("$.title").value("타이틀"))
@@ -372,7 +371,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
                                 .content(mapper.writeValueAsString(pageCondition))
                                 .accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 )
-                .andDo(print())
+
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.articles.[0].slug").value(responseSingleArticle5.getSlug()))
                 .andExpect(jsonPath("$.articles.[0].title").value(responseSingleArticle5.getTitle()))
@@ -437,7 +436,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
                                 .content(mapper.writeValueAsString(pageRequest))
                                 .accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 )
-                .andDo(print())
+
                 .andExpect(status().isOk());
     }
 
@@ -447,7 +446,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
         mockMvc.perform(
                         get("/api/tags")
                 )
-                .andDo(print())
+
                 .andExpect(status().isOk());
 
     }

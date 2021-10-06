@@ -8,7 +8,8 @@ import com.example.realworld.application.users.persistence.User;
 
 public class UserFixture {
 
-    private UserFixture() {}
+    private UserFixture() {
+    }
 
     public static RequestUpdateUser getRequestUpdateUser(String email, String updatedUserName, String password, String image, String bio) {
         return RequestUpdateUser.of(email, updatedUserName, password, image, bio);

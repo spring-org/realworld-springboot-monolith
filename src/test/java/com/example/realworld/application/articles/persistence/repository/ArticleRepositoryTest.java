@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -144,7 +145,7 @@ class ArticleRepositoryTest {
         assertThat(updatedArticle.getTitle()).isEqualTo("title-1");
     }
 
-    @DisplayName("글 조건 조회 테스트")
+    @DisplayName("글 조건 조회 (오름차순 정렬) 테스트")
     @Test
     void when_searchPageArticle_expect_success() {
         // given
@@ -168,14 +169,56 @@ class ArticleRepositoryTest {
 
         // when
         RequestArticleCondition condition = RequestArticleCondition.of("Java", email, null);
-        PageRequest pageRequest = PageRequest.of(0, 20);
+        PageRequest pageRequest = PageRequest.of(0, 20, Sort.by("title").ascending());
         List<Article> searchArticles = articleRepository.searchPageArticle(condition, pageRequest);
 
         // then
         assertThat(searchArticles.size()).isEqualTo(3);
 
-        Article actual = searchArticles.get(0);
-        Article expected = articles.get(0);
+        Article actual = searchArticles.get(2); // 3 건
+        Article expected = articles.get(2); // 3
+
+        assertAll("first Article Assertion",
+                () -> {
+                    assertThat(actual.getSlug()).isEqualTo(makeSlug(expected.getTitle()));
+                    assertThat(actual.getAuthor()).isEqualTo(expected.getAuthor());
+                    assertThat(actual.getTags()).contains(Tag.of("Java"));
+                }
+        );
+    }
+
+    @DisplayName("글 조건 조회 (내림차순 정렬) 테스트")
+    @Test
+    void when_searchPageArticle_expect_success_condition() {
+        // given
+        String email = "seokrae@gmail.com";
+        User author = User.of(email, "1234", "SR");
+        User savedUser = userRepository.save(author);
+
+        List<RequestSaveArticle> requestSaveArticles = List.of(
+                RequestSaveArticle.of("타이틀-1", "설명", "바디", "Java"),
+                RequestSaveArticle.of("타이틀-2", "설명", "바디", "Java"),
+                RequestSaveArticle.of("타이틀-3", "설명", "바디", "Java"),
+                RequestSaveArticle.of("타이틀-4", "설명", "바디", "Python"),
+                RequestSaveArticle.of("타이틀-5", "설명", "바디", "JavaScript")
+        );
+
+        List<Article> dummyArticles = requestSaveArticles.stream()
+                .map(request -> RequestSaveArticle.toEntity(request, savedUser))
+                .collect(Collectors.toList());
+
+        List<Article> articles = articleRepository.saveAll(dummyArticles);
+
+        // when
+        RequestArticleCondition condition = RequestArticleCondition.of("Java", email, null);
+        PageRequest pageRequest = PageRequest.of(0, 20, Sort.by("title").descending());
+        List<Article> searchArticles = articleRepository.searchPageArticle(condition, pageRequest);
+
+        // then
+        assertThat(searchArticles.size()).isEqualTo(3);
+
+        Article actual = searchArticles.get(0); // 3건 (타이틀-3, 타이틀-2, 타이틀-1)
+        Article expected = articles.get(2); // 실 데이터 5건 (1, 2, 3, 4, 5)
 
         assertAll("first Article Assertion",
                 () -> {
