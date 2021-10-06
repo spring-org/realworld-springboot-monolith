@@ -3,6 +3,8 @@ package com.example.realworld.application.tags.presentation;
 import com.example.realworld.application.BaseSpringBootTest;
 import com.example.realworld.application.tags.persistence.Tag;
 import com.example.realworld.application.tags.persistence.repository.TagRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +21,19 @@ class TagApiTest extends BaseSpringBootTest {
     @Autowired
     private TagRepository tagRepository;
 
+    @BeforeEach
+    void setUp() {
+        tagRepository.saveAll(List.of(Tag.of("Java"), Tag.of("R"), Tag.of("Python"), Tag.of("Node.js"), Tag.of("JavaScript"), Tag.of("Ruby")));
+    }
+
+    @AfterEach
+    void tearDown() {
+        tagRepository.deleteAll();
+    }
+
     @DisplayName("전체 태그리스트 조회")
     @Test
     void when_getTags_expect_success_tagList() throws Exception {
-        tagRepository.saveAll(List.of(Tag.of("Java"), Tag.of("R"), Tag.of("Python"), Tag.of("Node.js"), Tag.of("JavaScript"), Tag.of("Ruby")));
 
         mockMvc.perform(get("/api/tags"))
                 .andExpect(status().isOk())
