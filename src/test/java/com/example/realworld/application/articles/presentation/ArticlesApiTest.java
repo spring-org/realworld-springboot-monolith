@@ -21,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -371,7 +372,7 @@ class ArticlesApiTest extends BaseSpringBootTest {
                                 .content(mapper.writeValueAsString(pageCondition))
                                 .accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 )
-
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.articles.[0].slug").value(responseSingleArticle5.getSlug()))
                 .andExpect(jsonPath("$.articles.[0].title").value(responseSingleArticle5.getTitle()))
