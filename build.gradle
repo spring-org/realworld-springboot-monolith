@@ -30,13 +30,11 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-
-    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2',
+    implementation 'io.jsonwebtoken:jjwt-api:0.10.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.10.5',
             // Uncomment the next line if you want to use RSASSA-PSS (PS256, PS384, PS512) algorithms:
             //'org.bouncycastle:bcprov-jdk15on:1.60',
-            'io.jsonwebtoken:jjwt-jackson:0.11.2' // or 'io.jsonwebtoken:jjwt-gson:0.11.2' for gson
-
+            'io.jsonwebtoken:jjwt-jackson:0.10.5' // or 'io.jsonwebtoken:jjwt-gson:0.11.2' for gson
 
     implementation "com.querydsl:querydsl-jpa"
     compileOnly "com.querydsl:querydsl-core"
@@ -65,7 +63,6 @@ sonarqube {
         property "sonar.exclusions", "**/RealWorldApplication.java, **/*Exception.java, **/*Handler.java, **/*Config.java, **/Response*.java, **/Request*.java, **/*Fixture.java, **/Q*.java"
     }
 }
-
 
 // querydsl 적용
 def generated='src/main/generated'
