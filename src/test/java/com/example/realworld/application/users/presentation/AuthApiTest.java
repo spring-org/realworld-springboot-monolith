@@ -74,7 +74,8 @@ class AuthApiTest extends BaseSpringBootTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("email").value("seokrae@gmail.com"))
-                .andExpect(jsonPath("userName").value("seokrae"));
+                .andExpect(jsonPath("userName").value("seokrae"))
+                .andExpect(jsonPath("token").isNotEmpty());
     }
 
     @DisplayName("사용자 로그아웃 테스트")
