@@ -1,15 +1,16 @@
 package com.example.realworld.application.users.service;
 
-import com.example.realworld.application.users.dto.RequestSaveUser;
-import com.example.realworld.application.users.dto.RequestUpdateUser;
-import com.example.realworld.application.users.dto.ResponseProfile;
-import com.example.realworld.application.users.dto.ResponseUser;
+import com.example.realworld.application.users.dto.*;
 import com.example.realworld.application.users.exception.DuplicateUserException;
 import com.example.realworld.application.users.persistence.User;
+import com.example.realworld.core.jwt.JwtUtils;
+import com.example.realworld.core.security.context.UserContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserBusinessService implements UserService {
 
     private final UserDomainService userDomainService;
+    private final JwtUtils jwtUtils;
 
     /**
      * 새로운 사용자 등록
@@ -90,5 +92,14 @@ public class UserBusinessService implements UserService {
         User toUser = userDomainService.findUserByEmail(toEmail);
 
         return ResponseProfile.ofProfile(currentUser, toUser);
+    }
+
+    @Override
+    public ResponseUser login(RequestLoginUser loginUser) {
+        return Optional.of(userDomainService.findUserByEmail(loginUser.getEmail()))
+                .filter(user -> user.isPasswordMatches(loginUser.getPassword()))
+                .map(user -> user.generateToken(jwtUtils.generateToken(UserContext.of(user), 1)))
+                .map(ResponseUser::of)
+                .orElseThrow(RuntimeException::new);
     }
 }

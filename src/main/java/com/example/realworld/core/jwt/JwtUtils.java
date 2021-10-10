@@ -7,6 +7,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -17,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+@Component
 public class JwtUtils {
 
     private final Key key;
@@ -54,7 +56,7 @@ public class JwtUtils {
      */
     public boolean isToken(String token, UserContext userContext) {
         String email = extractEmail(token);
-        return email.equals(userContext.getUser().getEmail());
+        return email.equals(userContext.email());
     }
 
     private String createToken(HashMap<String, Object> claims, UserContext userContext, int expiredTime) {
