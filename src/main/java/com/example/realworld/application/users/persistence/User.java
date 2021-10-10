@@ -81,6 +81,15 @@ public class User extends BaseTimeEntity implements Serializable {
         return this.profile.userName();
     }
 
+    public boolean isPasswordMatches(String password) {
+        return this.password.equals(password);
+    }
+
+    public User generateToken(String generateToken) {
+        this.token = generateToken;
+        return this;
+    }
+
     // 프로필 업데이트
     public void update(RequestUpdateUser updateUser) {
         if (StringUtils.hasText(updateUser.getEmail())) {
@@ -203,7 +212,9 @@ public class User extends BaseTimeEntity implements Serializable {
                 .orElseThrow(NotFoundFavoriteArticleException::new);
     }
 
+
     // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션
+
     @Generated
     @Override
     public boolean equals(Object o) {
@@ -213,8 +224,8 @@ public class User extends BaseTimeEntity implements Serializable {
         return Objects.equals(id, user.id)
                 && Objects.equals(email, user.email);
     }
-
     // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션
+
     @Generated
     @Override
     public int hashCode() {

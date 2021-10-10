@@ -36,3 +36,5 @@ spring:
 #        sql: debug
 #        type: trace
 
+jwt:
+  secret: 89127391284091890863490852390458239048zjklsjdhalskjdklsdfjadklsj72

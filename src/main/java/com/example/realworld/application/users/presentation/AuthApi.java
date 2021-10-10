@@ -38,16 +38,14 @@ public class AuthApi {
     /**
      * 사용자 로그인
      *
-     * @param session   사용자 로그인 시 세션에 사용자의 정보를 등록하기 위한 세션
      * @param loginUser 사용자 로그인을 위한 정보
      * @return 로그인한 사용자의 정보를 반환
      */
     @PostMapping(value = "/login")
     public ResponseEntity<ResponseUser> login(
-            HttpSession session, @Valid @RequestBody RequestLoginUser loginUser) {
+            @Valid @RequestBody RequestLoginUser loginUser) {
 
-        ResponseUser responseUser = userBusinessService.getUserByEmail(loginUser.getEmail());
-        session.setAttribute(EMAIL, responseUser.getEmail());
+        ResponseUser responseUser = userBusinessService.login(loginUser);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseUser);
     }

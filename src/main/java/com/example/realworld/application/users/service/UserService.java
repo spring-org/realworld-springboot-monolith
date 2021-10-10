@@ -1,9 +1,6 @@
 package com.example.realworld.application.users.service;
 
-import com.example.realworld.application.users.dto.RequestSaveUser;
-import com.example.realworld.application.users.dto.RequestUpdateUser;
-import com.example.realworld.application.users.dto.ResponseProfile;
-import com.example.realworld.application.users.dto.ResponseUser;
+import com.example.realworld.application.users.dto.*;
 
 public interface UserService {
     // 사용자 등록
@@ -19,4 +16,6 @@ public interface UserService {
     ResponseProfile getProfile(String toEmail);
 
     ResponseProfile getProfile(String currentUserEmail, String toEmail);
+
+    ResponseUser login(RequestLoginUser loginUser);
 }

@@ -65,6 +65,10 @@ $ ./gradlew --console verbose test jacocoTestReport jacocoTestCoverageVerificati
 - 제거가 어려운 경우 Mocking을 활용한다.
 - 느려지인 테스트 코드에 대한 프로파일링이 필요
 
+## JsonWebToken
+
+- [jjwt library](https://github.com/jwtk/jjwt))
+
 # Getting started
 
 > npm install, npm start, etc.

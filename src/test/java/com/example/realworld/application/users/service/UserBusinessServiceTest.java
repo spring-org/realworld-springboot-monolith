@@ -1,9 +1,6 @@
 package com.example.realworld.application.users.service;
 
-import com.example.realworld.application.users.dto.RequestSaveUser;
-import com.example.realworld.application.users.dto.RequestUpdateUser;
-import com.example.realworld.application.users.dto.ResponseProfile;
-import com.example.realworld.application.users.dto.ResponseUser;
+import com.example.realworld.application.users.dto.*;
 import com.example.realworld.application.users.exception.DuplicateUserException;
 import com.example.realworld.application.users.exception.NotFoundUserException;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
@@ -131,5 +128,20 @@ class UserBusinessServiceTest {
         ResponseProfile profile = userBusinessService.getProfile(email);
         // then
         assertThat(profile.getUserName()).isEqualTo("seok");
+    }
+
+    @DisplayName("로그인 및 토큰 발급 테스트")
+    @Test
+    void when_login_expect_success_generate_token() {
+        // given
+        String email = "seokrae@gmail.com";
+        RequestSaveUser saveUser = getRequestSaveUser(email, "seok");
+        // when
+        userBusinessService.postUser(saveUser);
+
+        RequestLoginUser requestLoginUser = RequestLoginUser.of("seokrae@gmail.com", "1234");
+        ResponseUser responseUser = userBusinessService.login(requestLoginUser);
+
+        assertThat(responseUser.getToken()).isNotEmpty();
     }
 }
