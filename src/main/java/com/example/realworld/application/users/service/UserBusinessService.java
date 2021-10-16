@@ -3,10 +3,10 @@ package com.example.realworld.application.users.service;
 import com.example.realworld.application.users.dto.*;
 import com.example.realworld.application.users.exception.DuplicateUserException;
 import com.example.realworld.application.users.persistence.User;
-import com.example.realworld.core.jwt.JwtUtils;
-import com.example.realworld.core.security.context.UserContext;
+import com.example.realworld.core.security.jwt.JwtFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +19,8 @@ import java.util.Optional;
 public class UserBusinessService implements UserService {
 
     private final UserDomainService userDomainService;
-    private final JwtUtils jwtUtils;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtFactory jwtFactory;
 
     /**
      * 새로운 사용자 등록
@@ -30,14 +31,11 @@ public class UserBusinessService implements UserService {
     @Transactional
     @Override
     public ResponseUser postUser(final RequestSaveUser saveUser) {
-        boolean existsUser = userDomainService.existsByEmail(saveUser.getEmail());
-
-        if (existsUser) {
+        if (userDomainService.existsByEmail(saveUser.getEmail())) {
             throw new DuplicateUserException();
         }
-
-        User savedUser = userDomainService.save(RequestSaveUser.toEntity(saveUser));
-        return ResponseUser.of(savedUser);
+        User user = RequestSaveUser.toEntity(saveUser, passwordEncoder);
+        return ResponseUser.of(userDomainService.save(user));
     }
 
     /**
@@ -97,8 +95,8 @@ public class UserBusinessService implements UserService {
     @Override
     public ResponseUser login(RequestLoginUser loginUser) {
         return Optional.of(userDomainService.findUserByEmail(loginUser.getEmail()))
-                .filter(user -> user.isPasswordMatches(loginUser.getPassword()))
-                .map(user -> user.generateToken(jwtUtils.generateToken(UserContext.of(user), 1)))
+                .filter(user -> passwordEncoder.matches(loginUser.getPassword(), user.getPassword()))
+                .map(user -> user.generateToken(jwtFactory.generateToken(user.getEmail(), 1)))
                 .map(ResponseUser::of)
                 .orElseThrow(RuntimeException::new);
     }

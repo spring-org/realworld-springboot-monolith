@@ -3,6 +3,7 @@ package com.example.realworld.application.users.dto;
 import com.example.realworld.application.users.persistence.User;
 import lombok.Getter;
 import lombok.ToString;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -27,7 +28,7 @@ public class RequestSaveUser {
         return new RequestSaveUser(email, userName, password);
     }
 
-    public static User toEntity(RequestSaveUser saveUser) {
-        return User.of(saveUser.getEmail(), saveUser.getPassword(), saveUser.getUserName());
+    public static User toEntity(RequestSaveUser saveUser, PasswordEncoder passwordEncoder) {
+        return User.of(saveUser.getEmail(), passwordEncoder.encode(saveUser.getPassword()), saveUser.getUserName());
     }
 }

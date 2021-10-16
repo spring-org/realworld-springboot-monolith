@@ -4,14 +4,15 @@ import com.example.realworld.application.articles.dto.*;
 import com.example.realworld.application.articles.service.ArticleService;
 import com.example.realworld.application.articles.service.CommentService;
 import com.example.realworld.application.favorites.service.FavoriteArticleService;
+import com.example.realworld.core.security.context.UserDetailsContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 @RestController
@@ -19,7 +20,6 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class ArticlesApi {
 
-    public static final String EMAIL = "email";
     private final FavoriteArticleService favoriteArticleService;
     private final ArticleService articleService;
     private final CommentService commentService;
@@ -32,7 +32,8 @@ public class ArticlesApi {
      */
     @GetMapping
     public ResponseEntity<ResponseMultiArticle> getArticles(
-            @Valid @RequestBody RequestArticleCondition condition, @PageableDefault(value = 20) Pageable pageable) {
+            @Valid @RequestBody RequestArticleCondition condition,
+            @PageableDefault(value = 20) Pageable pageable) {
 
         ResponseMultiArticle articles = articleService.searchPageArticles(condition, pageable);
 
@@ -42,15 +43,16 @@ public class ArticlesApi {
     /**
      * Follow 한 사용자의 글(피드)들을 가져오는 인터페이스
      *
-     * @param session  현재 사용자의 정보
-     * @param pageable 피드 정보를 페이징 하기 위한 정보
+     * @param userDetailsContext 현재 사용자의 정보
+     * @param pageable           피드 정보를 페이징 하기 위한 정보
      * @return 피드 리스트
      */
     @GetMapping(value = "/feed")
     public ResponseEntity<ResponseMultiArticle> feedArticle(
-            HttpSession session, @PageableDefault(value = 20) Pageable pageable) {
+            @AuthenticationPrincipal UserDetailsContext userDetailsContext,
+            @PageableDefault(value = 20) Pageable pageable) {
 
-        String email = (String) session.getAttribute(EMAIL);
+        String email = userDetailsContext.getUsername();
         ResponseMultiArticle feedArticles = articleService.getFeedArticles(email, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(feedArticles);
@@ -59,15 +61,16 @@ public class ArticlesApi {
     /**
      * 글 생성
      *
-     * @param session     현재 사용자의 정보
-     * @param saveArticle 글 등록을 위한 정보
+     * @param userDetailsContext 현재 사용자의 정보
+     * @param saveArticle        글 등록을 위한 정보
      * @return 등록된 글 반환
      */
     @PostMapping
     public ResponseEntity<ResponseSingleArticle> createArticle(
-            HttpSession session, @Valid @RequestBody RequestSaveArticle saveArticle) {
+            @AuthenticationPrincipal UserDetailsContext userDetailsContext,
+            @Valid @RequestBody RequestSaveArticle saveArticle) {
 
-        String email = (String) session.getAttribute(EMAIL);
+        String email = userDetailsContext.getUsername();
         ResponseSingleArticle savedArticle = articleService.postArticle(email, saveArticle);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedArticle);
@@ -91,16 +94,18 @@ public class ArticlesApi {
     /**
      * 글 수정
      *
-     * @param session       현재 사용자의 정보
-     * @param slug          특정 글의 slug
-     * @param updateArticle 특정 글을 수정하기 위한 정보
+     * @param userDetailsContext 현재 사용자의 정보
+     * @param slug               특정 글의 slug
+     * @param updateArticle      특정 글을 수정하기 위한 정보
      * @return 수정된 글 반환
      */
     @PutMapping(value = "/{slug}")
     public ResponseEntity<ResponseSingleArticle> updateArticle(
-            HttpSession session, @PathVariable("slug") String slug, @Valid @RequestBody RequestUpdateArticle updateArticle) {
+            @AuthenticationPrincipal UserDetailsContext userDetailsContext,
+            @PathVariable("slug") String slug,
+            @Valid @RequestBody RequestUpdateArticle updateArticle) {
 
-        String email = (String) session.getAttribute(EMAIL);
+        String email = userDetailsContext.getUsername();
         ResponseSingleArticle updatedArticle = articleService.updateArticle(email, slug, updateArticle);
 
         return ResponseEntity.status(HttpStatus.OK).body(updatedArticle);
@@ -109,15 +114,16 @@ public class ArticlesApi {
     /**
      * 글 삭제
      *
-     * @param session 현재 사용자 정보
-     * @param slug    특정 글의 slug
+     * @param userDetailsContext 현재 사용자의 정보
+     * @param slug               특정 글의 slug
      * @return 204 코드 반환
      */
     @DeleteMapping(value = "/{slug}")
     public ResponseEntity<Void> deleteArticle(
-            HttpSession session, @PathVariable("slug") String slug) {
+            @AuthenticationPrincipal UserDetailsContext userDetailsContext,
+            @PathVariable("slug") String slug) {
 
-        String email = (String) session.getAttribute(EMAIL);
+        String email = userDetailsContext.getUsername();
         articleService.deleteArticle(email, slug);
 
         return ResponseEntity.noContent().build();
@@ -126,16 +132,18 @@ public class ArticlesApi {
     /**
      * 특정 글에 커멘트 등록
      *
-     * @param session     현재 사용자의 정보
-     * @param slug        특정 글의 Slug
-     * @param saveComment 커멘트 등록을 위한 정보
+     * @param userDetailsContext 현재 사용자의 정보
+     * @param slug               특정 글의 Slug
+     * @param saveComment        커멘트 등록을 위한 정보
      * @return 등록된 커멘트의 정보
      */
     @PostMapping(value = "/{slug}/comments")
     public ResponseEntity<ResponseSingleComment> addCommentsToArticle(
-            HttpSession session, @PathVariable("slug") String slug, @Valid @RequestBody RequestSaveComment saveComment) {
+            @AuthenticationPrincipal UserDetailsContext userDetailsContext,
+            @PathVariable("slug") String slug,
+            @Valid @RequestBody RequestSaveComment saveComment) {
 
-        String email = (String) session.getAttribute(EMAIL);
+        String email = userDetailsContext.getUsername();
         ResponseSingleComment savedComment = commentService.postComment(email, slug, saveComment);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedComment);
@@ -159,16 +167,18 @@ public class ArticlesApi {
     /**
      * 커멘트 삭제
      *
-     * @param session   현재 사용자의 정보
-     * @param slug      특정 글의 Slug
-     * @param commentId 특정 커멘트의 Id 정보
+     * @param userDetailsContext 현재 사용자의 정보
+     * @param slug               특정 글의 Slug
+     * @param commentId          특정 커멘트의 Id 정보
      * @return 204 코드 반환
      */
-    @DeleteMapping(value = "/{slug}/comments/{id}")
+    @DeleteMapping(value = "/{slug}/comments/{commentId}")
     public ResponseEntity<Void> deleteComments(
-            HttpSession session, @PathVariable("slug") String slug, @PathVariable("id") Long commentId) {
+            @AuthenticationPrincipal UserDetailsContext userDetailsContext,
+            @PathVariable("slug") String slug,
+            @PathVariable("commentId") Long commentId) {
 
-        String email = (String) session.getAttribute(EMAIL);
+        String email = userDetailsContext.getUsername();
         commentService.deleteComment(email, slug, commentId);
 
         return ResponseEntity.noContent().build();
@@ -177,15 +187,16 @@ public class ArticlesApi {
     /**
      * 관심 글로 등록
      *
-     * @param session 현재 사용자의 정보
-     * @param slug    특정 글의 Slug
+     * @param userDetailsContext 현재 사용자의 정보
+     * @param slug               특정 글의 Slug
      * @return 관심 글로 처리된 글의 정보를 반환
      */
     @PostMapping(value = "/{slug}/favorite")
     public ResponseEntity<ResponseSingleArticle> favoriteArticle(
-            HttpSession session, @PathVariable("slug") String slug) {
+            @AuthenticationPrincipal UserDetailsContext userDetailsContext,
+            @PathVariable("slug") String slug) {
 
-        String email = (String) session.getAttribute(EMAIL);
+        String email = userDetailsContext.getUsername();
         ResponseSingleArticle followArticle = favoriteArticleService.favoriteArticle(email, slug);
 
         return ResponseEntity.status(HttpStatus.OK).body(followArticle);
@@ -195,15 +206,16 @@ public class ArticlesApi {
     /**
      * 관심 글 취소
      *
-     * @param session 현재 사용자의 정보
-     * @param slug    특정 글의 Slug
+     * @param userDetailsContext 현재 사용자의 정보
+     * @param slug               특정 글의 Slug
      * @return 관심 글 취소 된 글의 정보를 반환
      */
     @DeleteMapping(value = "/{slug}/favorite")
     public ResponseEntity<ResponseSingleArticle> unFavoriteArticle(
-            HttpSession session, @PathVariable("slug") String slug) {
+            @AuthenticationPrincipal UserDetailsContext userDetailsContext,
+            @PathVariable("slug") String slug) {
 
-        String email = (String) session.getAttribute(EMAIL);
+        String email = userDetailsContext.getUsername();
         ResponseSingleArticle unfollowArticle = favoriteArticleService.unFavoriteArticle(email, slug);
 
         return ResponseEntity.status(HttpStatus.OK).body(unfollowArticle);
