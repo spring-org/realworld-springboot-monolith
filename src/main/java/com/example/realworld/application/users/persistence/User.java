@@ -81,10 +81,6 @@ public class User extends BaseTimeEntity implements Serializable {
         return this.profile.userName();
     }
 
-    public boolean isPasswordMatches(String password) {
-        return this.password.equals(password);
-    }
-
     public User generateToken(String generateToken) {
         this.token = generateToken;
         return this;

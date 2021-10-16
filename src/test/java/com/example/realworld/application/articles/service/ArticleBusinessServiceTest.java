@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -115,7 +114,6 @@ class ArticleBusinessServiceTest {
 
     // 갑자기 delete 처리가 안되는 문제 발생
     @DisplayName("글 삭제 테스트")
-    @Transactional
     @Test
     void when_deleteArticle_expect_success_deleted_article() {
         // given
