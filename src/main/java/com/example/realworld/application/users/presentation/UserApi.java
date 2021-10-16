@@ -39,8 +39,8 @@ public class UserApi {
     /**
      * 현재 사용자의 정보를 수정
      *
-     * @param userDetailsContext    현재 사용자의 정보
-     * @param updateUser            사용의 특정 정보를 수정하기 위한 정보
+     * @param userDetailsContext 현재 사용자의 정보
+     * @param updateUser         사용의 특정 정보를 수정하기 위한 정보
      * @return 수정된 사용자의 정보를 반환
      */
     @PutMapping

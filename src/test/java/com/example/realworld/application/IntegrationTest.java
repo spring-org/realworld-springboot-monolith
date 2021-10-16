@@ -20,8 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Objects;
 
-import static com.example.realworld.application.IntegrationUtilTest.matchesCurrentUserInfo;
-import static com.example.realworld.application.IntegrationUtilTest.matchesOtherUserInfo;
 import static com.example.realworld.application.articles.ArticleFixture.*;
 import static com.example.realworld.application.users.UserFixture.*;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
@@ -62,7 +60,8 @@ class IntegrationTest {
                                 .accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 )
                 .andExpect(status().isCreated())
-                .andExpect(matchesCurrentUserInfo());
+                .andExpect(jsonPath("email").value("seokrae@gmail.com"))
+                .andExpect(jsonPath("userName").value("seokrae"));
     }
 
     @Order(2)
@@ -79,7 +78,8 @@ class IntegrationTest {
                                 .accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 )
                 .andExpect(status().isCreated())
-                .andExpect(matchesOtherUserInfo());
+                .andExpect(jsonPath("email").value("seok@gmail.com"))
+                .andExpect(jsonPath("userName").value("seok"));
     }
 
     @Order(3)

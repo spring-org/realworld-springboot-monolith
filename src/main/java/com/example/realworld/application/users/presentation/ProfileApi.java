@@ -23,8 +23,8 @@ public class ProfileApi {
     /**
      * 특정 사용자의 프로필 조회
      *
-     * @param userDetailsContext    현재 사용자의 정보
-     * @param toEmail               특정 사용자의 이메일 정보
+     * @param userDetailsContext 현재 사용자의 정보
+     * @param toEmail            특정 사용자의 이메일 정보
      * @return 특정 사용자의 프로필 정보 반환
      */
     @GetMapping(value = "/{toEmail}")
@@ -46,8 +46,8 @@ public class ProfileApi {
     /**
      * 특정 사용자와 팔로우 관계 생성
      *
-     * @param userDetailsContext    현재 사용자의 정보
-     * @param toEmail               특정 사용자의 이메일 정보
+     * @param userDetailsContext 현재 사용자의 정보
+     * @param toEmail            특정 사용자의 이메일 정보
      * @return 특정 사용자와의 팔로우 관계 및 프로필 정보를 반환
      */
     @PostMapping(value = "/{toEmail}/follow")
@@ -64,8 +64,8 @@ public class ProfileApi {
     /**
      * 특정 사용자와의 팔로우 관계를 취소
      *
-     * @param userDetailsContext    현재 사용자의 정보
-     * @param toEmail               특정 사용자의 이메일 정보
+     * @param userDetailsContext 현재 사용자의 정보
+     * @param toEmail            특정 사용자의 이메일 정보
      * @return 특정 사용자와의 팔로우 관계 및 프로필 정보를 반환
      */
     @DeleteMapping(value = "/{toEmail}/follow")

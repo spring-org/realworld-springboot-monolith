@@ -43,8 +43,8 @@ public class ArticlesApi {
     /**
      * Follow 한 사용자의 글(피드)들을 가져오는 인터페이스
      *
-     * @param userDetailsContext    현재 사용자의 정보
-     * @param pageable              피드 정보를 페이징 하기 위한 정보
+     * @param userDetailsContext 현재 사용자의 정보
+     * @param pageable           피드 정보를 페이징 하기 위한 정보
      * @return 피드 리스트
      */
     @GetMapping(value = "/feed")
@@ -61,8 +61,8 @@ public class ArticlesApi {
     /**
      * 글 생성
      *
-     * @param userDetailsContext    현재 사용자의 정보
-     * @param saveArticle           글 등록을 위한 정보
+     * @param userDetailsContext 현재 사용자의 정보
+     * @param saveArticle        글 등록을 위한 정보
      * @return 등록된 글 반환
      */
     @PostMapping
@@ -94,9 +94,9 @@ public class ArticlesApi {
     /**
      * 글 수정
      *
-     * @param userDetailsContext    현재 사용자의 정보
-     * @param slug                  특정 글의 slug
-     * @param updateArticle         특정 글을 수정하기 위한 정보
+     * @param userDetailsContext 현재 사용자의 정보
+     * @param slug               특정 글의 slug
+     * @param updateArticle      특정 글을 수정하기 위한 정보
      * @return 수정된 글 반환
      */
     @PutMapping(value = "/{slug}")
@@ -114,8 +114,8 @@ public class ArticlesApi {
     /**
      * 글 삭제
      *
-     * @param userDetailsContext    현재 사용자의 정보
-     * @param slug                  특정 글의 slug
+     * @param userDetailsContext 현재 사용자의 정보
+     * @param slug               특정 글의 slug
      * @return 204 코드 반환
      */
     @DeleteMapping(value = "/{slug}")
@@ -206,8 +206,8 @@ public class ArticlesApi {
     /**
      * 관심 글 취소
      *
-     * @param userDetailsContext    현재 사용자의 정보
-     * @param slug                  특정 글의 Slug
+     * @param userDetailsContext 현재 사용자의 정보
+     * @param slug               특정 글의 Slug
      * @return 관심 글 취소 된 글의 정보를 반환
      */
     @DeleteMapping(value = "/{slug}/favorite")
