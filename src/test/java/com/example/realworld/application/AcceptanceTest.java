@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestInstance(PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class IntegrationTest {
+class AcceptanceTest {
 
     private static final String BEARER_PREFIX = "Bearer ";
     private static final String REPLACEMENT_EMPTY_DELIMITER = "";
