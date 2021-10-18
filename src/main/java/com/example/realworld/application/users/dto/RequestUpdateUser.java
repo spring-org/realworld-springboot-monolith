@@ -1,30 +1,28 @@
 package com.example.realworld.application.users.dto;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
-
-import javax.validation.constraints.NotEmpty;
 
 @Getter
 @ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RequestUpdateUser {
 
-    @NotEmpty(message = "email is not empty")
-    private final String email;
-    private final String userName;
-    private final String password;
-    private final String image;
-    private final String bio;
+    private String userName;
+    private String password;
+    private String image;
+    private String bio;
 
-    private RequestUpdateUser(String email, String userName, String password, String image, String bio) {
-        this.email = email;
+    private RequestUpdateUser(String userName, String password, String image, String bio) {
         this.userName = userName;
         this.password = password;
         this.image = image;
         this.bio = bio;
     }
 
-    public static RequestUpdateUser of(String email, String userName, String password, String image, String bio) {
-        return new RequestUpdateUser(email, userName, password, image, bio);
+    public static RequestUpdateUser of(String userName, String password, String image, String bio) {
+        return new RequestUpdateUser(userName, password, image, bio);
     }
 }

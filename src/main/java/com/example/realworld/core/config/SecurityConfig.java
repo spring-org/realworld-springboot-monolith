@@ -74,7 +74,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers(POST, "/api/users/login", "/api/users").permitAll()
-                .antMatchers(GET, "/api/tags", "/api/articles", "/api/articles/feed", "/api/profiles/*").permitAll()
+                .antMatchers(GET,
+                        "/api/tags", "/api/articles", "/api/articles/*",
+                        "/api/articles/feed", "/api/profiles/*", "/api/articles/*/comments"
+                ).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(jwtAuthenticationFilter())

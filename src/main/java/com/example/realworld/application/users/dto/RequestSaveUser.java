@@ -1,7 +1,9 @@
 package com.example.realworld.application.users.dto;
 
 import com.example.realworld.application.users.persistence.User;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -9,14 +11,15 @@ import javax.validation.constraints.NotEmpty;
 
 @Getter
 @ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RequestSaveUser {
 
     @NotEmpty(message = "email is not empty")
-    private final String email;
+    private String email;
     @NotEmpty(message = "userName is not empty")
-    private final String userName;
+    private String userName;
     @NotEmpty(message = "password is not empty")
-    private final String password;
+    private String password;
 
     private RequestSaveUser(String email, String userName, String password) {
         this.email = email;

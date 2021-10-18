@@ -2,7 +2,6 @@ package com.example.realworld.application.users.presentation;
 
 import com.example.realworld.application.users.dto.RequestUpdateUser;
 import com.example.realworld.application.users.dto.ResponseUser;
-import com.example.realworld.application.users.exception.UnauthorizedUserException;
 import com.example.realworld.application.users.service.UserService;
 import com.example.realworld.core.security.context.UserDetailsContext;
 import lombok.RequiredArgsConstructor;
@@ -49,11 +48,6 @@ public class UserApi {
             @Valid @RequestBody RequestUpdateUser updateUser) {
 
         String email = userDetailsContext.getUsername();
-        // 일단 이메일 정보가 일치해야 수정이 가능한 것으로 간주.
-        if (!email.equals(updateUser.getEmail())) {
-            throw new UnauthorizedUserException();
-        }
-
         ResponseUser responseUser = userService.updateUser(email, updateUser);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseUser);

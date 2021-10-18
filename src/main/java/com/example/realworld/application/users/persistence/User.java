@@ -88,9 +88,6 @@ public class User extends BaseTimeEntity implements Serializable {
 
     // 프로필 업데이트
     public void update(RequestUpdateUser updateUser) {
-        if (StringUtils.hasText(updateUser.getEmail())) {
-            this.email = updateUser.getEmail();
-        }
         if (StringUtils.hasText(updateUser.getPassword())) {
             this.password = updateUser.getPassword();
         }

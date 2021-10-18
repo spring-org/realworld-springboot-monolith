@@ -97,7 +97,7 @@ class UserBusinessServiceTest {
         // given
         String currentUserEmail = "seokrae@gmail.com";
         RequestSaveUser saveUser = getRequestSaveUser(currentUserEmail, "seok");
-        RequestUpdateUser updateUser = getRequestUpdateUser(currentUserEmail, "seokrae", "12345", "/image.png", "hello bio");
+        RequestUpdateUser updateUser = getRequestUpdateUser("seokrae", "12345", "/image.png", "hello bio");
         // when
         userBusinessService.postUser(saveUser);
         ResponseUser updatedUser = userBusinessService.updateUser(currentUserEmail, updateUser);
@@ -111,7 +111,7 @@ class UserBusinessServiceTest {
         // given
         String currentUserEmail = "seokrae@gmail.com";
         RequestSaveUser saveUser = getRequestSaveUser(currentUserEmail, "seok");
-        RequestUpdateUser updateUser = getRequestUpdateUser("", "", "", "", "");
+        RequestUpdateUser updateUser = getRequestUpdateUser("", "", "", "");
         // when
         userBusinessService.postUser(saveUser);
         ResponseUser updatedUser = userBusinessService.updateUser(currentUserEmail, updateUser);
