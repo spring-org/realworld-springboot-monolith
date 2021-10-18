@@ -11,8 +11,8 @@ public class UserFixture {
     private UserFixture() {
     }
 
-    public static RequestUpdateUser getRequestUpdateUser(String email, String updatedUserName, String password, String image, String bio) {
-        return RequestUpdateUser.of(email, updatedUserName, password, image, bio);
+    public static RequestUpdateUser getRequestUpdateUser(String updatedUserName, String password, String image, String bio) {
+        return RequestUpdateUser.of(updatedUserName, password, image, bio);
     }
 
     public static RequestSaveUser getRequestSaveUser(String email, String userName) {

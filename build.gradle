@@ -46,6 +46,10 @@ dependencies {
 
     // https://www.archunit.org/getting-started
     testImplementation 'com.tngtech.archunit:archunit-junit5:0.21.0'
+
+    // https://mvnrepository.com/artifact/io.rest-assured/rest-assured
+    testImplementation 'io.rest-assured:rest-assured:4.4.0'
+
 }
 
 test {

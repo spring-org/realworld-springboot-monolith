@@ -72,7 +72,7 @@ public class UserBusinessService implements UserService {
     /**
      * 현재 사용자의 프로필 정보 조회
      *
-     * @param email 현재 사용자의 이메일 정보
+     * @param toEmail 현재 사용자의 이메일 정보
      * @return 현재 사용자의 프로필 정보 반환
      */
     @Override

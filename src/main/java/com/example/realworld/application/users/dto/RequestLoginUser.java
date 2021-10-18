@@ -1,19 +1,21 @@
 package com.example.realworld.application.users.dto;
 
-import com.example.realworld.application.users.persistence.User;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.validation.constraints.NotEmpty;
 
 @Getter
 @ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RequestLoginUser {
 
     @NotEmpty(message = "email is not empty")
-    private final String email;
+    private String email;
     @NotEmpty(message = "password is not empty")
-    private final String password;
+    private String password;
 
     private RequestLoginUser(String email, String password) {
         this.email = email;
@@ -22,9 +24,5 @@ public class RequestLoginUser {
 
     public static RequestLoginUser of(String email, String password) {
         return new RequestLoginUser(email, password);
-    }
-
-    public static User toEntity(RequestLoginUser loginUser) {
-        return User.of(loginUser.getEmail(), loginUser.getPassword());
     }
 }
