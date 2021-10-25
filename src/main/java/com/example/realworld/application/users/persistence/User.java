@@ -15,8 +15,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.CascadeType.PERSIST;
-import static javax.persistence.CascadeType.REMOVE;
 
 @Getter
 @ToString
@@ -40,10 +40,11 @@ public class User extends BaseTimeEntity implements Serializable {
     @Embedded
     private Follows follows;
 
-    @OneToMany(mappedBy = "author", orphanRemoval = true, cascade = {PERSIST, REMOVE})
+    @OneToMany(mappedBy = "author", orphanRemoval = true, cascade = {PERSIST, MERGE})
     @ToString.Exclude
     private final Set<Article> articles = new HashSet<>();
-    @OneToMany(mappedBy = "favoriteUser", orphanRemoval = true, cascade = {PERSIST, REMOVE})
+
+    @OneToMany(mappedBy = "favoriteUser", orphanRemoval = true, cascade = {PERSIST, MERGE})
     @ToString.Exclude
     private final Set<FavoriteArticle> favoriteArticles = new HashSet<>();
 
@@ -207,7 +208,6 @@ public class User extends BaseTimeEntity implements Serializable {
 
 
     // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션
-
     @Generated
     @Override
     public boolean equals(Object o) {
@@ -217,8 +217,8 @@ public class User extends BaseTimeEntity implements Serializable {
         return Objects.equals(id, user.id)
                 && Objects.equals(email, user.email);
     }
-    // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션
 
+    // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션
     @Generated
     @Override
     public int hashCode() {
