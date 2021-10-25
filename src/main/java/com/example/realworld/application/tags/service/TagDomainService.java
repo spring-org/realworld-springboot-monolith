@@ -25,11 +25,4 @@ public class TagDomainService {
         return tagRepository.findAll().stream()
                 .collect(Collectors.toUnmodifiableSet());
     }
-//
-//    @Transactional
-//    public List<Tag> saveAll(String... tags) {
-//        Set<Tag> setTags = Arrays.stream(tags).map(Tag::of)
-//                .collect(Collectors.toSet());
-//        return tagRepository.saveAll(setTags);
-//    }
 }
