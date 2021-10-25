@@ -1,6 +1,5 @@
 package com.example.realworld.application.users.presentation;
 
-import com.example.realworld.application.users.dto.RequestLoginUser;
 import com.example.realworld.application.users.dto.RequestSaveUser;
 import com.example.realworld.application.users.dto.ResponseUser;
 import com.example.realworld.application.users.service.UserBusinessService;

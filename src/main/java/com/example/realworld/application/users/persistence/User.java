@@ -15,7 +15,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static javax.persistence.CascadeType.*;
+import static javax.persistence.CascadeType.MERGE;
+import static javax.persistence.CascadeType.PERSIST;
 
 @Getter
 @ToString
@@ -216,6 +217,7 @@ public class User extends BaseTimeEntity implements Serializable {
         return Objects.equals(id, user.id)
                 && Objects.equals(email, user.email);
     }
+
     // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션
     @Generated
     @Override
