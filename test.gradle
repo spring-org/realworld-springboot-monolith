@@ -72,7 +72,7 @@ jacocoTestCoverageVerification {
                 maximum = 1.00
             }
 
-            // 라인 커버리지를 최소한 80% 만족
+            // 라인 커버리지를 최소한 100% 만족
             limit {
                 counter = 'INSTRUCTION'
                 value = 'COVEREDRATIO'
