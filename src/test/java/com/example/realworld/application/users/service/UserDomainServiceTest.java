@@ -1,41 +1,42 @@
 package com.example.realworld.application.users.service;
 
 import com.example.realworld.application.users.exception.NotFoundUserException;
-import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
 
 import static com.example.realworld.application.users.UserFixture.createUser;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class UserDomainServiceTest {
-    @Autowired
+
+    @InjectMocks
     private UserDomainService userDomainService;
 
-    @Autowired
+    @Mock
     private UserRepository userRepository;
-
-    @AfterEach
-    void tearDown() {
-        userRepository.deleteAll();
-    }
 
     @DisplayName("사용자 조회 테스트")
     @Test
     void when_findUserByEmail_expect_success_find_user() {
         // given
         String email = "seokrae@gmail.com";
-        User actual = userDomainService.save(createUser(email));
+        given(userRepository.findByEmail(email)).willReturn(Optional.of(createUser(email)));
         // when
-        User expect = userDomainService.findUserByEmail(email);
+        userDomainService.findUserByEmail(email);
         // then
-        assertThat(actual).isEqualTo(expect);
+        then(userRepository).should(times(1)).findByEmail(email);
     }
 
     @DisplayName("사용자 조회 예외 테스트")
@@ -43,12 +44,11 @@ class UserDomainServiceTest {
     void when_findUserByEmail_expect_fail_not_found_exception() {
         // given
         String email = "seokrae@gmail.com";
-        userDomainService.save(createUser(email));
+        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
         // when
-        String notExistsUserEmail = "not_found@gmail.com";
         // then
         assertThatExceptionOfType(NotFoundUserException.class)
-                .isThrownBy(() -> userDomainService.findUserByEmail(notExistsUserEmail));
+                .isThrownBy(() -> userDomainService.findUserByEmail(email));
     }
 
     @DisplayName("사용자 존재여부 확인 테스트")
@@ -56,10 +56,10 @@ class UserDomainServiceTest {
     void when_existsByEmail_expect_success_true() {
         // given
         String email = "seokrae@gmail.com";
-        userDomainService.save(createUser(email));
+        when(userRepository.existsByEmail(email)).thenReturn(true);
         // when
-        boolean expect = userDomainService.existsByEmail(email);
+        userDomainService.existsByEmail(email);
         // then
-        assertThat(expect).isTrue();
+        then(userRepository).should(times(1)).existsByEmail(email);
     }
 }

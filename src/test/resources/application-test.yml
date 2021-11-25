@@ -1,5 +1,5 @@
 server:
-  port: 8087
+  port: 8088
 
 spring:
   application:
@@ -7,7 +7,7 @@ spring:
 
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:realdb;DB_CLOSE_ON_EXIT=FALSE
+    url: jdbc:h2:mem:testdb;DB_CLOSE_ON_EXIT=FALSE
     username: sa
     password:
 
@@ -29,12 +29,12 @@ spring:
       enabled: true
       path: /h2-console
 
-#logging:
-#  level:
-#    org:
-#      hibernate:
-#        sql: debug
-#        type: trace
+logging:
+  level:
+    org:
+      hibernate:
+        sql: debug
+        type: trace
 
 jwt:
   secret: 89127391284091890863490852390458239048zjklsjdhalskjdklsdfjadklsj72

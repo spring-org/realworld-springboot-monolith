@@ -29,7 +29,7 @@ public class User extends BaseTimeEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "USER_ID", nullable = false)
     private Long id;
-    @Column(nullable = false, unique = true)
+    @Column(name = "email")
     private String email;
     private String password;
     @LastModifiedDate
