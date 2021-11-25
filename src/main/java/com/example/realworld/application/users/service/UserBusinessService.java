@@ -61,6 +61,7 @@ public class UserBusinessService implements UserService {
      * @param email 현재 사용자의 이메일 정보
      * @return 현재 사용자의 정보 반환
      */
+    @Transactional(readOnly = true)
     @Override
     public ResponseUser getUserByEmail(String email) {
 
