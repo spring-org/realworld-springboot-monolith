@@ -149,7 +149,7 @@ class UserBusinessServiceTest {
         given(userDomainService.findUserByEmail(email)).willReturn(createUser(email));
         when(passwordEncoder.matches(any(), any())).thenReturn(true);
         // then
-        ResponseUser responseUser = userBusinessService.login(RequestLoginUser.of(email, "1234"));
+        userBusinessService.login(RequestLoginUser.of(email, "1234"));
 
         then(jwtFactory).should(times(1)).generateToken(email, 1);
 
