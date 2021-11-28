@@ -66,7 +66,7 @@ public class Comment extends BaseTimeEntity {
         return Objects.equals(id, comment.id);
     }
 
-    // jacoco 라이브러리가 lobok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션
+    // jacoco 라이브러리가 lombok 에서 생성된 메서드를 무시할 수 있도록 설정하기 위한 어노테이션
     @Generated
     @Override
     public int hashCode() {

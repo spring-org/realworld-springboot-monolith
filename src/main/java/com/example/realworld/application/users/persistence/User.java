@@ -61,7 +61,6 @@ public class User extends BaseTimeEntity implements Serializable {
     public boolean isSameUser(User toUser) {
         return this.getEmail().equals(toUser.getEmail());
     }
-
     // ========================================== profile
     public Profile profile() {
         return profile;

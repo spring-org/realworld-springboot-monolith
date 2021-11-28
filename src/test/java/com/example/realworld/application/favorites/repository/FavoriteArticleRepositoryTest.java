@@ -2,6 +2,7 @@ package com.example.realworld.application.favorites.repository;
 
 import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.favorites.persistence.FavoriteArticle;
+import com.example.realworld.application.favorites.persistence.FavoriteArticleFactory;
 import com.example.realworld.application.favorites.persistence.repository.FavoriteArticleRepository;
 import com.example.realworld.application.tags.persistence.Tag;
 import com.example.realworld.application.users.persistence.User;
@@ -24,7 +25,7 @@ class FavoriteArticleRepositoryTest {
     void when_saveFavoriteArticle_expect_success_save() {
         User author = UserFactory.of("seokrae@gmail.com", "1234", "seokrae");
         Article article = Article.of("title-1", "description", "body", author, Tag.of("Kotlin"));
-        FavoriteArticle favoriteArticle = FavoriteArticle.of(author, article);
+        FavoriteArticle favoriteArticle = FavoriteArticleFactory.of(author, article);
 
         FavoriteArticle savedFavoriteArticle = favoriteArticleRepository.save(favoriteArticle);
 

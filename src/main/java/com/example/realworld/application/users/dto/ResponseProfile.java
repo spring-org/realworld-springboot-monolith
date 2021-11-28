@@ -33,6 +33,6 @@ public class ResponseProfile {
 
     public static ResponseProfile ofProfile(final User fromUser, final User toUser) {
         FollowUserRelationShip relationShip = new FollowUserRelationShip(fromUser);
-        return new ResponseProfile(fromUser, relationShip.isFollowing(toUser));
+        return new ResponseProfile(toUser, relationShip.isFollowing(toUser));
     }
 }

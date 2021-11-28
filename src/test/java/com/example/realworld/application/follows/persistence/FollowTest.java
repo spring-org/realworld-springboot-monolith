@@ -24,7 +24,8 @@ class FollowTest {
         relationShip.following(FollowFactory.following(fromUser, toUser));
 
         // then
-        assertThat(relationShip.isFollowing(toUser)).isTrue();
+        boolean following = relationShip.isFollowing(toUser);
+        assertThat(following).isTrue();
     }
 
     @DisplayName("A 사용자가 B 사용자를 언팔로우하는 확인 테스트")

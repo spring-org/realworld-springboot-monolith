@@ -49,10 +49,6 @@ public final class FollowUserRelationShip implements Serializable {
         return user.getFollows().isFollowing(toUser);
     }
 
-    public boolean isFollowers(User toUser) {
-        return user.getFollows().isFollowers(toUser);
-    }
-
     // 팔로우 관계를 찾기위한 검색
     public Follow findFollowing(User toUser) {
         return user.getFollows().findFollowing(toUser);

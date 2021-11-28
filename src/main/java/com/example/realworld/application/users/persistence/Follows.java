@@ -51,17 +51,17 @@ public class Follows implements Serializable {
 
     public boolean isFollowing(User toUser) {
         return following.stream()
-                .anyMatch(follow -> follow.isSameToUser(toUser));
+                .anyMatch(follow -> follow.matchesUser(toUser));
     }
 
     public boolean isFollowers(User toUser) {
         return followers.stream()
-                .anyMatch(follow -> follow.isSameToUser(toUser));
+                .anyMatch(follow -> follow.matchesUser(toUser));
     }
 
     public Follow findFollowing(User toUser) {
         return following.stream()
-                .filter(follow -> follow.isSameToUser(toUser))
+                .filter(follow -> follow.matchesUser(toUser))
                 .findFirst()
                 .orElseThrow(NotFoundFollowException::new);
     }

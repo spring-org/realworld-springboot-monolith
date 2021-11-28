@@ -1,6 +1,5 @@
 package com.example.realworld.application.follows.persistence;
 
-import com.example.realworld.application.follows.exception.CannotSelfFollowException;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.core.persistence.BaseTimeEntity;
 import lombok.AccessLevel;
@@ -33,11 +32,8 @@ public class Follow extends BaseTimeEntity {
         this.toUser = toUser;
     }
 
-    public boolean isSameToUser(User toUser) {
-        if (this.toUser.isSameUser(toUser)) {
-            throw new CannotSelfFollowException();
-        }
-        return false;
+    public boolean matchesUser(User toUser) {
+        return this.toUser.isSameUser(toUser);
     }
 
     public User toUser() {
