@@ -1,10 +1,10 @@
 package com.example.realworld.application.follows.service;
 
-import com.example.realworld.application.follows.exception.CannotSelfFollowException;
 import com.example.realworld.application.follows.exception.DuplicatedFollowException;
 import com.example.realworld.application.follows.exception.NotFoundFollowException;
 import com.example.realworld.application.follows.persistence.Follow;
 import com.example.realworld.application.users.dto.ResponseProfile;
+import com.example.realworld.application.users.persistence.FollowUserRelationShip;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.service.UserDomainService;
 import lombok.RequiredArgsConstructor;
@@ -28,26 +28,24 @@ public class FollowBusinessService implements FollowService {
      */
     @Transactional
     @Override
-    public ResponseProfile follow(final String currentUserEmail, final String toEmail) {
-
-        if (currentUserEmail.equals(toEmail)) {
-            throw new CannotSelfFollowException();
-        }
+    public ResponseProfile follow(String currentUserEmail, String toEmail) {
 
         User fromUser = userDomainService.findUserByEmail(currentUserEmail);
         User toUser = userDomainService.findUserByEmail(toEmail);
 
-        if (fromUser.isFollowing(toUser)) {
+        FollowUserRelationShip relationShip = new FollowUserRelationShip(fromUser);
+
+        if (relationShip.isFollowing(toUser)) {
             throw new DuplicatedFollowException();
         }
 
-        Follow savedFollow = followDomainService.save(fromUser, toUser);
-        Follow savedFollowers = followDomainService.save(toUser, fromUser);
+        Follow follower = followDomainService.save(fromUser, toUser);
+        Follow followee = followDomainService.save(toUser, fromUser);
 
-        fromUser.following(savedFollow);
-        toUser.followers(savedFollowers);
+        relationShip.following(follower);
+        relationShip.followers(followee);
 
-        return ResponseProfile.ofProfile(fromUser, toUser);
+        return ResponseProfile.ofProfile(relationShip.user(), toUser);
     }
 
     /**
@@ -59,24 +57,22 @@ public class FollowBusinessService implements FollowService {
      */
     @Transactional
     @Override
-    public ResponseProfile unFollow(final String currentUserEmail, final String toEmail) {
-
-        if (currentUserEmail.equals(toEmail)) {
-            throw new CannotSelfFollowException();
-        }
+    public ResponseProfile unFollow(String currentUserEmail, String toEmail) {
 
         User fromUser = userDomainService.findUserByEmail(currentUserEmail);
         User toUser = userDomainService.findUserByEmail(toEmail);
 
-        if (!fromUser.isFollowing(toUser)) {
+        FollowUserRelationShip fromUserRelationShip = new FollowUserRelationShip(fromUser);
+        if (!fromUserRelationShip.isFollowing(toUser)) {
             throw new NotFoundFollowException();
         }
 
-        Follow findFollowing = fromUser.findFollowing(toUser);
-        fromUser.unFollowing(findFollowing);
+        Follow findFollowing = fromUserRelationShip.findFollowing(toUser);
+        fromUserRelationShip.unFollowing(findFollowing);
 
-        Follow findFollower = toUser.findFollowing(fromUser);
-        toUser.unFollowers(findFollower);
+        FollowUserRelationShip toUserRelationShip = new FollowUserRelationShip(toUser);
+        Follow findFollower = toUserRelationShip.findFollowing(fromUser);
+        toUserRelationShip.unFollowers(findFollower);
 
         followDomainService.delete(findFollowing);
         followDomainService.delete(findFollower);

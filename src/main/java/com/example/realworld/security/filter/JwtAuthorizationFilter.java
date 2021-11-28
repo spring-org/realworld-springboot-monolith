@@ -1,7 +1,7 @@
-package com.example.realworld.core.security.filter;
+package com.example.realworld.security.filter;
 
-import com.example.realworld.core.security.jwt.JwtFactory;
-import com.example.realworld.core.security.token.JwtAuthenticationToken;
+import com.example.realworld.security.jwt.JwtFactory;
+import com.example.realworld.security.token.JwtAuthenticationToken;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;

@@ -6,6 +6,7 @@ import com.example.realworld.application.articles.persistence.repository.Article
 import com.example.realworld.application.articles.persistence.repository.CommentRepository;
 import com.example.realworld.application.users.exception.UnauthorizedUserException;
 import com.example.realworld.application.users.persistence.User;
+import com.example.realworld.application.users.persistence.UserFactory;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,10 +42,10 @@ class CommentBusinessServiceTest {
     void when_postComment_expect_success_comments() {
         // given
         String authEmail = "seok@gmail.com";
-        User authorUser = User.of(authEmail, "1234", "seok");
+        User authorUser = UserFactory.of(authEmail, "1234", "seok");
         User savedAuthorUser = userRepository.save(authorUser);
 
-        User otherUser = User.of("other@gmail.com", "1234", "otherName");
+        User otherUser = UserFactory.of("other@gmail.com", "1234", "otherName");
         User savedOtherUser = userRepository.save(otherUser);
         ResponseSingleArticle responseSingleArticle = articleService.postArticle(authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", "Kotlin"));
 
@@ -61,11 +62,11 @@ class CommentBusinessServiceTest {
     void when_getCommentsByArticle_expect_success_comments() {
         // given
         String authEmail = "seok@gmail.com";
-        User authorUser = User.of(authEmail, "1234", "seok");
+        User authorUser = UserFactory.of(authEmail, "1234", "seok");
         userRepository.save(authorUser);
 
         String otherUserEmail = "other@gmail.com";
-        User otherUser = User.of(otherUserEmail, "1234", "otherName");
+        User otherUser = UserFactory.of(otherUserEmail, "1234", "otherName");
         userRepository.save(otherUser);
         ResponseSingleArticle responseArticle = articleService.postArticle(
                 authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", "PHP"));
@@ -85,11 +86,11 @@ class CommentBusinessServiceTest {
     void when_deleteComment_expect_success_delete_comment() {
         // given
         String authEmail = "seok@gmail.com";
-        User authorUser = User.of(authEmail, "1234", "seok");
+        User authorUser = UserFactory.of(authEmail, "1234", "seok");
         userRepository.save(authorUser);
 
         String otherUserEmail = "other@gmail.com";
-        User otherUser = User.of(otherUserEmail, "1234", "otherName");
+        User otherUser = UserFactory.of(otherUserEmail, "1234", "otherName");
         userRepository.save(otherUser);
         ResponseSingleArticle responseSingleArticle = articleService.postArticle(authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", "Ruby"));
 
@@ -110,11 +111,11 @@ class CommentBusinessServiceTest {
     void when_deleteComment_expect_fail_unAuthorization_exception() {
         // given
         String authEmail = "seok@gmail.com";
-        User authorUser = User.of(authEmail, "1234", "seok");
+        User authorUser = UserFactory.of(authEmail, "1234", "seok");
         userRepository.save(authorUser);
 
         String otherUserEmail = "other@gmail.com";
-        User otherUser = User.of(otherUserEmail, "1234", "otherName");
+        User otherUser = UserFactory.of(otherUserEmail, "1234", "otherName");
         userRepository.save(otherUser);
         ResponseSingleArticle responseSingleArticle = articleService.postArticle(authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", "R"));
 
@@ -133,11 +134,11 @@ class CommentBusinessServiceTest {
     void when_deleteComment_expect_fail_not_exists_comment_exception() {
         // given
         String authEmail = "seok@gmail.com";
-        User authorUser = User.of(authEmail, "1234", "seok");
+        User authorUser = UserFactory.of(authEmail, "1234", "seok");
         userRepository.save(authorUser);
 
         String otherUserEmail = "other@gmail.com";
-        User otherUser = User.of(otherUserEmail, "1234", "otherName");
+        User otherUser = UserFactory.of(otherUserEmail, "1234", "otherName");
         userRepository.save(otherUser);
         ResponseSingleArticle responseSingleArticle = articleService.postArticle(authEmail, RequestSaveArticle.of("타이틀-1", "설명", "글 내용", "C++"));
 

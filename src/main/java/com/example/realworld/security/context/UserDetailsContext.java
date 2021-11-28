@@ -1,4 +1,4 @@
-package com.example.realworld.core.security.context;
+package com.example.realworld.security.context;
 
 import com.example.realworld.application.users.persistence.User;
 import org.springframework.security.core.GrantedAuthority;

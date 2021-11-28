@@ -5,14 +5,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
+
 @Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RequestUpdateUser {
 
+    @NotNull
     private String userName;
     private String password;
+    @NotNull
     private String image;
+    @NotNull
     private String bio;
 
     private RequestUpdateUser(String userName, String password, String image, String bio) {

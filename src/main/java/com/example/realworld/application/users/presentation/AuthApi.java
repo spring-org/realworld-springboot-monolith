@@ -3,7 +3,7 @@ package com.example.realworld.application.users.presentation;
 import com.example.realworld.application.users.dto.RequestSaveUser;
 import com.example.realworld.application.users.dto.ResponseUser;
 import com.example.realworld.application.users.service.UserBusinessService;
-import com.example.realworld.core.security.context.UserDetailsContext;
+import com.example.realworld.security.context.UserDetailsContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

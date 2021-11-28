@@ -1,6 +1,7 @@
 package com.example.realworld.application.users.dto;
 
 import com.example.realworld.application.users.persistence.User;
+import com.example.realworld.application.users.persistence.UserFactory;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,6 +33,6 @@ public class RequestSaveUser {
     }
 
     public static User toEntity(RequestSaveUser saveUser, PasswordEncoder passwordEncoder) {
-        return User.of(saveUser.getEmail(), passwordEncoder.encode(saveUser.getPassword()), saveUser.getUserName());
+        return UserFactory.of(saveUser.getEmail(), passwordEncoder.encode(saveUser.getPassword()), saveUser.getUserName());
     }
 }

@@ -10,6 +10,7 @@ import com.example.realworld.application.favorites.exception.NotFoundFavoriteArt
 import com.example.realworld.application.favorites.persistence.repository.FavoriteArticleRepository;
 import com.example.realworld.application.tags.persistence.Tag;
 import com.example.realworld.application.users.persistence.User;
+import com.example.realworld.application.users.persistence.UserFactory;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -46,8 +47,8 @@ class FavoriteArticleBusinessServiceTest {
     void when_favArticle_expect_success_favorite() {
         // given
         String email = "me@gmail.com";
-        User me = User.of(email, "1234", "myName");
-        User otherUser = User.of("other@gmail.com", "1234", "otherName");
+        User me = UserFactory.of(email, "1234", "myName");
+        User otherUser = UserFactory.of("other@gmail.com", "1234", "otherName");
         userRepository.save(me);
         User savedOtherUser = userRepository.save(otherUser);
 
@@ -69,8 +70,8 @@ class FavoriteArticleBusinessServiceTest {
     void when_duplicateFavoriteArticle_expect_fail_exception() {
         // given
         String email = "me@gmail.com";
-        User me = User.of(email, "1234", "myName");
-        User otherUser = User.of("other@gmail.com", "1234", "otherName");
+        User me = UserFactory.of(email, "1234", "myName");
+        User otherUser = UserFactory.of("other@gmail.com", "1234", "otherName");
 
         userRepository.save(me);
         userRepository.save(otherUser);
@@ -93,8 +94,8 @@ class FavoriteArticleBusinessServiceTest {
     void when_unFavArticle_expect_success_un_favorite_article() {
         // given
         String email = "me@gmail.com";
-        User me = User.of(email, "1234", "myName");
-        User otherUser = User.of("other@gmail.com", "1234", "otherName");
+        User me = UserFactory.of(email, "1234", "myName");
+        User otherUser = UserFactory.of("other@gmail.com", "1234", "otherName");
 
         // 사용자 둘 등록
         userRepository.save(me);
@@ -121,8 +122,8 @@ class FavoriteArticleBusinessServiceTest {
     void when_unFavArticle_expect_fail_not_yet_favorite() {
         // given
         String email = "me@gmail.com";
-        User me = User.of(email, "1234", "myName");
-        User otherUser = User.of("other@gmail.com", "1234", "otherName");
+        User me = UserFactory.of(email, "1234", "myName");
+        User otherUser = UserFactory.of("other@gmail.com", "1234", "otherName");
         userRepository.save(me);
         User savedOtherUser = userRepository.save(otherUser);
 

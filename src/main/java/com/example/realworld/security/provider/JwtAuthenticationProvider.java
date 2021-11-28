@@ -1,6 +1,6 @@
-package com.example.realworld.core.security.provider;
+package com.example.realworld.security.provider;
 
-import com.example.realworld.core.security.token.JwtAuthenticationToken;
+import com.example.realworld.security.token.JwtAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;

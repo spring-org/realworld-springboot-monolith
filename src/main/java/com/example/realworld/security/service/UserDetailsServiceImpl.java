@@ -1,9 +1,9 @@
-package com.example.realworld.core.security.service;
+package com.example.realworld.security.service;
 
 import com.example.realworld.application.users.exception.NotFoundUserException;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
-import com.example.realworld.core.security.context.UserDetailsContext;
+import com.example.realworld.security.context.UserDetailsContext;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

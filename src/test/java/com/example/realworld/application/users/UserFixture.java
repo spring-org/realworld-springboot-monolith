@@ -5,6 +5,7 @@ import com.example.realworld.application.users.dto.RequestSaveUser;
 import com.example.realworld.application.users.dto.RequestUpdateUser;
 import com.example.realworld.application.users.persistence.Profile;
 import com.example.realworld.application.users.persistence.User;
+import com.example.realworld.application.users.persistence.UserFactory;
 
 public class UserFixture {
 
@@ -20,11 +21,11 @@ public class UserFixture {
     }
 
     public static User createUser(String email) {
-        return User.of(email, "1234", "seokrae");
+        return UserFactory.of(email, "1234", "seokrae");
     }
 
     public static User createUser(String email, String username) {
-        return User.of(email, "1234", username);
+        return UserFactory.of(email, "1234", username);
     }
 
     public static Profile createProfile() {
@@ -33,9 +34,5 @@ public class UserFixture {
 
     public static RequestLoginUser getRequestLoginUser(String email) {
         return RequestLoginUser.of(email, "1234");
-    }
-
-    public static RequestSaveUser getRequestSaveUser(String email) {
-        return RequestSaveUser.of(email, "seokrae", "1234");
     }
 }

@@ -17,6 +17,7 @@ import java.util.Objects;
 @Table(name = "TB_FAVORITE_ARTICLE")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FavoriteArticle extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "FAVORITE_ARTICLE_ID", nullable = false)
@@ -30,13 +31,9 @@ public class FavoriteArticle extends BaseTimeEntity {
     @JoinColumn(name = "ARTICLE_ID")
     private Article favoritedArticle;
 
-    private FavoriteArticle(User fromUser, Article favArticle) {
+    public FavoriteArticle(User fromUser, Article favArticle) {
         this.favoriteUser = fromUser;
         this.favoritedArticle = favArticle;
-    }
-
-    public static FavoriteArticle of(User fromUser, Article article) {
-        return new FavoriteArticle(fromUser, article);
     }
 
     public boolean isMatchesArticleBySlug(String slug) {

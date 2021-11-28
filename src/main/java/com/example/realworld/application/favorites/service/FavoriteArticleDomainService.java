@@ -2,6 +2,7 @@ package com.example.realworld.application.favorites.service;
 
 import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.favorites.persistence.FavoriteArticle;
+import com.example.realworld.application.favorites.persistence.FavoriteArticleFactory;
 import com.example.realworld.application.favorites.persistence.repository.FavoriteArticleRepository;
 import com.example.realworld.application.users.persistence.User;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class FavoriteArticleDomainService {
     @Transactional
     public FavoriteArticle save(User user, Article article) {
 
-        FavoriteArticle favoriteArticle = FavoriteArticle.of(user, article);
+        FavoriteArticle favoriteArticle = FavoriteArticleFactory.of(user, article);
 
         return favoriteArticleRepository.save(favoriteArticle);
     }

@@ -1,6 +1,7 @@
 package com.example.realworld.application.follows.service;
 
 import com.example.realworld.application.follows.persistence.Follow;
+import com.example.realworld.application.follows.persistence.FollowFactory;
 import com.example.realworld.application.follows.persistence.repository.FollowRepository;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.core.annotations.DomainService;
@@ -21,10 +22,8 @@ public class FollowDomainService {
      * @return 현재 사용자와 특정 사용자 간의 관계를 형성
      */
     @Transactional
-    public Follow save(final User fromUser, final User toUser) {
-
-        final Follow following = Follow.following(fromUser, toUser);
-
+    public Follow save(User fromUser, User toUser) {
+        Follow following = FollowFactory.following(fromUser, toUser);
         return followRepository.save(following);
     }
 

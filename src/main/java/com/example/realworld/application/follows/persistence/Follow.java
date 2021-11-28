@@ -13,6 +13,7 @@ import javax.persistence.*;
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Follow extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "FOLLOW_ID", nullable = false)
@@ -26,16 +27,12 @@ public class Follow extends BaseTimeEntity {
     @JoinColumn(name = "TO_USER_ID")
     private User toUser;
 
-    private Follow(User fromUser, User toUser) {
+    public Follow(User fromUser, User toUser) {
         this.fromUser = fromUser;
         this.toUser = toUser;
     }
 
-    public static Follow following(User fromUser, User toUser) {
-        return new Follow(fromUser, toUser);
-    }
-
-    public boolean isSameToUser(User toUser) {
+    public boolean matchesUser(User toUser) {
         return this.toUser.isSameUser(toUser);
     }
 

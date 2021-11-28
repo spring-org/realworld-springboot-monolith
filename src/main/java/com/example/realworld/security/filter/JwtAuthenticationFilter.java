@@ -1,8 +1,8 @@
-package com.example.realworld.core.security.filter;
+package com.example.realworld.security.filter;
 
 import com.example.realworld.application.users.dto.RequestLoginUser;
-import com.example.realworld.core.security.jwt.JwtFactory;
-import com.example.realworld.core.security.token.JwtAuthenticationToken;
+import com.example.realworld.security.jwt.JwtFactory;
+import com.example.realworld.security.token.JwtAuthenticationToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.net.HttpHeaders;
 import org.springframework.http.MediaType;
