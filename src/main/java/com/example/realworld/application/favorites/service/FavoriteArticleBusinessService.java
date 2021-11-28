@@ -6,6 +6,7 @@ import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.service.ArticleDomainService;
 import com.example.realworld.application.favorites.persistence.FavoriteArticle;
 import com.example.realworld.application.users.persistence.User;
+import com.example.realworld.application.users.persistence.UserFavoriteArticle;
 import com.example.realworld.application.users.service.UserDomainService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,9 @@ public class FavoriteArticleBusinessService implements FavoriteArticleService {
     public ResponseSingleArticle favoriteArticle(String email, String slug) {
 
         User findUser = userDomainService.findUserByEmail(email);
-        boolean existsFavorite = findUser.isMatchesArticleBySlug(slug);
+        UserFavoriteArticle userFavArticle = new UserFavoriteArticle(findUser);
+
+        boolean existsFavorite = userFavArticle.isMatchesArticleBySlug(slug);
 
         if (existsFavorite) {
             throw new DuplicatedFavoriteArticleException();
@@ -40,7 +43,7 @@ public class FavoriteArticleBusinessService implements FavoriteArticleService {
 
         Article findArticle = articleDomainService.getArticleOrElseThrow(slug);
         FavoriteArticle savedFavoriteArticle = favoriteDomainService.save(findUser, findArticle);
-        Article resultArticle = findUser.favArticle(savedFavoriteArticle);
+        Article resultArticle = userFavArticle.favArticle(savedFavoriteArticle);
 
         return ResponseSingleArticle.of(resultArticle, findUser);
     }
@@ -57,9 +60,10 @@ public class FavoriteArticleBusinessService implements FavoriteArticleService {
     public ResponseSingleArticle unFavoriteArticle(String email, String slug) {
         // 존재하는 사용자와 글이 있으며, 좋아요 관계가 성립되는 경우
         User findUser = userDomainService.findUserByEmail(email);
+        UserFavoriteArticle userFavArticle = new UserFavoriteArticle(findUser);
 
-        FavoriteArticle favoriteArticle = findUser.getFavArticle(slug);
-        Article resultArticle = findUser.unFavArticle(favoriteArticle);
+        FavoriteArticle favoriteArticle = userFavArticle.getFavArticle(slug);
+        Article resultArticle = userFavArticle.unFavArticle(favoriteArticle);
 
         favoriteDomainService.delete(favoriteArticle);
 

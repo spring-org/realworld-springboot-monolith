@@ -3,7 +3,7 @@ package com.example.realworld.application.users.service;
 import com.example.realworld.application.users.dto.*;
 import com.example.realworld.application.users.exception.DuplicateUserException;
 import com.example.realworld.application.users.persistence.User;
-import com.example.realworld.core.security.jwt.JwtFactory;
+import com.example.realworld.security.jwt.JwtFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -50,8 +50,10 @@ public class UserBusinessService implements UserService {
     public ResponseUser updateUser(String email, RequestUpdateUser updateUser) {
 
         User user = userDomainService.findUserByEmail(email);
+        // TODO updateUser -> serviceDto (null 체크 값이 있는 애들만 파라미터로 넘긴다.)
         user.update(updateUser);
 
+        // TODO update querydsl 도 생각해 보기
         return ResponseUser.of(user);
     }
 
@@ -61,7 +63,6 @@ public class UserBusinessService implements UserService {
      * @param email 현재 사용자의 이메일 정보
      * @return 현재 사용자의 정보 반환
      */
-    @Transactional(readOnly = true)
     @Override
     public ResponseUser getUserByEmail(String email) {
 

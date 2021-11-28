@@ -1,7 +1,10 @@
 package com.example.realworld.application.follows.persistence.repository;
 
 import com.example.realworld.application.follows.persistence.Follow;
+import com.example.realworld.application.follows.persistence.FollowFactory;
+import com.example.realworld.application.users.persistence.FollowUserRelationShip;
 import com.example.realworld.application.users.persistence.User;
+import com.example.realworld.application.users.persistence.UserFactory;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,9 +30,9 @@ class FollowRepositoryTest {
     private static Stream<Arguments> userList() {
         return Stream.of(
                 Arguments.of(
-                        User.of("seok2@gmail.com", "1234"),
-                        User.of("seok3@gmail.com", "1234"),
-                        User.of("seok1@gmail.com", "1234"))
+                        UserFactory.of("seok2@gmail.com", "1234"),
+                        UserFactory.of("seok3@gmail.com", "1234"),
+                        UserFactory.of("seok1@gmail.com", "1234"))
         );
     }
 
@@ -40,12 +43,15 @@ class FollowRepositoryTest {
         // given
         userRepository.saveAll(List.of(fromUser, toUser));
 
-        final Follow newFollow = Follow.following(fromUser, toUser);
-        final Follow savedFollow = followRepository.save(newFollow);
-        fromUser.follows().addFollowing(savedFollow);
+        FollowUserRelationShip relationShip = new FollowUserRelationShip(fromUser);
+        Follow following = FollowFactory.following(fromUser, toUser);
+        relationShip.following(following);
+
+        final Follow savedFollow = followRepository.save(following);
+        relationShip.follows().addFollowing(savedFollow);
         // when
-        boolean contains = fromUser.isFollowing(toUser);
-        int followSize = fromUser.follows().followingSize();
+        boolean contains = relationShip.isFollowing(toUser);
+        int followSize = relationShip.follows().followingSize();
         // then
         assertThat(contains).isTrue();
         assertThat(followSize).isNotZero();
@@ -58,12 +64,14 @@ class FollowRepositoryTest {
         // given
         userRepository.saveAll(List.of(fromUser, toUser, otherUser));
 
-        final Follow newFollow = Follow.following(fromUser, toUser);
-        followRepository.save(newFollow);
-        fromUser.following(newFollow);
+        FollowUserRelationShip relationShip = new FollowUserRelationShip(fromUser);
+        Follow following = FollowFactory.following(fromUser, toUser);
+
+        followRepository.save(following);
+        relationShip.following(following);
 
         // when
-        boolean contains = fromUser.isFollowing(otherUser);
+        boolean contains = relationShip.isFollowing(otherUser);
 
         // then
         assertThat(contains).isFalse();

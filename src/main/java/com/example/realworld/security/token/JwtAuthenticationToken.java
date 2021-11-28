@@ -1,4 +1,4 @@
-package com.example.realworld.core.security.token;
+package com.example.realworld.security.token;
 
 import lombok.Generated;
 import org.springframework.security.authentication.AbstractAuthenticationToken;

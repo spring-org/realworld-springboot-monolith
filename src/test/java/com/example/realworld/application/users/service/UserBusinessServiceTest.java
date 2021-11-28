@@ -4,7 +4,7 @@ import com.example.realworld.application.users.dto.*;
 import com.example.realworld.application.users.exception.DuplicateUserException;
 import com.example.realworld.application.users.persistence.User;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
-import com.example.realworld.core.security.jwt.JwtFactory;
+import com.example.realworld.security.jwt.JwtFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -118,7 +118,6 @@ class UserBusinessServiceTest {
         RequestUpdateUser reqUpdateUser = getRequestUpdateUser("", "", "", "");
         given(userDomainService.findUserByEmail(email)).willReturn(createUser(email));
         // when
-
         ResponseUser updatedUser = userBusinessService.updateUser(email, reqUpdateUser);
         // then
         then(userDomainService).should(times(1)).findUserByEmail(email);

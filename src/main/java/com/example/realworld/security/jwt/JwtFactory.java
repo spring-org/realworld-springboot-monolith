@@ -1,4 +1,4 @@
-package com.example.realworld.core.security.jwt;
+package com.example.realworld.security.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

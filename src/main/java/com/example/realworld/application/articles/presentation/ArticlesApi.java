@@ -4,7 +4,7 @@ import com.example.realworld.application.articles.dto.*;
 import com.example.realworld.application.articles.service.ArticleService;
 import com.example.realworld.application.articles.service.CommentService;
 import com.example.realworld.application.favorites.service.FavoriteArticleService;
-import com.example.realworld.core.security.context.UserDetailsContext;
+import com.example.realworld.security.context.UserDetailsContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;

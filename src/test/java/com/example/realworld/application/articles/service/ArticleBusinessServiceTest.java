@@ -5,6 +5,7 @@ import com.example.realworld.application.articles.exception.NotFoundArticleExcep
 import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.persistence.repository.ArticleRepository;
 import com.example.realworld.application.users.persistence.User;
+import com.example.realworld.application.users.persistence.UserFactory;
 import com.example.realworld.application.users.persistence.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -136,9 +137,8 @@ class ArticleBusinessServiceTest {
     void when_deleteArticle_expect_fail_exception() {
         // given
         String email = "seokrae@gmail.com";
-        User user = User.of(email, "1234", "seokrae");
+        User user = UserFactory.of(email, "1234", "seokrae");
         RequestSaveArticle saveArticle = RequestSaveArticle.of("타이틀", "설명", "내용", "Java");
-
         // when
         userRepository.save(user);
         articleService.postArticle(email, saveArticle);

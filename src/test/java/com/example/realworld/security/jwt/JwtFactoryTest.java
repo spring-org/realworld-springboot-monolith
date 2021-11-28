@@ -1,4 +1,4 @@
-package com.example.realworld.core.security.jwt;
+package com.example.realworld.security.jwt;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

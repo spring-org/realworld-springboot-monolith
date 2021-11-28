@@ -1,5 +1,6 @@
 package com.example.realworld.application.users.dto;
 
+import com.example.realworld.application.users.persistence.FollowUserRelationShip;
 import com.example.realworld.application.users.persistence.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -31,6 +32,7 @@ public class ResponseProfile {
     }
 
     public static ResponseProfile ofProfile(final User fromUser, final User toUser) {
-        return new ResponseProfile(toUser, toUser.isFollowers(fromUser));
+        FollowUserRelationShip relationShip = new FollowUserRelationShip(fromUser);
+        return new ResponseProfile(fromUser, relationShip.isFollowing(toUser));
     }
 }

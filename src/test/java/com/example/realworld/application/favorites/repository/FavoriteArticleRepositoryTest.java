@@ -5,6 +5,7 @@ import com.example.realworld.application.favorites.persistence.FavoriteArticle;
 import com.example.realworld.application.favorites.persistence.repository.FavoriteArticleRepository;
 import com.example.realworld.application.tags.persistence.Tag;
 import com.example.realworld.application.users.persistence.User;
+import com.example.realworld.application.users.persistence.UserFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ class FavoriteArticleRepositoryTest {
     @DisplayName("특정 글의 좋아요 처리 테스트")
     @Test
     void when_saveFavoriteArticle_expect_success_save() {
-        User author = User.of("seokrae@gmail.com", "1234", "seokrae");
+        User author = UserFactory.of("seokrae@gmail.com", "1234", "seokrae");
         Article article = Article.of("title-1", "description", "body", author, Tag.of("Kotlin"));
         FavoriteArticle favoriteArticle = FavoriteArticle.of(author, article);
 

@@ -17,6 +17,7 @@ import java.util.Objects;
 @Table(name = "TB_FAVORITE_ARTICLE")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FavoriteArticle extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "FAVORITE_ARTICLE_ID", nullable = false)

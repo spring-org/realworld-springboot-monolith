@@ -1,10 +1,10 @@
-package com.example.realworld.core.config;
+package com.example.realworld.security.config;
 
-import com.example.realworld.core.security.filter.JwtAuthenticationFilter;
-import com.example.realworld.core.security.filter.JwtAuthorizationFilter;
-import com.example.realworld.core.security.jwt.JwtFactory;
-import com.example.realworld.core.security.provider.JwtAuthenticationProvider;
-import com.example.realworld.core.security.service.UserDetailsServiceImpl;
+import com.example.realworld.security.filter.JwtAuthenticationFilter;
+import com.example.realworld.security.filter.JwtAuthorizationFilter;
+import com.example.realworld.security.jwt.JwtFactory;
+import com.example.realworld.security.provider.JwtAuthenticationProvider;
+import com.example.realworld.security.service.UserDetailsServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
