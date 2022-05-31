@@ -33,11 +33,11 @@ public class ResponseSingleArticle {
     private final int favoritesCount;
     private final ResponseProfile author;
 
-    private ResponseSingleArticle(Article article, ResponseProfile author) {
+    private ResponseSingleArticle(Article article, User author) {
         this(article, author, null);
     }
 
-    private ResponseSingleArticle(Article article, ResponseProfile author, User favoriteUser) {
+    private ResponseSingleArticle(Article article, User author, User favoriteUser) {
         this.slug = article.getSlug();
         this.title = article.getTitle();
         this.description = article.getDescription();
@@ -47,14 +47,14 @@ public class ResponseSingleArticle {
         this.updatedAt = article.getUpdatedAt();
         this.favorited = article.getFavoriteArticles().contains(favoriteUser);
         this.favoritesCount = article.getFavoriteArticles().size();
-        this.author = author;
+        this.author = ResponseProfile.of(author);
     }
 
     public static ResponseSingleArticle from(Article article) {
-        return new ResponseSingleArticle(article, ResponseProfile.of(article.getAuthor()));
+        return new ResponseSingleArticle(article, article.getAuthor());
     }
 
     public static ResponseSingleArticle of(Article article, User favoriteUser) {
-        return new ResponseSingleArticle(article, ResponseProfile.of(article.getAuthor()), favoriteUser);
+        return new ResponseSingleArticle(article, article.getAuthor(), favoriteUser);
     }
 }

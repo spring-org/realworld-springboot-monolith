@@ -18,7 +18,13 @@ import static javax.persistence.CascadeType.PERSIST;
 
 @Getter
 @ToString
-@Table(name = "TB_USER")
+@Table(name = "TB_USER",
+		indexes = {
+			@Index(name = "idx_user_email", columnList = "email")
+			, @Index(name = "idx_user_created_at", columnList = "CREATED_AT")
+			, @Index(name = "idx_user_updated_at", columnList = "updatedAt")
+		}
+)
 @Entity(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity implements Serializable {

@@ -39,7 +39,6 @@ class ArticleRepositoryTest {
         userRepository.deleteAll();
     }
 
-
     @DisplayName("특정 글에 데이터 없이 정보 수정요청 테스트")
     @Test
     void when_updateArticle_expected_success_article_no_data() {

@@ -69,7 +69,7 @@ public class ArticleBusinessService implements ArticleService {
     @Override
     public ResponseSingleArticle getArticle(String slug) {
 
-        final Article findArticle = articleDomainService.getArticleOrElseThrow(slug);
+        final Article findArticle = articleDomainService.getArticleBySlug(slug);
 
         return ResponseSingleArticle.from(findArticle);
     }
@@ -104,12 +104,13 @@ public class ArticleBusinessService implements ArticleService {
     @Override
     public ResponseSingleArticle updateArticle(final String email, final String slug, final RequestUpdateArticle updateArticle) {
 
-        final User findUser = userDomainService.findUserByEmail(email);
-        Article findArticle = findUser.getArticleBySlug(slug)
-                .orElseThrow(NotFoundArticleException::new);
-        findArticle.update(updateArticle.getTitle(), updateArticle.getDescription(), updateArticle.getBody());
+	    Article article = userDomainService.findUserByEmail(email)
+			    .getArticleBySlug(slug)
+			    .orElseThrow(NotFoundArticleException::new);
 
-        return ResponseSingleArticle.from(findArticle);
+	    article.update(updateArticle.getTitle(), updateArticle.getDescription(), updateArticle.getBody());
+
+        return ResponseSingleArticle.from(article);
     }
 
     /**

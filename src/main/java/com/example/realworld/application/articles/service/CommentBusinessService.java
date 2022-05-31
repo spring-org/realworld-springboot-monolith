@@ -32,7 +32,7 @@ public class CommentBusinessService implements CommentService {
     @Override
     public ResponseMultiComment getCommentsByArticle(String slug) {
 
-        Article findArticle = articleDomainService.getArticleOrElseThrow(slug);
+        Article findArticle = articleDomainService.getArticleBySlug(slug);
 
         return ResponseMultiComment.from(findArticle.comments().all());
     }
@@ -51,7 +51,7 @@ public class CommentBusinessService implements CommentService {
             final String email, final String slug, final RequestSaveComment saveComment) {
 
         User findUser = userDomainService.findUserByEmail(email);
-        Article article = articleDomainService.getArticleOrElseThrow(slug);
+        Article article = articleDomainService.getArticleBySlug(slug);
 
         Comment savedComment = commentRepository.save(RequestSaveComment.of(saveComment, findUser, article));
         article.comments().add(savedComment);
@@ -70,7 +70,7 @@ public class CommentBusinessService implements CommentService {
     @Override
     public void deleteComment(final String email, final String slug, final Long commentId) {
         User findUser = userDomainService.findUserByEmail(email);
-        Article findArticle = articleDomainService.getArticleOrElseThrow(slug);
+        Article findArticle = articleDomainService.getArticleBySlug(slug);
 
         Comment findComment = findArticle.getComments().get(commentId);
 

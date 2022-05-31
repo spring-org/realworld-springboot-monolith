@@ -22,7 +22,7 @@ public class ArticleDomainService {
      * @return 특정 글 조회
      */
     @Transactional(readOnly = true)
-    public Article getArticleOrElseThrow(String slug) {
+    public Article getArticleBySlug(String slug) {
         return articleRepository.findBySlugOrderByIdDesc(slug)
                 .orElseThrow(NotFoundArticleException::new);
     }

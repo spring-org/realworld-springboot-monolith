@@ -1,6 +1,6 @@
 package com.example.realworld.application.users.persistence;
 
-public class UserFactory {
+public final class UserFactory {
 
     private UserFactory() {
     }
@@ -9,7 +9,7 @@ public class UserFactory {
         return new User(email, password);
     }
 
-    public static User of(String email, String password, String userName) {
+    public static User of(final String email, final String password, final String userName) {
         return new User(email, password, Profile.from(userName), Follows.init(), null);
     }
 }

@@ -53,8 +53,8 @@ class UserBusinessServiceTest {
         // when
         userBusinessService.postUser(saveUser);
         // then
-        then(userDomainService).should(times(1)).existsByEmail(saveUser.getEmail());
-        then(userDomainService).should(times(1)).save(user);
+        then(userDomainService).should().existsByEmail(saveUser.getEmail());
+        then(userDomainService).should().save(user);
     }
 
     @DisplayName("중복된 사용자 등록 예외 테스트")
@@ -79,7 +79,7 @@ class UserBusinessServiceTest {
         // when
         userBusinessService.getProfile(email);
         // then
-        then(userDomainService).should(times(1)).findUserByEmail(email);
+        then(userDomainService).should().findUserByEmail(email);
     }
 
     @DisplayName("현재 사용자 조회 테스트")
@@ -90,7 +90,7 @@ class UserBusinessServiceTest {
         // when
         ResponseUser userByEmail = userBusinessService.getUserByEmail(email);
         // then
-        then(userDomainService).should(times(1)).findUserByEmail(email);
+        then(userDomainService).should().findUserByEmail(email);
         assertThat(userByEmail.getUserName()).isEqualTo("seokrae");
     }
 
@@ -105,7 +105,7 @@ class UserBusinessServiceTest {
 
         ResponseUser responseUser = userBusinessService.updateUser(email, updateUser);
         // then
-        then(userDomainService).should(times(1)).findUserByEmail(email);
+        then(userDomainService).should().findUserByEmail(email);
         assertThat(responseUser.getImage()).isEqualTo("/image.png");
         assertThat(responseUser.getBio()).isEqualTo("hello bio");
     }
@@ -120,7 +120,7 @@ class UserBusinessServiceTest {
         // when
         ResponseUser updatedUser = userBusinessService.updateUser(email, reqUpdateUser);
         // then
-        then(userDomainService).should(times(1)).findUserByEmail(email);
+        then(userDomainService).should().findUserByEmail(email);
         assertThat(updatedUser.getUserName()).isEqualTo("seokrae");
         assertThat(updatedUser.getBio()).isNull();
         assertThat(updatedUser.getImage()).isNull();
@@ -135,7 +135,7 @@ class UserBusinessServiceTest {
         // when
         ResponseProfile profile = userBusinessService.getProfile(email);
         // then
-        then(userDomainService).should(times(1)).findUserByEmail(email);
+        then(userDomainService).should().findUserByEmail(email);
         assertThat(profile.getUserName()).isEqualTo("seokrae");
     }
 
@@ -150,7 +150,6 @@ class UserBusinessServiceTest {
         // then
         userBusinessService.login(RequestLoginUser.of(email, "1234"));
 
-        then(jwtFactory).should(times(1)).generateToken(email, 1);
-
+        then(jwtFactory).should().generateToken(email, 1);
     }
 }

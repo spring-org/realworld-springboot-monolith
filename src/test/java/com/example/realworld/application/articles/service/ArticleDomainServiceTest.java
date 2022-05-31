@@ -1,50 +1,34 @@
 package com.example.realworld.application.articles.service;
 
 import com.example.realworld.application.articles.exception.NotFoundArticleException;
-import com.example.realworld.application.articles.persistence.Article;
 import com.example.realworld.application.articles.persistence.repository.ArticleRepository;
-import com.example.realworld.application.tags.persistence.Tag;
-import com.example.realworld.application.users.persistence.User;
-import com.example.realworld.application.users.persistence.repository.UserRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static com.example.realworld.application.articles.ArticleFixture.createArticle;
-import static com.example.realworld.application.users.UserFixture.createUser;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class ArticleDomainServiceTest {
 
-    @Autowired
-    private ArticleDomainService articleDomainService;
-    @Autowired
-    private ArticleRepository articleRepository;
-    @Autowired
-    private UserRepository userRepository;
+	@InjectMocks
+	private ArticleDomainService articleDomainService;
+	@Mock
+	private ArticleRepository articleRepository;
 
-    @AfterEach
-    void tearDown() {
-        articleRepository.deleteAll();
-        userRepository.deleteAll();
-    }
 
-    @DisplayName("글 조회 실패 예외 테스트")
-    @Test
-    void when_getArticle_expect_fail_exception() {
-        // given
-        User author = userRepository.save(createUser("seokrae@gmail.com"));
-        User savedUser = userRepository.save(author);
-        Article article = createArticle(1, savedUser, Tag.of("Kotlin"));
+	@DisplayName("글 조회 실패 예외 테스트")
+	@Test
+	void when_getArticle_expect_fail_exception() {
+		given(articleRepository.findBySlugOrderByIdDesc(anyString())).willThrow(NotFoundArticleException.class);
 
-        // when
-        articleRepository.save(article);
-
-        // then
-        assertThatExceptionOfType(NotFoundArticleException.class)
-                .isThrownBy(() -> articleDomainService.getArticleOrElseThrow("no_data_slug"));
-    }
+		assertThatExceptionOfType(NotFoundArticleException.class)
+				.isThrownBy(() -> articleDomainService.getArticleBySlug("no_data_slug"));
+		;
+	}
 }

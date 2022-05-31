@@ -12,6 +12,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -19,9 +20,15 @@ import static javax.persistence.CascadeType.PERSIST;
 
 @Getter
 @ToString
-@Table(name = "TB_ARTICLE")
+@Table(name = "TB_ARTICLE",
+		indexes = {
+			@Index(name = "idx_article_title", columnList = "title")
+			, @Index(name = "idx_article_author", columnList = "USER_ID")
+			, @Index(name = "idx_article_updated_at", columnList = "updatedAt")
+			, @Index(name = "idx_article_created_at", columnList = "CREATED_AT")
+		}
+)
 @Entity(name = "articles")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Article extends BaseTimeEntity {
 
     @Id
@@ -44,21 +51,23 @@ public class Article extends BaseTimeEntity {
     @ManyToMany(fetch = FetchType.EAGER, cascade = {PERSIST})
     private final Set<Tag> tags = new LinkedHashSet<>();
 
-    private Article(
-            String title, String description, String body, User author, Set<Tag> tags) {
+	protected Article() {}
+
+	private Article(
+            String title, String description, String body, User author, Tag... tags) {
         this.slug = makeSlug(title);
         this.title = title;
         this.description = description;
         this.body = body;
         this.author = author;
-        this.tags.addAll(tags);
+        this.tags.addAll(List.of(tags));
         this.favoriteArticles = FavoriteArticles.init();
         this.comments = ArticleComments.init();
     }
 
     public static Article of(
             String title, String description, String body, User author, Tag... tags) {
-        return new Article(title, description, body, author, Set.of(tags));
+        return new Article(title, description, body, author, tags);
     }
 
     private String makeSlug(String title) {

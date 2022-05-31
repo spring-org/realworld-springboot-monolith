@@ -41,7 +41,7 @@ public class FavoriteArticleBusinessService implements FavoriteArticleService {
             throw new DuplicatedFavoriteArticleException();
         }
 
-        Article findArticle = articleDomainService.getArticleOrElseThrow(slug);
+        Article findArticle = articleDomainService.getArticleBySlug(slug);
         FavoriteArticle savedFavoriteArticle = favoriteDomainService.save(findUser, findArticle);
         Article resultArticle = userFavArticle.favArticle(savedFavoriteArticle);
 

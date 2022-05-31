@@ -13,6 +13,7 @@ import java.util.Optional;
 
 import static com.example.realworld.application.users.UserFixture.createUser;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
@@ -32,11 +33,11 @@ class UserDomainServiceTest {
     void when_findUserByEmail_expect_success_find_user() {
         // given
         String email = "seokrae@gmail.com";
-        given(userRepository.findByEmail(email)).willReturn(Optional.of(createUser(email)));
+        given(userRepository.findByEmail(any())).willReturn(Optional.of(createUser(email)));
         // when
         userDomainService.findUserByEmail(email);
         // then
-        then(userRepository).should(times(1)).findByEmail(email);
+        then(userRepository).should(times(1)).findByEmail(any());
     }
 
     @DisplayName("사용자 조회 예외 테스트")

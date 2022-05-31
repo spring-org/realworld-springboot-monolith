@@ -28,7 +28,8 @@ public class ResponseProfile {
     }
 
     public static ResponseProfile of(final User fromUser) {
-        return new ResponseProfile(fromUser, fromUser.profile().isFollowing());
+        return new ResponseProfile(fromUser,
+		        fromUser.profile().isFollowing());
     }
 
     public static ResponseProfile ofProfile(final User fromUser, final User toUser) {
